@@ -224,7 +224,7 @@ TRUSTED_BY = '<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg
 
 def page(d):
     body_open=f'<body class="font-body bg-white text-black overflow-x-clip text-base xl:text-lg page-{d["slug"]}"><div id="page" class="relative min-h-screen block" x-data="{{menuOpen:false}}">'
-    return head(d)+"\n"+body_open+"\n"+HEADER+"\n<main id=\"main\">\n"+"\n".join(d["sections"])+("" if d["slug"]=="404" else "\n"+TRUSTED_BY)+"\n</main>\n"+FOOTER+"\n"+SCRIPTS+"\n</div></body></html>"
+    return head(d)+"\n"+body_open+"\n"+HEADER+"\n<main id=\"main\">\n"+"\n".join(d["sections"])+("" if d["slug"] in ("404","legal") else "\n"+TRUSTED_BY)+"\n</main>\n"+FOOTER+"\n"+SCRIPTS+"\n</div></body></html>"
 
 IMG=lambda n:"/images/"+n
 # ---------------- pages ----------------
@@ -661,6 +661,84 @@ def furniture_page():
         cta_band("Need Furniture Storage in West Sussex?",IMG("gallery-warehouse-b.webp")),
       ])
 
+# ---------------- legal pages (privacy / terms) ----------------
+LEGAL_CSS=('<style>'
+  '.legal{max-width:48rem;margin:0 auto;color:#262626;font-size:1.02rem;line-height:1.75}'
+  '.legal h2{font-size:1.5rem;font-weight:800;color:#262626;text-transform:none;margin:2.2rem 0 .6rem;line-height:1.25}'
+  '.legal h2:first-of-type{margin-top:0}'
+  '.legal p{margin:.7rem 0}'
+  '.legal ul{margin:.7rem 0 .7rem 1.3rem;padding:0;list-style:disc}'
+  '.legal li{margin:.35rem 0}'
+  '.legal a{color:#FC9700;font-weight:600;text-decoration:underline}'
+  '.legal strong{color:#262626}'
+  '.legal .updated{color:#697783;font-size:.95rem;margin:0 0 1.4rem}'
+  '</style>')
+def legal_page(file,nav,title,meta,h1,sub,body):
+    header=('<section class="relative w-full bg-darkgrey text-white overflow-hidden"><div class="container py-12 lg:py-16"><div class="max-w-3xl">'
+            f'<h1 class="text-3xl lg:text-5xl font-bold leading-tight">{h1}</h1>'
+            f'<p class="mt-3 text-lg xl:text-xl text-beige">{sub}</p></div></div></section>')
+    content=('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container">'
+             +LEGAL_CSS+'<div class="legal">'+body+'</div></div></section>')
+    return dict(file=file,slug="legal",nav=nav,title=title,meta=meta,hero=IMG("hero-facility-van.webp"),sections=[header,content])
+
+PRIVACY_BODY='''<p class="updated">Last updated: 28 June 2026</p>
+<p>This privacy policy explains how <strong>Wolves Storage Sussex</strong> (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;), part of the family-run Wolves Removals business, collects and uses your personal information when you use our website or enquire about our storage services. We are the data controller for the information you provide.</p>
+<h2>Who we are</h2>
+<p>Wolves Storage Sussex, Doryln House, London Road, Ashington, Pulborough, West Sussex RH20 3JT.<br>Phone: 01903 893731 &middot; Email: <a href="mailto:info@sussexstoragecompany.co.uk">info@sussexstoragecompany.co.uk</a></p>
+<h2>What information we collect</h2>
+<ul>
+<li><strong>Enquiry details</strong> you provide through our contact or quote forms &mdash; your name, email address, phone number and any details you include about what you would like to store.</li>
+<li><strong>Communications</strong> &mdash; records of emails, calls and messages between us.</li>
+<li><strong>Technical and usage data</strong> &mdash; basic information your browser sends (such as IP address and pages visited), collected by our hosting and any analytics or cookies.</li>
+</ul>
+<h2>How and why we use your information</h2>
+<ul>
+<li>To respond to your enquiry and prepare a quote.</li>
+<li>To arrange, deliver and manage your storage (and any related removals) service.</li>
+<li>To keep records and communicate with you about your booking.</li>
+<li>To improve our website and services and keep our site secure.</li>
+</ul>
+<p>Our lawful bases for processing are your <strong>consent</strong> (when you submit a form), the performance of a <strong>contract</strong> with you, and our <strong>legitimate interests</strong> in running and improving our business.</p>
+<h2>Who we share it with</h2>
+<p>We do not sell your personal information. We share it only with trusted providers that help us run our business, including:</p>
+<ul>
+<li><strong>Resend</strong> &mdash; to deliver enquiry and confirmation emails.</li>
+<li><strong>Cloudflare</strong> &mdash; website hosting and security.</li>
+<li><strong>Google</strong> &mdash; embedded maps, and review display via Trustindex.</li>
+</ul>
+<p>We may also disclose information where required to do so by law.</p>
+<h2>How long we keep it</h2>
+<p>We keep enquiry and customer information only for as long as necessary &mdash; to deal with your enquiry, fulfil our service, and meet our legal and accounting obligations &mdash; after which it is securely deleted.</p>
+<h2>Your rights</h2>
+<p>Under UK data protection law you have the right to access, correct, delete or restrict the use of your personal data, to object to processing, and to data portability. To exercise any of these, contact us at <a href="mailto:info@sussexstoragecompany.co.uk">info@sussexstoragecompany.co.uk</a>. You also have the right to complain to the Information Commissioner&rsquo;s Office (ICO) at <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>.</p>
+<h2>Cookies</h2>
+<p>Our website uses a small number of cookies and similar technologies that are necessary for the site to work and stay secure, and may use cookies set by embedded content such as Google Maps and the Trustindex reviews widget. You can control cookies through your browser settings.</p>
+<h2>Changes to this policy</h2>
+<p>We may update this policy from time to time. The latest version will always appear on this page, with the date it was last updated shown above.</p>
+<h2>Contact us</h2>
+<p>For any questions about this policy or your personal data, contact us at <a href="mailto:info@sussexstoragecompany.co.uk">info@sussexstoragecompany.co.uk</a> or call 01903 893731.</p>'''
+
+TERMS_BODY='''<p class="updated">Last updated: 28 June 2026</p>
+<p>These terms govern your use of the Wolves Storage Sussex website and any enquiry you make through it. By using this website you agree to these terms. <strong>Wolves Storage Sussex</strong> is part of the family-run Wolves Removals business, based at Doryln House, London Road, Ashington, Pulborough, West Sussex RH20 3JT.</p>
+<h2>Using our website</h2>
+<p>You may use this website for lawful purposes only. You must not misuse it, attempt to gain unauthorised access, or use it in any way that could damage the site or impair anyone else&rsquo;s use of it. We aim to keep the site available and accurate but cannot guarantee it will always be uninterrupted or error-free.</p>
+<h2>Quotes and enquiries</h2>
+<p>Prices shown on this website, including any figure from our storage calculator, are <strong>indicative guides only</strong> and do not form a binding quotation. A formal quote is provided once we understand your requirements, and a contract is only formed when a booking is confirmed in writing. The storage calculator gives an approximate volume and price and is not a guarantee of cost or space.</p>
+<h2>Our storage services</h2>
+<p>The supply of storage and related services is governed by the specific terms and conditions provided to you at the point of booking, which take precedence over these website terms in respect of the service itself. Service details, inclusions and pricing may change; the terms agreed at booking apply to your contract.</p>
+<h2>Intellectual property</h2>
+<p>The content, branding, text, images and design of this website are owned by or licensed to Wolves Storage Sussex and are protected by copyright. You may view and print pages for your own personal, non-commercial use only.</p>
+<h2>Reviews and third-party content</h2>
+<p>Customer reviews shown on this site are displayed via Trustindex from verified sources. The site also links to and embeds third-party content (such as Google Maps and social media). We are not responsible for the content or privacy practices of external sites.</p>
+<h2>Limitation of liability</h2>
+<p>To the extent permitted by law, we are not liable for any loss or damage arising from your use of this website or reliance on its content. Nothing in these terms limits our liability for matters that cannot lawfully be limited.</p>
+<h2>Governing law</h2>
+<p>These terms are governed by the laws of England and Wales, and any disputes are subject to the exclusive jurisdiction of the courts of England and Wales.</p>
+<h2>Changes to these terms</h2>
+<p>We may update these terms from time to time. The current version will always be shown on this page.</p>
+<h2>Contact us</h2>
+<p>Questions about these terms? Email <a href="mailto:info@sussexstoragecompany.co.uk">info@sussexstoragecompany.co.uk</a> or call 01903 893731.</p>'''
+
 def build():
     P=[]
     # HOME
@@ -921,6 +999,15 @@ def build():
     # LOCATION SILO — per-town pages
     for t in TOWNS:
         P.append(town(t))
+    # LEGAL
+    P.append(legal_page("privacy-policy.html","Privacy Policy",
+      "Privacy Policy | Wolves Storage Sussex",
+      "How Wolves Storage Sussex collects, uses and protects your personal data when you enquire about storage. Your rights, cookies and how to contact us.",
+      "Privacy Policy","How we handle and protect your personal information.",PRIVACY_BODY))
+    P.append(legal_page("terms.html","Terms &amp; Conditions",
+      "Terms & Conditions | Wolves Storage Sussex",
+      "The terms for using the Wolves Storage Sussex website, our quotes and storage calculator, intellectual property, liability and governing law.",
+      "Terms &amp; Conditions","The terms for using our website and services.",TERMS_BODY))
     # 404
     P.append(dict(file="404.html",slug="404",nav="Page not found",
       title="Page Not Found (404) | Wolves Storage Sussex",
@@ -930,7 +1017,7 @@ def build():
         f'<div class="flex flex-wrap gap-3 justify-center">{btn("Back to Home","index.html","px-8 lg:px-10")}{btn("Contact Us","contact.html","px-8 lg:px-10")}</div>')]))
 
     for d in P:
-        if d["slug"]!="404" and d["file"]!="contact.html":
+        if d["slug"] not in ("404","legal") and d["file"]!="contact.html":
             d["sections"].insert(1, TRUSTINDEX_SECTION)
         if d["file"] in WHYUS:
             d["sections"].insert(2, WHYUS[d["file"]])
@@ -952,6 +1039,7 @@ def build():
     for d in P:
         if d["file"]=="404.html": continue
         if d["file"]=="index.html": pr="1.0"
+        elif d["slug"]=="legal": pr="0.3"
         elif d["slug"] in ("town","guide","furniture"): pr="0.8"
         else: pr="0.7"
         sm+=f'  <url><loc>{BASE}{d["file"]}</loc><changefreq>weekly</changefreq><priority>{pr}</priority></url>\n'
