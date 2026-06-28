@@ -485,7 +485,7 @@ TOWNS = [
   img3="hero-team-loading.webp",img3_alt="Wolves Storage Sussex team loading a container in Steyning",
   s3_h2="Flexible Storage for Steyning",
   s3=["From <a href=\"short-term-storage.html\">short-term storage</a> during a chain delay to <a href=\"long-term-storage.html\">long-term</a> options, <a href=\"furniture-storage.html\">furniture storage</a> and <a href=\"business-storage.html\">business storage</a>, we shape it around you.",
-      "We also serve nearby <a href=\"storage-henfield.html\">Henfield</a> and <a href=\"storage-washington.html\">Washington</a>, plus Shoreham and the coast &mdash; or see all <a href=\"areas-we-cover.html\">areas we cover</a>."],
+      "We also serve nearby <a href=\"storage-henfield.html\">Henfield</a> and <a href=\"storage-washington.html\">Washington</a>, plus <a href=\"storage-shoreham-by-sea.html\">Shoreham-by-Sea</a> and the coast &mdash; or see all <a href=\"areas-we-cover.html\">areas we cover</a>."],
   img4="gallery-warehouse-b.webp",img4_alt="Indoor secure storage warehouse serving Steyning, West Sussex",
   cta="Storing in Steyning? Get a Free Quote",
   faqs=[("Do you cover Steyning and the nearby villages?","Yes &mdash; we cover Steyning, Bramber and Upper Beeding, collecting, storing and redelivering across the area."),
@@ -559,7 +559,7 @@ TOWNS = [
   img3="hero-packed-container.webp",img3_alt="A sealed container packed with a Worthing customer's belongings",
   s3_h2="Storage for Every Worthing Need",
   s3=["Whether it&rsquo;s <a href=\"short-term-storage.html\">short-term storage</a> during a move, <a href=\"long-term-storage.html\">long-term storage</a> while downsizing, <a href=\"business-storage.html\">business storage</a> for seafront traders or student storage over summer, we shape it around you.",
-      "We also serve nearby <a href=\"storage-steyning.html\">Steyning</a>, plus Findon, Littlehampton and the coastal villages &mdash; see all <a href=\"areas-we-cover.html\">areas we cover</a>."],
+      "We also serve nearby <a href=\"storage-steyning.html\">Steyning</a>, <a href=\"storage-findon.html\">Findon</a> and <a href=\"storage-littlehampton.html\">Littlehampton</a> &mdash; see all <a href=\"areas-we-cover.html\">areas we cover</a>."],
   img4="gallery-van.webp",img4_alt="Wolves Storage Sussex van collecting from a Worthing home",
   extra=centered("bg-lightgrey","Storage That Suits Coastal Worthing","From seafront flats to family homes, our managed containers fit every kind of Worthing move across BN11 to BN14.",
         checklist(["Downsizers and retirees clearing space","Families moving home or between completions","Students storing over the summer holidays","Renovations, redecorations and staging for sale","Seafront and town-centre businesses with stock","Anyone who&rsquo;d rather not hire a van"],center=True)),
@@ -570,6 +570,8 @@ TOWNS = [
         ("Do you offer student storage in Worthing?","Yes &mdash; we collect at the end of term, store your sealed boxes safely, and redeliver when you return."),
         ("Is my storage insured and secure?","Yes &mdash; sealed containers in an alarmed, 24/7 CCTV indoor warehouse, fully insured and LAPADA accredited.")]),
 ]
+# additional town pages (unique local content generated into a data file)
+TOWNS += json.load(open(os.path.join(SITE,"partials","extra-towns.json"),encoding="utf-8"))
 
 # ---------------- P0 content assets: size guide + furniture storage --------
 SIZE_CARDS = [
@@ -867,14 +869,29 @@ def build():
         ("storage-storrington","Storrington","RH20","A few minutes along the A283 from our warehouse."),
         ("storage-pulborough","Pulborough","RH20","Same RH20 area as our base, by the River Arun."),
         ("storage-steyning","Steyning","BN44","Covering Steyning, Bramber and Upper Beeding."),
+        ("storage-findon","Findon","BN14","Downland village just north of Worthing on the A24."),
       ]),
       ("North &amp; Around Horsham",[
         ("storage-billingshurst","Billingshurst","RH14","Managed storage across the RH14 villages."),
         ("storage-horsham","Horsham","RH12&ndash;13","Collecting right across RH12 and RH13."),
         ("storage-henfield","Henfield","BN5","Your friendly local managed-storage alternative."),
+        ("storage-cowfold","Cowfold","RH13","Village storage between Horsham and Henfield."),
+        ("storage-partridge-green","Partridge Green","RH13","Rural storage near Henfield and West Grinstead."),
       ]),
-      ("Towards the Coast",[
+      ("Arun Valley &amp; Coast",[
+        ("storage-arundel","Arundel","BN18","Moves, downsizing and antiques across the Arun Valley."),
+        ("storage-littlehampton","Littlehampton","BN17","Coastal storage by the mouth of the River Arun."),
         ("storage-worthing","Worthing","BN11&ndash;14","Across BN11&ndash;BN14 &mdash; moves, downsizing and students."),
+        ("storage-shoreham-by-sea","Shoreham-by-Sea","BN43","Between Worthing and Brighton on the River Adur."),
+      ]),
+      ("Mid Sussex",[
+        ("storage-burgess-hill","Burgess Hill","RH15","Managed storage across the RH15 area."),
+        ("storage-haywards-heath","Haywards Heath","RH16","Commuter-town storage across RH16 and RH17."),
+      ]),
+      ("West Sussex &amp; the Downs",[
+        ("storage-petworth","Petworth","GU28","Antiques capital &mdash; specialist furniture care."),
+        ("storage-midhurst","Midhurst","GU29","South Downs market town storage on the A272."),
+        ("storage-chichester","Chichester","PO19","Cathedral city storage, west of our patch."),
       ]),
     ]
     LOC_CSS=('<style>'
@@ -912,7 +929,7 @@ def build():
     LOC_PIN='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5.5-8 12-8 12s-8-6.5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.8"/></svg>'
     LOC_GPIN='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5.5-8 12-8 12s-8-6.5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.8"/></svg>'
     LOC_ARR='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>'
-    more_towns=["Arundel","Petworth","Littlehampton","Shoreham-by-Sea","Findon","Burgess Hill","Haywards Heath","Chichester","Midhurst","Cowfold","Partridge Green"]
+    more_towns=["Amberley","Bramber","Upper Beeding","West Chiltington","Wisborough Green","Lindfield","Hassocks","Hurstpierpoint","Pyecombe","Walberton","Small Dole","Ashurst"]
     def area_cards():
         out=LOC_CSS+'<div class="loc-wrap">'
         for label,items in area_groups:
