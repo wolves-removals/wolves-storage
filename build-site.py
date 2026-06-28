@@ -124,7 +124,25 @@ def process():
                 f'<div class="uppercase font-bold text-black group-hover:text-white leading-snug text-sm xl:text-base">{t}</div>'
                 f'<div class="uppercase text-darkgrey group-hover:text-beige leading-snug text-xs xl:text-sm">{s}</div></div>'
                 f'<div class="ico-badge shrink-0 w-[5.25rem] h-[5.25rem] xl:w-24 xl:h-24 shadow-[0_8px_18px_-6px_rgba(0,0,0,0.16)]"><img src="/images/process/{icon}" alt="{t} &ndash; storage step icon" width="103" height="103" loading="lazy" decoding="async" class="w-14 h-14 xl:w-16 xl:h-16 object-contain"></div></div>')
-    inner=(f'<div data-proc><div class="flex md:grid md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 auto-rows-fr overflow-x-auto md:overflow-visible snap-x snap-mandatory proc-scroll -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0">{cards}</div></div>')
+    dots="".join(f'<button type="button" class="proc-dot{" is-active" if i==0 else ""}" data-i="{i}" aria-label="Go to step {i+1}"></button>' for i in range(len(PROC_STEPS)))
+    procnav_css=('<style>'
+      '.proc-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.25rem}'
+      '@media(min-width:768px){.proc-nav{display:none}}'
+      '.proc-nav .proc-dots{margin-top:0}'
+      '.proc-arrow{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;flex:none;border-radius:9999px;background:#fff;border:2px solid #262626;color:#262626;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s ease,color .2s ease,border-color .2s ease,opacity .2s ease}'
+      '.proc-arrow:hover{background:#FC9700;border-color:#FC9700;color:#fff}'
+      '.proc-arrow:disabled{opacity:.3;cursor:default}'
+      '.proc-arrow svg{width:20px;height:20px}'
+      '</style>')
+    ARRL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>'
+    ARRR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
+    inner=(procnav_css+'<div data-proc>'
+      '<div class="flex md:grid md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 auto-rows-fr overflow-x-auto md:overflow-visible snap-x snap-mandatory proc-scroll -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0">'+cards+'</div>'
+      '<div class="proc-nav">'
+      '<button type="button" class="proc-arrow proc-prev" aria-label="Previous step">'+ARRL+'</button>'
+      '<div class="proc-dots" role="tablist" aria-label="Storage step navigation">'+dots+'</div>'
+      '<button type="button" class="proc-arrow proc-next" aria-label="Next step">'+ARRR+'</button>'
+      '</div></div>')
     return centered("bg-beige","Our Step-by-Step Storage Process","We handle the heavy lifting, literally &mdash; here&rsquo;s how storing with us works.",inner)
 
 def faq(items):
