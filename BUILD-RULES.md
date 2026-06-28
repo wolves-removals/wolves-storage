@@ -48,7 +48,7 @@ design system + SEO/EEAT bible. **On any new page build, follow these rules.**
 
 - **Real reviews only** — currently 5.0★ / 478 reviews across Google, Checkatrade & Facebook (Trustindex). Never fabricate reviews or ratings.
 - **Real accreditations only:** LAPADA, Checkatrade, fully insured. (NOT a BAR member.)
-- **Consistent NAP everywhere:** Wolves Storage Sussex (part of the Wolves Removals family) · Doryln House, London Road, Ashington, Pulborough, West Sussex RH20 3JT · 01903 893731 / 07789 390421 · contact@wolves-removals.co.uk.
+- **Consistent NAP everywhere:** Wolves Storage Sussex (part of the Wolves Removals family) · Doryln House, London Road, Ashington, Pulborough, West Sussex RH20 3JT · 01903 893731 / 07789 390421 · info@sussexstoragecompany.co.uk.
 - Family-run, 10+ years' experience. State real facts only — never invent.
 - Real photos of the facility, containers, team and fleet.
 

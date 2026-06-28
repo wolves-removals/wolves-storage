@@ -11,7 +11,7 @@ CONTACT_MAIN = open(os.path.join(SITE,"partials","contact-main.html"),encoding="
 CALC_HTML = open(os.path.join(SITE,"partials","storage-calculator.html"),encoding="utf-8").read()
 
 PHONE1, PHONE2 = "01903 893731", "07789 390421"
-EMAIL = "contact@wolves-removals.co.uk"
+EMAIL = "info@sussexstoragecompany.co.uk"
 CHK = '<span class="text-green mt-1 shrink-0"><svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.4 4.5L19.5 7"/></svg></span>'
 SVG_PHONE = '<svg viewBox="0 0 512 512" class="w-4 text-beige" fill="currentColor" aria-hidden="true"><path d="M493 384l-91-91c-12-12-31-12-43 0l-45 45c-58-30-104-77-134-134l45-45c12-12 12-31 0-43l-91-91c-12-12-31-12-43 0L46 30C32 44 25 64 28 84c19 122 76 232 163 319s197 144 319 163c20 3 40-4 54-18l39-39c12-12 12-31 0-43z"/></svg>'
 SVG_MAIL = '<svg viewBox="0 0 512 512" class="w-4 text-beige" fill="currentColor" aria-hidden="true"><path d="M48 96c-18 0-32 14-32 32v10l240 156 240-156v-10c0-18-14-32-32-32H48zm448 79L262 332c-2 2-6 3-10 3s-8-1-10-3L16 175v209c0 18 14 32 32 32h416c18 0 32-14 32-32V175z"/></svg>'
