@@ -371,16 +371,50 @@ def town_map(t):
             '<div class="col-span-12 lg:col-span-7"><iframe title="Map of '+t["town"]+', West Sussex storage area" src="https://www.google.com/maps?q='+q+'&amp;z=12&amp;ie=UTF8&amp;iwloc=&amp;output=embed" class="block w-full rounded-xl shadow-custom" style="border:0;height:320px" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>'
             '</div></div></section>')
 
+TOWN_STATS=('<section class="relative bg-darkgrey text-white w-full py-7 lg:py-9 border-border"><div class="container">'
+  '<div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">'
+  +"".join(f'<div><div class="text-3xl font-bold">{b}</div><div class="text-beige text-sm mt-1">{s}</div></div>' for b,s in
+    [("5.0&#9733;","478 verified reviews"),("Since 2016","Family-run &amp; local"),("&pound;15","per week, no deposit"),("100%","Insured &amp; alarmed")])
+  +'</div></div></section>')
+TOWN_SERVICES_DATA=[
+ ("storage-solutions.html","Containerised Storage","Sealed wooden containers in our dry, alarmed indoor warehouse."),
+ ("long-term-storage.html","Long-Term Storage","Months or years &mdash; and better value the longer you stay."),
+ ("short-term-storage.html","Short-Term Storage","Flexible weekly terms for moves, chain delays and renovations."),
+ ("business-storage.html","Business Storage","Stock, archives &amp; equipment, collected and redelivered."),
+ ("furniture-storage.html","Furniture Storage","Blanket-wrapped, sealed and handled with proper care."),
+ ("how-it-works.html","Packing &amp; Collection","We bring the materials, pack and collect from your door."),
+]
+def town_services(tn):
+    cells="".join(f'<a href="{h}" class="col-span-12 sm:col-span-6 lg:col-span-4 block bg-white rounded-2xl shadow-custom p-6 h-full"><h3 class="font-bold text-black text-lg mb-2">{t}</h3><p class="text-darkgrey mb-3">{d}</p><span class="text-orange font-bold text-sm uppercase">Learn more &rarr;</span></a>' for h,t,d in TOWN_SERVICES_DATA)
+    return centered("bg-lightgrey","Storage Services in "+tn,"Whatever you need to store in "+tn+", we tailor a fully managed, fully insured solution &mdash; collected from your door from just &pound;15 a week.",'<div class="grid grid-cols-12 gap-4 lg:gap-6">'+cells+'</div>')
+def town_usps(tn):
+    usps=[("Fully Insured &amp; Alarmed","Sealed containers in a 24/7 CCTV, alarmed indoor warehouse, fully insured throughout your stay."),
+          ("Family-Run Since 2016","A local, LAPADA-accredited family team that treats your belongings like our own."),
+          ("From &pound;15/week, No Deposit","Honest weekly pricing with no deposit and no hidden fees &mdash; pay only for the space you use."),
+          ("We Come to You","No unit to drive to &mdash; we pack, collect from your "+tn+" door and redeliver on 24 hours&rsquo; notice.")]
+    cells="".join(f'<div class="col-span-12 sm:col-span-6 lg:col-span-3"><div class="bg-white rounded-2xl shadow-custom p-6 h-full"><h3 class="font-bold text-black text-lg mb-2">{t}</h3><p class="text-darkgrey mb-0">{d}</p></div></div>' for t,d in usps)
+    return centered("bg-lightgrey","Why "+tn+" Chooses Wolves Storage","Local, managed and genuinely cared for &mdash; the reasons "+tn+" stores with us.",'<div class="grid grid-cols-12 gap-4 lg:gap-6">'+cells+'</div>')
+def town_nearby(t):
+    try: here=(float(t["lat"]),float(t["lng"]))
+    except: return ""
+    others=[x for x in TOWNS if x.get("slug")!=t.get("slug") and x.get("lat")]
+    near=sorted(others,key=lambda x:(float(x["lat"])-here[0])**2+(float(x["lng"])-here[1])**2)[:6]
+    chips="".join(f'<a href="{x["slug"]}.html" class="inline-block bg-lightgrey rounded-full px-5 py-2 font-semibold text-black shadow-custom hover:text-orange">Storage in {x["town"]}</a>' for x in near)
+    return centered("bg-white","Areas Near "+t["town"]+" We Also Cover","Our managed collection service reaches right across the area &mdash; here are nearby towns we store for too.",'<div class="flex flex-wrap gap-3 justify-center">'+chips+'</div>')
+
 def town(t):
     h1="Storage in "+t["town"]+", "+t.get("region","West Sussex")
     secs=[
         hero(IMG(t["hero"]),t["hero_alt"],h1,t["sub"],t["checks"],big=False),
+        TOWN_STATS,
         split("bg-white",t["s1_h2"],t["s1"],IMG(t["img2"]),t["img2_alt"]),
-        split("bg-lightgrey",t["s2_h2"],t["s2"],IMG(t["img3"]),t["img3_alt"],reverse=True),
+        town_services(t["town"]),
+        split("bg-white",t["s2_h2"],t["s2"],IMG(t["img3"]),t["img3_alt"],reverse=True),
+        town_usps(t["town"]),
         split("bg-white",t["s3_h2"],t["s3"],IMG(t["img4"]),t["img4_alt"]),
     ]
     if t.get("extra"): secs.append(t["extra"])
-    secs+=[process(),town_map(t),faq(t["faqs"]),cta_band(t["cta"],IMG("gallery-warehouse-b.webp"))]
+    secs+=[process(),town_map(t),town_nearby(t),faq(t["faqs"]),cta_band(t["cta"],IMG("gallery-warehouse-b.webp"))]
     return dict(file=t["slug"]+".html",slug="town",nav="Storage in "+t["town"],
         title=t["title"],meta=t["meta"],hero=IMG(t["hero"]),faqs=t["faqs"],
         crumb_parent=("areas-we-cover.html","Areas We Cover"),extra_schema=town_service_schema(t),
