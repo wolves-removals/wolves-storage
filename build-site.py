@@ -165,10 +165,22 @@ FORM = ('<form id="quote-form" class="enquiry-form mt-5" novalidate><div data-fo
  '<div class="col-span-12"><label class="block font-semibold mb-1" for="f-msg">Message</label><textarea class="w-full" id="f-msg" name="message" rows="4"></textarea></div>'
  f'<div class="col-span-12">{btn("Request My Free Quote","javascript:void(0)","px-8 lg:px-10")}</div></div>'
  '<div data-form-success hidden class="mt-5 p-6 bg-lightgrey rounded-xl text-center"><p class="text-xl font-bold text-black">Thank you &mdash; your request is in!</p><p class="mt-2">A member of our family team will be in touch within 24 hours with your free quote.</p></div></form>')
-FORM_JS = ('<script>document.addEventListener("submit",function(e){var f=e.target.closest("#quote-form");if(!f)return;e.preventDefault();'
- 'var ok=true;f.querySelectorAll("[required]").forEach(function(x){if(!x.value.trim()){ok=false;x.style.borderColor="#c00";}});if(!ok)return;'
- 'f.querySelector("[data-form-fields]").style.display="none";f.querySelector("[data-form-success]").hidden=false;});'
- 'document.addEventListener("click",function(e){var b=e.target.closest("#quote-form button");if(b){var f=b.closest("form");if(f)f.dispatchEvent(new Event("submit",{cancelable:true}));}});</script>')
+FORM_JS = ('<script>document.addEventListener("submit",async function(e){'
+ 'var f=e.target.closest(".enquiry-form");if(!f)return;e.preventDefault();'
+ 'var ok=true;f.querySelectorAll("[required]").forEach(function(x){var bad=x.type==="checkbox"?!x.checked:!x.value.trim();x.style.borderColor=bad?"#c00":"";if(bad)ok=false;});if(!ok)return;'
+ 'var btn=f.querySelector("button[type=submit]")||f.querySelector("button");var orig=btn?btn.innerHTML:"";'
+ 'var data={};new FormData(f).forEach(function(v,k){if(k in data){if(!Array.isArray(data[k]))data[k]=[data[k]];data[k].push(v);}else{data[k]=v;}});'
+ 'data.page=document.title;data.page_url=location.href;'
+ 'var prev=f.querySelector("[data-form-error]");if(prev)prev.hidden=true;'
+ 'if(btn){btn.disabled=true;btn.innerHTML="Sending\\u2026";}'
+ 'try{var res=await fetch("/api/contact",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});'
+ 'var j={};try{j=await res.json();}catch(_){}'
+ 'if(res.ok&&j&&j.ok){var fl=f.querySelector("[data-form-fields]");if(fl)fl.style.display="none";var s=f.querySelector("[data-form-success]");if(s)s.hidden=false;if(s&&s.scrollIntoView)s.scrollIntoView({behavior:"smooth",block:"center"});}'
+ 'else{throw new Error((j&&j.error)||"send failed");}'
+ '}catch(_){if(btn){btn.disabled=false;btn.innerHTML=orig;}'
+ 'var box=f.querySelector("[data-form-error]");if(!box){box=document.createElement("div");box.setAttribute("data-form-error","");box.style.cssText="margin-top:1rem;padding:1rem 1.25rem;border-radius:.75rem;background:#fdecec;color:#a11616;font-weight:600;font-size:.95rem";var anchor=f.querySelector("[data-form-fields]")||f;anchor.appendChild(box);}'
+ 'box.hidden=false;box.textContent="Sorry \\u2014 your message couldn\\u2019t be sent just now. Please call 01903 893731 or email info@sussexstoragecompany.co.uk.";}'
+ '});</script>')
 
 # ---------------- head / page assembly ----------------
 ORG = json.dumps({"@context":"https://schema.org","@type":["SelfStorage","MovingCompany","LocalBusiness"],
