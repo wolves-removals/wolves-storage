@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.wolvesstoragesussex.co.uk/sitemap.xml
+Sitemap: https://www.sussexstoragecompany.co.uk/sitemap.xml

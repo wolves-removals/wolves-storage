@@ -6,7 +6,7 @@
 import re, json, os
 
 SITE = os.path.dirname(os.path.abspath(__file__))
-BASE = "https://www.wolvesstoragesussex.co.uk/"
+BASE = "https://www.sussexstoragecompany.co.uk/"
 
 # ---------- pull shared partials from an existing brand-matched page ----------
 src = open(os.path.join(SITE, "contact.html"), encoding="utf-8").read()

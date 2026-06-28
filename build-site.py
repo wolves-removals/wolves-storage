@@ -4,7 +4,7 @@
 # own storage wording. Only uses class strings confirmed present in their CSS.
 import json, os
 SITE = os.path.dirname(os.path.abspath(__file__))
-BASE = "https://www.wolvesstoragesussex.co.uk/"
+BASE = "https://www.sussexstoragecompany.co.uk/"
 CSSV = "/css/site.min.css"
 LOGO = "/images/wolves-storage-logo@480.webp"
 CONTACT_MAIN = open(os.path.join(SITE,"partials","contact-main.html"),encoding="utf-8").read()

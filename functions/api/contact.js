@@ -8,7 +8,7 @@
 
 const OWNER_TO = "info@sussexstoragecompany.co.uk";                       // where enquiries land
 const FROM     = "Wolves Storage Sussex <enquiries@sussexstoragecompany.co.uk>"; // verified Resend domain
-const SITE     = "https://www.wolvesstoragesussex.co.uk";
+const SITE     = "https://www.sussexstoragecompany.co.uk";
 const LOGO     = SITE + "/images/email-logo.png";
 const PHONE    = "01903 893731";
 
