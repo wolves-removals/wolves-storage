@@ -2,7 +2,7 @@
 # Generator: builds our storage pages in the wolves-removals THEME (their
 # compiled site.min.css + Alpine + their exact component markup), with our
 # own storage wording. Only uses class strings confirmed present in their CSS.
-import json, os
+import json, os, html
 SITE = os.path.dirname(os.path.abspath(__file__))
 BASE = "https://www.sussexstoragecompany.co.uk/"
 CSSV = "/css/site.min.css"
@@ -183,15 +183,24 @@ FORM_JS = ('<script>document.addEventListener("submit",async function(e){'
  '});</script>')
 
 # ---------------- head / page assembly ----------------
+AREA_SERVED = ["West Sussex","Ashington","Washington","Storrington","Pulborough","Steyning","Billingshurst",
+  "Horsham","Henfield","Worthing","Arundel","Petworth","Littlehampton","Shoreham-by-Sea","Findon",
+  "Burgess Hill","Haywards Heath","Chichester","Midhurst","Cowfold","Partridge Green"]
+SOCIALS_URLS = ["https://www.instagram.com/wolvesremovals/","https://www.facebook.com/wolvesremovals/",
+  "https://www.linkedin.com/company/wolves-removals","https://www.pinterest.co.uk/wolvesremovals/",
+  "https://x.com/WolvesRemovals","https://www.tumblr.com/wolvesremovalsltd","https://www.youtube.com/@wolvesremovals"]
 ORG = json.dumps({"@context":"https://schema.org","@type":["SelfStorage","MovingCompany","LocalBusiness"],
+  "@id":BASE+"#business",
   "name":"Wolves Storage Sussex","url":BASE,"telephone":"+441903893731","email":EMAIL,"priceRange":"From £15 per week",
-  "image":BASE+"images/wolves-storage-logo@480.webp",
+  "currenciesAccepted":"GBP","paymentAccepted":"Cash, Credit Card, Debit Card, Bank Transfer","foundingDate":"2016",
+  "image":BASE+"images/wolves-storage-logo@480.webp","logo":BASE+"images/wolves-storage-logo@480.webp",
+  "hasMap":"https://www.google.com/maps?q=Doryln+House,+London+Road,+Ashington,+Pulborough,+West+Sussex+RH20+3JT",
   "address":{"@type":"PostalAddress","streetAddress":"Doryln House, London Road, Ashington","addressLocality":"Pulborough","addressRegion":"West Sussex","postalCode":"RH20 3JT","addressCountry":"GB"},
   "geo":{"@type":"GeoCoordinates","latitude":"50.9270","longitude":"-0.4470"},
-  "areaServed":["West Sussex","Ashington","Pulborough","Storrington","Horsham","Worthing","Steyning","Billingshurst","Henfield"],
+  "areaServed":[{"@type":"City","name":a} for a in AREA_SERVED],
   "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:30","closes":"18:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Saturday"],"opens":"09:00","closes":"16:00"}],
   "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"478","bestRating":"5"},
-  "sameAs":["https://www.facebook.com/","https://www.instagram.com/","https://twitter.com/"]},ensure_ascii=False)
+  "sameAs":SOCIALS_URLS},ensure_ascii=False)
 
 def head(d):
     faqjson=""
@@ -328,13 +337,24 @@ def town_service_schema(t):
         "provider":{"@type":["SelfStorage","MovingCompany"],"name":"Wolves Storage Sussex","telephone":"+441903893731","url":BASE,
             "image":BASE+"images/wolves-storage-logo@480.webp","address":ADDR_LD,
             "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"478","bestRating":"5"}},
-        "areaServed":{"@type":"Place","name":t["town"] if "Sussex" in t["town"] else t["town"]+", West Sussex","geo":{"@type":"GeoCoordinates","latitude":t["lat"],"longitude":t["lng"]}},
+        "areaServed":{"@type":"Place","name":t["town"] if "Sussex" in t["town"] else t["town"]+", "+t.get("region","West Sussex"),"geo":{"@type":"GeoCoordinates","latitude":t["lat"],"longitude":t["lng"]}},
         "url":BASE+t["slug"]+".html",
         "offers":{"@type":"Offer","price":"15","priceCurrency":"GBP","priceSpecification":{"@type":"UnitPriceSpecification","price":"15","priceCurrency":"GBP","referenceQuantity":{"@type":"QuantitativeValue","value":"1","unitText":"WEEK"}}}
     },ensure_ascii=False)+'</script>')
 
+def town_map(t):
+    q=(t["town"]+", "+t.get("region","West Sussex")).replace(" ","+")
+    return ('<section class="relative bg-lightgrey w-full pt-8 lg:pt-12 pb-8 lg:pb-12 border-border"><div class="container">'
+            '<div class="grid grid-cols-12 gap-6 lg:gap-10 items-center">'
+            '<div class="col-span-12 lg:col-span-5"><h2 class="relative leading-tight text-black">We Cover '+t["town"]+'</h2>'
+            '<p class="mt-3">From our alarmed warehouse in Ashington (RH20 3JT) we collect from and redeliver right across '+t["town"]+' and the surrounding area &mdash; just tell us your postcode.</p>'
+            +checklist(["Door-to-door collection &amp; redelivery","Sealed, alarmed &amp; fully insured storage","From &pound;15/week, no deposit"])+
+            '<div class="mt-6">'+btn("Get a Free Quote","contact.html","px-8 lg:px-10")+'</div></div>'
+            '<div class="col-span-12 lg:col-span-7"><iframe title="Map of '+t["town"]+', West Sussex storage area" src="https://www.google.com/maps?q='+q+'&amp;z=12&amp;ie=UTF8&amp;iwloc=&amp;output=embed" class="block w-full rounded-xl shadow-custom" style="border:0;height:320px" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>'
+            '</div></div></section>')
+
 def town(t):
-    h1="Storage in "+t["town"]+", West Sussex"
+    h1="Storage in "+t["town"]+", "+t.get("region","West Sussex")
     secs=[
         hero(IMG(t["hero"]),t["hero_alt"],h1,t["sub"],t["checks"],big=False),
         split("bg-white",t["s1_h2"],t["s1"],IMG(t["img2"]),t["img2_alt"]),
@@ -342,7 +362,7 @@ def town(t):
         split("bg-white",t["s3_h2"],t["s3"],IMG(t["img4"]),t["img4_alt"]),
     ]
     if t.get("extra"): secs.append(t["extra"])
-    secs+=[process(),faq(t["faqs"]),cta_band(t["cta"],IMG("gallery-warehouse-b.webp"))]
+    secs+=[process(),town_map(t),faq(t["faqs"]),cta_band(t["cta"],IMG("gallery-warehouse-b.webp"))]
     return dict(file=t["slug"]+".html",slug="town",nav="Storage in "+t["town"],
         title=t["title"],meta=t["meta"],hero=IMG(t["hero"]),faqs=t["faqs"],
         crumb_parent=("areas-we-cover.html","Areas We Cover"),extra_schema=town_service_schema(t),
@@ -572,6 +592,7 @@ TOWNS = [
 ]
 # additional town pages (unique local content generated into a data file)
 TOWNS += json.load(open(os.path.join(SITE,"partials","extra-towns.json"),encoding="utf-8"))
+TOWNS += json.load(open(os.path.join(SITE,"partials","extra-towns-2.json"),encoding="utf-8"))
 
 # ---------------- P0 content assets: size guide + furniture storage --------
 SIZE_CARDS = [
@@ -741,6 +762,41 @@ TERMS_BODY='''<p class="updated">Last updated: 28 June 2026</p>
 <h2>Contact us</h2>
 <p>Questions about these terms? Email <a href="mailto:info@sussexstoragecompany.co.uk">info@sussexstoragecompany.co.uk</a> or call 01903 893731.</p>'''
 
+# ---------------- reviews page ----------------
+REVIEWS = [
+ ("Dionne Watson","Wolves provide a very helpful, friendly, efficient and professional service. I would highly recommend them."),
+ ("Leiza Bladd-Symms","The team were just amazing and went above and beyond to make the whole move as easy as possible. Huge thanks!"),
+ ("Chris Rees","The Wolves team were very courteous and professional. They took care of everything and handled my belongings with real care."),
+ ("K H","Jack and his team were incredibly helpful, with great advice for our house move and storage. Always polite and professional."),
+ ("Mike Hale","A friendly bunch and very professional in the way they pack and protect all your valuable belongings. Couldn&rsquo;t fault them."),
+ ("Lindsay Jordan","We cannot praise this team highly enough. They worked tirelessly and cheerfully throughout &mdash; true professionals from start to finish."),
+]
+def review_cards():
+    STAR='<span style="color:#F6BB06;font-size:1.05rem;letter-spacing:2px" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>'
+    cells=""
+    for n,r in REVIEWS:
+        cells+=('<div class="col-span-12 md:col-span-6 lg:col-span-4"><div class="bg-white rounded-2xl shadow-custom p-6 h-full">'
+                +STAR+'<p class="mt-3 mb-0">&ldquo;'+r+'&rdquo;</p>'
+                '<p class="font-bold text-black mt-4 mb-0">'+n+'</p>'
+                '<p class="text-sm text-darkgrey mt-0 mb-0">Verified Google review</p></div></div>')
+    return '<div class="grid grid-cols-12 gap-4 lg:gap-6">'+cells+'</div>'
+def reviews_page():
+    rs=('<script type="application/ld+json">'+json.dumps({"@context":"https://schema.org","@type":["SelfStorage","LocalBusiness"],
+        "@id":BASE+"#business","name":"Wolves Storage Sussex","url":BASE+"reviews.html","image":BASE+"images/wolves-storage-logo@480.webp",
+        "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"478","bestRating":"5"},
+        "review":[{"@type":"Review","author":{"@type":"Person","name":n},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5","worstRating":"1"},"reviewBody":html.unescape(r)} for n,r in REVIEWS]},ensure_ascii=False)+'</script>')
+    return dict(file="reviews.html",slug="reviews",nav="Reviews",
+        title="Reviews | 5.0 Stars from 478 | Wolves Storage Sussex",
+        meta="Read Wolves Storage Sussex reviews — rated 5.0 from 478 verified reviews on Google, Checkatrade & Facebook. Family-run, LAPADA accredited & fully insured.",
+        hero=IMG("hero-fleet.webp"),extra_schema=rs,
+        sections=[
+          hero(IMG("hero-fleet.webp"),"Wolves Storage Sussex 5-star rated family team and van fleet in West Sussex","Our Customers Rate Us 5.0",
+            "Don&rsquo;t just take our word for it &mdash; here&rsquo;s what West Sussex families and businesses say about storing with our family team.",
+            ["5.0 stars from 478 reviews","Verified on Google, Checkatrade &amp; Facebook","LAPADA accredited &amp; fully insured","Trusted by West Sussex estate agents"],big=False),
+          centered("bg-white","What Our Customers Say","Genuine, verified reviews from the families and businesses we&rsquo;ve helped across West Sussex.",review_cards()),
+          cta_band("Join Hundreds of Happy West Sussex Customers",IMG("gallery-warehouse-b.webp")),
+        ])
+
 def build():
     P=[]
     # HOME
@@ -878,15 +934,23 @@ def build():
         ("storage-cowfold","Cowfold","RH13","Village storage between Horsham and Henfield."),
         ("storage-partridge-green","Partridge Green","RH13","Rural storage near Henfield and West Grinstead."),
       ]),
-      ("Arun Valley &amp; Coast",[
+      ("Crawley &amp; the North-East",[
+        ("storage-crawley","Crawley","RH10&ndash;11","West Sussex&rsquo;s largest town &mdash; homes, business &amp; Gatwick."),
+        ("storage-east-grinstead","East Grinstead","RH19","High Weald town where Sussex meets Surrey &amp; Kent."),
+        ("storage-haywards-heath","Haywards Heath","RH16","Commuter-town storage across RH16 and RH17."),
+        ("storage-burgess-hill","Burgess Hill","RH15","Managed storage across the RH15 area."),
+      ]),
+      ("Arun Valley &amp; West Coast",[
         ("storage-arundel","Arundel","BN18","Moves, downsizing and antiques across the Arun Valley."),
         ("storage-littlehampton","Littlehampton","BN17","Coastal storage by the mouth of the River Arun."),
-        ("storage-worthing","Worthing","BN11&ndash;14","Across BN11&ndash;BN14 &mdash; moves, downsizing and students."),
-        ("storage-shoreham-by-sea","Shoreham-by-Sea","BN43","Between Worthing and Brighton on the River Adur."),
+        ("storage-rustington","Rustington","BN16","Leafy seaside village between Littlehampton &amp; Angmering."),
+        ("storage-bognor-regis","Bognor Regis","PO21&ndash;22","Sunny coastal storage &mdash; downsizing &amp; holiday lets."),
       ]),
-      ("Mid Sussex",[
-        ("storage-burgess-hill","Burgess Hill","RH15","Managed storage across the RH15 area."),
-        ("storage-haywards-heath","Haywards Heath","RH16","Commuter-town storage across RH16 and RH17."),
+      ("Worthing &amp; the Adur Coast",[
+        ("storage-worthing","Worthing","BN11&ndash;14","Across BN11&ndash;BN14 &mdash; moves, downsizing and students."),
+        ("storage-lancing","Lancing","BN15","Between Worthing and Shoreham on the BN15 coast."),
+        ("storage-shoreham-by-sea","Shoreham-by-Sea","BN43","Between Worthing and Brighton on the River Adur."),
+        ("storage-brighton","Brighton &amp; Hove","BN1&ndash;3","City storage for flats, students &amp; downsizers."),
       ]),
       ("West Sussex &amp; the Downs",[
         ("storage-petworth","Petworth","GU28","Antiques capital &mdash; specialist furniture care."),
@@ -1016,6 +1080,8 @@ def build():
     # LOCATION SILO — per-town pages
     for t in TOWNS:
         P.append(town(t))
+    # REVIEWS
+    P.append(reviews_page())
     # LEGAL
     P.append(legal_page("privacy-policy.html","Privacy Policy",
       "Privacy Policy | Wolves Storage Sussex",
