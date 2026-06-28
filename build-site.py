@@ -376,17 +376,50 @@ TOWN_STATS=('<section class="relative bg-darkgrey text-white w-full py-7 lg:py-9
   +"".join(f'<div><div class="text-3xl font-bold">{b}</div><div class="text-beige text-sm mt-1">{s}</div></div>' for b,s in
     [("5.0&#9733;","478 verified reviews"),("Since 2016","Family-run &amp; local"),("&pound;15","per week, no deposit"),("100%","Insured &amp; alarmed")])
   +'</div></div></section>')
+TSVC_ICONS={
+ "container":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>',
+ "calendar":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>',
+ "clock":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>',
+ "briefcase":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="7" width="19" height="13" rx="2"/><path d="M16 7V5.4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2V7M2.5 12.5h19"/></svg>',
+ "sofa":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11V8.5A2.5 2.5 0 0 1 7.5 6h9A2.5 2.5 0 0 1 19 8.5V11"/><path d="M3 13a2 2 0 0 1 4 0v3h10v-3a2 2 0 0 1 4 0v5H3z"/><path d="M6 18v2M18 18v2"/></svg>',
+ "van":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 5h13v10h-13z"/><path d="M14.5 8h4l3 3.2V15h-7z"/><circle cx="5.5" cy="17.5" r="1.9"/><circle cx="17.5" cy="17.5" r="1.9"/></svg>',
+}
+TSVC_ARROW='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+TSVC_CSS=('<style>'
+  '.tsvc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.25rem;text-align:left}'
+  '.tsvc-card{position:relative;display:flex;flex-direction:column;gap:.85rem;background:#fff;border:1px solid #E7E7E7;border-radius:1.15rem;padding:1.7rem 1.6rem 1.5rem;overflow:hidden;text-decoration:none;box-shadow:0 1px 2px rgba(38,38,38,.04);transition:transform .28s cubic-bezier(.2,.7,.3,1),box-shadow .28s ease,border-color .28s ease,background .28s ease}'
+  '.tsvc-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,#FC9700,#F6BB06);transform:scaleY(0);transform-origin:top;transition:transform .3s ease}'
+  '.tsvc-card::after{content:"";position:absolute;right:-32px;top:-32px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(252,151,0,.10),rgba(252,151,0,0) 70%);transition:transform .45s ease}'
+  '.tsvc-card:hover{transform:translateY(-6px);box-shadow:0 24px 50px -18px rgba(105,119,131,.55);border-color:#697783;background:#697783}'
+  '.tsvc-card:hover::before{transform:scaleY(1)}.tsvc-card:hover::after{transform:scale(1.7)}'
+  '.tsvc-card:focus-visible{outline:2px solid #FC9700;outline-offset:3px}'
+  '.tsvc-ico{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:.9rem;background:#E8E6DA;color:#697783;flex:none;transition:background .28s ease,color .28s ease,transform .28s ease}'
+  '.tsvc-card:hover .tsvc-ico{background:#FC9700;color:#fff;transform:rotate(-6deg) scale(1.05)}'
+  '.tsvc-name{position:relative;z-index:1;font-weight:700;color:#262626;font-size:1.18rem;line-height:1.15;margin:0;transition:color .28s ease}'
+  '.tsvc-card:hover .tsvc-name{color:#fff}'
+  '.tsvc-desc{position:relative;z-index:1;color:#697783;font-size:.96rem;line-height:1.55;margin:0;flex:1;transition:color .28s ease}'
+  '.tsvc-card:hover .tsvc-desc{color:#E8E6DA}'
+  '.tsvc-cta{position:relative;z-index:1;display:inline-flex;align-items:center;gap:.45rem;font-weight:700;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:#FC9700;margin-top:.2rem;transition:color .28s ease}'
+  '.tsvc-card:hover .tsvc-cta{color:#fff}'
+  '.tsvc-cta svg{transition:transform .28s ease}.tsvc-card:hover .tsvc-cta svg{transform:translateX(5px)}'
+  '@media (prefers-reduced-motion:reduce){.tsvc-card,.tsvc-ico,.tsvc-cta svg,.tsvc-card::before,.tsvc-card::after{transition:none}}'
+  '</style>')
 TOWN_SERVICES_DATA=[
- ("storage-solutions.html","Containerised Storage","Sealed wooden containers in our dry, alarmed indoor warehouse."),
- ("long-term-storage.html","Long-Term Storage","Months or years &mdash; and better value the longer you stay."),
- ("short-term-storage.html","Short-Term Storage","Flexible weekly terms for moves, chain delays and renovations."),
- ("business-storage.html","Business Storage","Stock, archives &amp; equipment, collected and redelivered."),
- ("furniture-storage.html","Furniture Storage","Blanket-wrapped, sealed and handled with proper care."),
- ("how-it-works.html","Packing &amp; Collection","We bring the materials, pack and collect from your door."),
+ ("storage-solutions.html","container","Containerised Storage","Sealed wooden containers in our dry, alarmed indoor warehouse."),
+ ("long-term-storage.html","calendar","Long-Term Storage","Months or years &mdash; and better value the longer you stay."),
+ ("short-term-storage.html","clock","Short-Term Storage","Flexible weekly terms for moves, chain delays and renovations."),
+ ("business-storage.html","briefcase","Business Storage","Stock, archives &amp; equipment, collected and redelivered."),
+ ("furniture-storage.html","sofa","Furniture Storage","Blanket-wrapped, sealed and handled with proper care."),
+ ("how-it-works.html","van","Packing &amp; Collection","We bring the materials, pack and collect from your door."),
 ]
 def town_services(tn):
-    cells="".join(f'<a href="{h}" class="col-span-12 sm:col-span-6 lg:col-span-4 block bg-white rounded-2xl shadow-custom p-6 h-full"><h3 class="font-bold text-black text-lg mb-2">{t}</h3><p class="text-darkgrey mb-3">{d}</p><span class="text-orange font-bold text-sm uppercase">Learn more &rarr;</span></a>' for h,t,d in TOWN_SERVICES_DATA)
-    return centered("bg-lightgrey","Storage Services in "+tn,"Whatever you need to store in "+tn+", we tailor a fully managed, fully insured solution &mdash; collected from your door from just &pound;15 a week.",'<div class="grid grid-cols-12 gap-4 lg:gap-6">'+cells+'</div>')
+    cells="".join(
+        f'<a href="{h}" class="tsvc-card" aria-label="{t} in {tn}">'
+        f'<span class="tsvc-ico">{TSVC_ICONS[ic]}</span>'
+        f'<h3 class="tsvc-name">{t}</h3><p class="tsvc-desc">{d}</p>'
+        f'<span class="tsvc-cta">Learn more {TSVC_ARROW}</span></a>'
+        for h,ic,t,d in TOWN_SERVICES_DATA)
+    return centered("bg-lightgrey","Storage Services in "+tn,"Whatever you need to store in "+tn+", we tailor a fully managed, fully insured solution &mdash; collected from your door from just &pound;15 a week.",TSVC_CSS+'<div class="tsvc-grid">'+cells+'</div>')
 def town_usps(tn):
     usps=[("Fully Insured &amp; Alarmed","Sealed containers in a 24/7 CCTV, alarmed indoor warehouse, fully insured throughout your stay."),
           ("Family-Run Since 2016","A local, LAPADA-accredited family team that treats your belongings like our own."),
