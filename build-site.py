@@ -371,11 +371,38 @@ def town_map(t):
             '<div class="col-span-12 lg:col-span-7"><iframe title="Map of '+t["town"]+', West Sussex storage area" src="https://www.google.com/maps?q='+q+'&amp;z=12&amp;ie=UTF8&amp;iwloc=&amp;output=embed" class="block w-full rounded-xl shadow-custom" style="border:0;height:320px" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>'
             '</div></div></section>')
 
-TOWN_STATS=('<section class="relative bg-darkgrey text-white w-full py-7 lg:py-9 border-border"><div class="container">'
-  '<div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">'
-  +"".join(f'<div><div class="text-3xl font-bold">{b}</div><div class="text-beige text-sm mt-1">{s}</div></div>' for b,s in
-    [("5.0&#9733;","478 verified reviews"),("Since 2016","Family-run &amp; local"),("&pound;15","per week, no deposit"),("100%","Insured &amp; alarmed")])
-  +'</div></div></section>')
+TSTAT_ICONS={
+ "star":'<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.45L12 17.9l-5.8 3.05 1.1-6.45L2.6 9.45 9.1 8.5z"/></svg>',
+ "home":'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2"/><path d="M5 9.8V20h14V9.8"/><path d="M10 20v-5h4v5"/></svg>',
+ "tag":'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 12 4.8H4.5v7.5l8.6 8.6a1.6 1.6 0 0 0 2.3 0l5.2-5.2a1.6 1.6 0 0 0 0-2.3z"/><circle cx="8" cy="8" r="1.4"/></svg>',
+ "shield":'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 5.7V11c0 4.6 3 7.8 7 9.3 4-1.5 7-4.7 7-9.3V5.7z"/><path d="M9 11.8l2 2 4-4"/></svg>',
+}
+TSTAT_DATA=[("star","5.0","478 verified reviews"),("home","Since 2016","Family-run &amp; local"),
+            ("tag","&pound;15","per week, no deposit"),("shield","100%","Insured &amp; alarmed")]
+TSTAT_CSS=('<style>'
+  '.tstats{position:relative;overflow:hidden;background:linear-gradient(120deg,#6f7d89 0%,#697783 45%,#5d6a75 100%)}'
+  '.tstats::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 140% at 85% -20%,rgba(252,151,0,.16),rgba(252,151,0,0) 55%);pointer-events:none}'
+  '.tstats::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700);opacity:.9}'
+  '.tstat-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,1fr)}'
+  '.tstat{display:flex;flex-direction:column;align-items:center;text-align:center;padding:1.5rem 1rem;border-left:1px solid rgba(255,255,255,.12);transition:transform .3s cubic-bezier(.2,.7,.3,1)}'
+  '.tstat:hover{transform:translateY(-4px)}'
+  '.tstat:nth-child(2n+1){border-left:0}'
+  '.tstat:nth-child(n+3){border-top:1px solid rgba(255,255,255,.12)}'
+  '@media (min-width:1024px){.tstat-grid{grid-template-columns:repeat(4,1fr)}'
+  '.tstat{border-left:1px solid rgba(255,255,255,.12);border-top:0;padding:2rem 1rem}'
+  '.tstat:nth-child(4n+1){border-left:0}.tstat:nth-child(n+3){border-top:0}}'
+  '.tstat-ico{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:999px;background:rgba(252,151,0,.16);color:#FC9700;margin-bottom:.7rem;transition:background .3s ease,color .3s ease,transform .3s ease}'
+  '.tstat:hover .tstat-ico{background:#FC9700;color:#fff;transform:scale(1.06)}'
+  '.tstat-num{font-weight:800;font-size:1.9rem;line-height:1;color:#fff;letter-spacing:-.01em}'
+  '.tstat-lab{margin-top:.45rem;font-size:.82rem;color:#E8E6DA;letter-spacing:.02em}'
+  '@media (min-width:1024px){.tstat-num{font-size:2.15rem}}'
+  '@media (prefers-reduced-motion:reduce){.tstat,.tstat-ico{transition:none}}'
+  '</style>')
+def town_stats(tn):
+    cells="".join(f'<div class="tstat"><span class="tstat-ico">{TSTAT_ICONS[ic]}</span>'
+                  f'<span class="tstat-num">{b}</span><span class="tstat-lab">{s}</span></div>' for ic,b,s in TSTAT_DATA)
+    return (f'<section class="tstats relative w-full border-border" aria-label="Why {tn} trusts Wolves Storage at a glance">'
+            f'{TSTAT_CSS}<div class="container"><div class="tstat-grid">{cells}</div></div></section>')
 TSVC_ICONS={
  "container":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>',
  "calendar":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></svg>',
@@ -439,7 +466,7 @@ def town(t):
     h1="Storage in "+t["town"]+", "+t.get("region","West Sussex")
     secs=[
         hero(IMG(t["hero"]),t["hero_alt"],h1,t["sub"],t["checks"],big=False),
-        TOWN_STATS,
+        town_stats(t["town"]),
         split("bg-white",t["s1_h2"],t["s1"],IMG(t["img2"]),t["img2_alt"]),
         town_services(t["town"]),
         split("bg-white",t["s2_h2"],t["s2"],IMG(t["img3"]),t["img3_alt"],reverse=True),
