@@ -360,15 +360,79 @@ def town_service_schema(t):
         "offers":{"@type":"Offer","price":"15","priceCurrency":"GBP","priceSpecification":{"@type":"UnitPriceSpecification","price":"15","priceCurrency":"GBP","referenceQuantity":{"@type":"QuantitativeValue","value":"1","unitText":"WEEK"}}}
     },ensure_ascii=False)+'</script>')
 
+COV_PIN='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.4 7-11a7 7 0 0 0-14 0c0 4.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>'
+COV_PHONE='<svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1z"/></svg>'
+COV_NAV='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg>'
+COV_TRUCK='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 5h13v10h-13z"/><path d="M14.5 8h4l3 3.2V15h-7z"/><circle cx="5.5" cy="17.5" r="1.9"/><circle cx="17.5" cy="17.5" r="1.9"/></svg>'
+COV_CSS=('<style>'
+  '.cov-eyebrow{display:inline-flex;align-items:center;gap:.55rem;font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#FC9700}'
+  '.cov-eyebrow::before{content:"";width:26px;height:2px;border-radius:2px;background:linear-gradient(90deg,#FC9700,#F6BB06)}'
+  '.cov-ctarow{margin-top:1.5rem;display:flex;flex-wrap:wrap;align-items:center;gap:.9rem 1.4rem}'
+  '.cov-call{display:inline-flex;align-items:center;gap:.5rem;font-weight:700;color:#262626;text-decoration:none;transition:color .25s ease}'
+  '.cov-call:hover{color:#FC9700}.cov-call:focus-visible{outline:2px solid #FC9700;outline-offset:3px;border-radius:6px}.cov-call svg{color:#FC9700;flex:none}'
+  '.cov-console{position:relative;border-radius:1.25rem;background:#fff;border:1px solid #E7E7E7;box-shadow:0 18px 50px -22px rgba(38,38,38,.45);overflow:hidden;transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s ease}'
+  '.cov-console:hover{transform:translateY(-5px);box-shadow:0 30px 72px -26px rgba(38,38,38,.55)}'
+  '.cov-console::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;z-index:3;pointer-events:none;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.cov-bar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.85rem 1rem;color:#fff;background:linear-gradient(120deg,#6f7d89,#697783 55%,#5d6a75)}'
+  '.cov-pin{display:inline-flex;align-items:center;gap:.55rem;min-width:0;font-weight:700;font-size:.92rem}'
+  '.cov-pinico{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;flex:none;border-radius:9px;color:#FC9700;background:rgba(252,151,0,.18)}'
+  '.cov-pintxt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+  '.cov-live{display:inline-flex;align-items:center;gap:.45rem;flex:none;padding:.32rem .7rem;border-radius:999px;font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#E8E6DA;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}'
+  '.cov-dot{width:9px;height:9px;border-radius:50%;background:#36d07f;animation:cov-pulse 2s ease-out infinite}'
+  '@keyframes cov-pulse{0%{box-shadow:0 0 0 0 rgba(54,208,127,.55)}70%{box-shadow:0 0 0 7px rgba(54,208,127,0)}100%{box-shadow:0 0 0 0 rgba(54,208,127,0)}}'
+  '.cov-map{position:relative;line-height:0;background:#E8E6DA}'
+  '.cov-map iframe{display:block;width:100%;height:340px;border:0;filter:saturate(1.02)}'
+  '@media (min-width:1024px){.cov-map iframe{height:380px}}'
+  '.cov-float{position:absolute;right:1rem;top:1rem;z-index:2;display:flex;align-items:center;gap:.7rem;max-width:calc(100% - 2rem);padding:.7rem .9rem;border-radius:.85rem;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(231,231,231,.9);box-shadow:0 12px 30px -14px rgba(38,38,38,.5);pointer-events:none}'
+  '.cov-floatico{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;flex:none;border-radius:10px;color:#fff;background:#FC9700}'
+  '.cov-floatnum{display:block;font-weight:800;font-size:1.02rem;line-height:1.1;color:#262626;letter-spacing:-.01em}'
+  '.cov-floatsub{display:block;margin-top:.12rem;font-size:.74rem;line-height:1.25;color:#697783}'
+  '.cov-foot{display:flex;align-items:center;flex-wrap:wrap;gap:.55rem;padding:.7rem 1rem;font-size:.8rem;color:#697783;background:#F9F8F6;border-top:1px solid #E7E7E7}'
+  '.cov-foot svg{color:#FC9700;flex:none}.cov-foot strong{color:#262626;font-weight:700}'
+  '.cov-foot-lab{font-weight:700;color:#697783;letter-spacing:.03em}'
+  '.cov-chip{display:inline-flex;align-items:center;font-size:.76rem;font-weight:600;color:#262626;background:#fff;border:1px solid #E7E7E7;border-radius:999px;padding:.3rem .7rem}'
+  '@media (prefers-reduced-motion:reduce){.cov-console,.cov-call{transition:none}.cov-console:hover{transform:none}.cov-dot{animation:none}}'
+  '</style>')
+def cov_miles(t):
+    from math import radians, sin, cos, asin, sqrt
+    try:
+        lat=float(t["lat"]); lng=float(t["lng"])
+    except (KeyError, TypeError, ValueError):
+        return 0
+    hlat, hlng = 50.9266, -0.4632
+    dlat=radians(lat-hlat); dlng=radians(lng-hlng)
+    a=sin(dlat/2)**2 + cos(radians(hlat))*cos(radians(lat))*sin(dlng/2)**2
+    return max(1, int(round(3958.8*2*asin(sqrt(a)))))
 def town_map(t):
-    q=(t["town"]+", "+t.get("region","West Sussex")).replace(" ","+")
-    return ('<section class="relative bg-lightgrey w-full pt-8 lg:pt-12 pb-8 lg:pb-12 border-border"><div class="container">'
-            '<div class="grid grid-cols-12 gap-6 lg:gap-10 items-center">'
-            '<div class="col-span-12 lg:col-span-5"><h2 class="relative leading-tight text-black">We Cover '+t["town"]+'</h2>'
-            '<p class="mt-3">From our alarmed warehouse in Ashington (RH20 3JT) we collect from and redeliver right across '+t["town"]+' and the surrounding area &mdash; just tell us your postcode.</p>'
+    town=t["town"]; reg=t.get("region","West Sussex")
+    q=(town+", "+reg).replace(" ","+")
+    m=cov_miles(t)
+    if m<=1:
+        fnum="Ashington HQ"; fsub="You&rsquo;re right on our doorstep"
+    else:
+        fnum="~"+str(m)+" miles"; fsub="from our Ashington HQ &middot; same-day redelivery"
+    return ('<section class="cov-sec relative bg-lightgrey w-full pt-8 lg:pt-12 pb-8 lg:pb-12 border-border" aria-label="Storage coverage area for '+town+'">'
+            +COV_CSS+
+            '<div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-center">'
+            '<div class="col-span-12 lg:col-span-5">'
+            '<span class="cov-eyebrow">Local Coverage</span>'
+            '<h2 class="relative leading-tight text-black mt-3">We Cover '+town+'</h2>'
+            '<p class="mt-3">From our alarmed warehouse in Ashington (RH20 3JT) we collect from and redeliver right across '+town+' and the surrounding area &mdash; just tell us your postcode.</p>'
             +checklist(["Door-to-door collection &amp; redelivery","Sealed, alarmed &amp; fully insured storage","From &pound;15/week, no deposit"])+
-            '<div class="mt-6">'+btn("Get a Free Quote","contact.html","px-8 lg:px-10")+'</div></div>'
-            '<div class="col-span-12 lg:col-span-7"><iframe title="Map of '+t["town"]+', West Sussex storage area" src="https://www.google.com/maps?q='+q+'&amp;z=12&amp;ie=UTF8&amp;iwloc=&amp;output=embed" class="block w-full rounded-xl shadow-custom" style="border:0;height:320px" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>'
+            '<div class="cov-ctarow">'+btn("Get a Free Quote","contact.html","px-8 lg:px-10")+
+            '<a class="cov-call" href="tel:+441903893731" aria-label="Call us on '+PHONE1+'">'+COV_PHONE+'<span>Call '+PHONE1+'</span></a>'
+            '</div></div>'
+            '<div class="col-span-12 lg:col-span-7"><div class="cov-console">'
+            '<div class="cov-bar"><span class="cov-pin"><span class="cov-pinico" aria-hidden="true">'+COV_PIN+'</span>'
+            '<span class="cov-pintxt">'+town+' &amp; surrounding postcodes</span></span>'
+            '<span class="cov-live"><span class="cov-dot" aria-hidden="true"></span>Service area</span></div>'
+            '<div class="cov-map"><iframe title="Map of '+town+', '+reg+' storage area" src="https://www.google.com/maps?q='+q+'&amp;z=12&amp;ie=UTF8&amp;iwloc=&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>'
+            '<div class="cov-float" aria-hidden="true"><span class="cov-floatico">'+COV_NAV+'</span>'
+            '<span><span class="cov-floatnum">'+fnum+'</span><span class="cov-floatsub">'+fsub+'</span></span></div></div>'
+            '<div class="cov-foot">'+COV_TRUCK+'<span class="cov-foot-lab">Also serving:</span>'
+            '<span class="cov-chip">Door-to-door across '+reg+'</span>'
+            '<span class="cov-chip">Free quote on your postcode</span></div>'
+            '</div></div>'
             '</div></div></section>')
 
 TSTAT_ICONS={
