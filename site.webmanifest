@@ -1,7 +1,7 @@
 {
-  "name": "Wolves Removals",
-  "short_name": "Wolves",
-  "description": "Family-run Sussex removals and storage — home and business moves, expert packing, secure storage and long-distance moves across Sussex, Surrey, Hampshire and Kent.",
+  "name": "Wolves Storage Sussex",
+  "short_name": "Wolves Storage",
+  "description": "Family-run, fully managed containerised storage across West Sussex — we pack, collect, store and redeliver. From £15/week, no deposit.",
   "id": "/",
   "lang": "en-GB",
   "dir": "ltr",
@@ -9,7 +9,7 @@
   "scope": "/",
   "display": "standalone",
   "background_color": "#E8E6DA",
-  "theme_color": "#E8E6DA",
+  "theme_color": "#697783",
   "categories": ["business"],
   "icons": [
     { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
@@ -22,22 +22,22 @@
     {
       "name": "Get a Free Quote",
       "short_name": "Quote",
-      "description": "Get a fast, fixed removals and storage quote",
-      "url": "/get-a-quote/",
+      "description": "Get a fast, no-obligation storage quote",
+      "url": "/contact.html",
       "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
-      "name": "Storage Calculator",
-      "short_name": "Storage",
-      "description": "Work out how much storage space your move needs",
-      "url": "/storage-calculator/",
+      "name": "Storage Size Guide",
+      "short_name": "Size Guide",
+      "description": "Work out how much storage space you need",
+      "url": "/storage-size-guide.html",
       "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Contact & Call Us",
       "short_name": "Contact",
       "description": "Reach our Sussex team and tap to call",
-      "url": "/contact-us/",
+      "url": "/contact.html",
       "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]

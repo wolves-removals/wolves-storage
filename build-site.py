@@ -2,8 +2,9 @@
 # Generator: builds our storage pages in the wolves-removals THEME (their
 # compiled site.min.css + Alpine + their exact component markup), with our
 # own storage wording. Only uses class strings confirmed present in their CSS.
-import json, os, html
+import json, os, html, datetime, re
 SITE = os.path.dirname(os.path.abspath(__file__))
+LASTMOD = datetime.date.today().isoformat()
 BASE = "https://www.sussexstoragecompany.co.uk/"
 CSSV = "/css/site.min.css"
 LOGO = "/images/wolves-storage-logo@480.webp"
@@ -34,7 +35,7 @@ def storage_dropdown():
     return ('<li class="lg:relative lg:h-full w-full lg:w-auto flex items-center shrink-0 lg:pr-4 xl:pr-5 2xl:pr-7 border-b border-black/10 lg:border-b-0 flex-col lg:flex-row lg:py-10" x-data="{o:false,t:0}" @mouseenter="if(window.innerWidth>=1024){clearTimeout(t);o=true}" @mouseleave="if(window.innerWidth>=1024){t=setTimeout(()=>o=false,250)}">'
             '<div class="flex items-center w-full lg:w-auto justify-between px-4 lg:p-0 py-3 lg:py-0">'
             '<a href="storage-solutions.html" class="nav-top shrink-0 text-black font-semibold uppercase lg:hover:text-orange text-base lg:text-sm">Storage</a>'
-            '<button type="button" aria-label="Open Storage menu" @click="o=!o" class="nav-top lg:ml-1 p-1 bg-transparent transition-transform duration-200" :class="o?\'rotate-180\':\'\'"><svg viewBox="0 0 20 20" class="h-5 w-5 fill-current" fill="currentColor" aria-hidden="true"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg></button></div>'
+            '<button type="button" aria-label="Open Storage menu" :aria-expanded="o ? \'true\' : \'false\'" @click="o=!o" class="nav-top lg:ml-1 p-1 bg-transparent transition-transform duration-200" :class="o?\'rotate-180\':\'\'"><svg viewBox="0 0 20 20" class="h-5 w-5 fill-current" fill="currentColor" aria-hidden="true"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg></button></div>'
             '<ul x-cloak class="bg-white w-full px-4 py-2 lg:absolute lg:top-full lg:left-0 lg:w-72 lg:z-30 lg:shadow-lg lg:border-t-4 lg:border-lightgrey list-none my-0 lg:p-2" :class="o ? \'block\' : \'hidden\'">'+subs+'</ul></li>')
 
 def nav_lis(mobile=False):
@@ -44,7 +45,7 @@ def nav_lis(mobile=False):
             out+=storage_dropdown(); continue
         ext=' target="_blank" rel="noopener"' if href.startswith("http") else ""
         out+=('<li class="lg:h-full w-full lg:w-auto flex items-center shrink-0 lg:pr-4 xl:pr-5 2xl:pr-7 border-b border-black/10 lg:border-b-0 px-4 py-3 lg:p-0 lg:py-10">'
-              f'<a href="{href}"{ext} class="nav-top shrink-0 text-black font-semibold uppercase lg:hover:text-orange text-base lg:text-sm">{label}</a></li>')
+              f'<a href="{"/" if href=="index.html" else href}"{ext} class="nav-top shrink-0 text-black font-semibold uppercase lg:hover:text-orange text-base lg:text-sm">{label}</a></li>')
     return out
 
 HEADER = (
@@ -56,16 +57,18 @@ f'<a class="hidden md:flex items-center gap-2 hover:text-orange" href="mailto:{E
 '</div></div></div>\n'
 '<div class="container mx-auto h-full"><div id="top-header" class="flex flex-wrap sm:flex-nowrap items-stretch h-full justify-between lg:gap-4 xl:gap-8">\n'
 '<div id="logo" class="order-1 relative shrink-0 w-[112px] sm:w-[140px] lg:w-[180px] xl:w-[200px] z-50">'
-f'<a id="site-logo" class="absolute left-0 top-1/2 -translate-y-1/2 flex z-50" href="index.html" title="Wolves Storage Sussex">'
+f'<a id="site-logo" class="absolute left-0 top-1/2 -translate-y-1/2 flex z-50" href="/" title="Wolves Storage Sussex">'
 f'<img class="h-[64px] sm:h-[88px] lg:h-[164px] xl:h-[180px] w-auto drop-shadow-lg" src="{LOGO}" width="200" height="197" alt="Wolves Storage Sussex logo"></a></div>\n'
 '<div class="order-2 hidden lg:flex lg:flex-1 items-center justify-end gap-4 xl:gap-6">'
 '<nav id="site-navigation" aria-label="Primary" class="font-medium"><ul class="flex lg:flex-row lg:items-center lg:justify-end p-0 mb-0 list-none">'+nav_lis()+'</ul></nav>'
 +btn("Get a Free Quote")+'</div>\n'
 '<div class="order-3 w-fit flex lg:hidden items-center justify-end gap-4">'
 +btn("Free Quote","contact.html","rounded-xl text-xs px-4 sm:text-sm sm:px-6")+
-'<button type="button" aria-label="Open menu" @click="menuOpen=!menuOpen" class="text-black bg-transparent p-2"><svg viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button></div>\n'
+'<button type="button" :aria-label="menuOpen ? \'Close menu\' : \'Open menu\'" :aria-expanded="menuOpen ? \'true\' : \'false\'" aria-controls="mobile-nav" @click="menuOpen=!menuOpen" class="text-black bg-transparent p-2">'
+'<svg x-show="!menuOpen" viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>'
+'<svg x-show="menuOpen" x-cloak viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>\n'
 '</div></div>\n'
-'<div x-cloak class="lg:hidden absolute top-full left-0 w-full bg-[#dad6c2] max-h-[80vh] overflow-y-auto shadow-custom-header" :class="menuOpen ? \'block\' : \'hidden\'">'
+'<div id="mobile-nav" x-cloak class="lg:hidden absolute top-full left-0 w-full bg-[#dad6c2] max-h-[80vh] overflow-y-auto shadow-custom-header" :class="menuOpen ? \'block\' : \'hidden\'">'
 '<nav aria-label="Mobile" class="font-medium"><ul class="flex flex-col p-0 mb-0 list-none">'+nav_lis(True)+'</ul></nav></div>\n'
 '</header>')
 
@@ -77,6 +80,40 @@ def checklist(items, center=False):
     if center:
         return '<div class="mt-6 flex justify-center"><ul class="space-y-2 list-none p-0 text-base xl:text-lg inline-block text-left">'+lis+'</ul></div>'
     return '<div class="mt-6"><ul class="space-y-2 list-none p-0 text-base xl:text-lg">'+lis+'</ul></div>'
+AUD_ICONS={
+ "home":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2"/><path d="M5 9.8V20h14V9.8"/><path d="M10 20v-5h4v5"/></svg>',
+ "wrench":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.6 6.4a3.5 3.5 0 0 0-4.7 4.7l-6 6a1.5 1.5 0 0 0 2.1 2.1l6-6a3.5 3.5 0 0 0 4.7-4.7l-2.3 2.3-1.9-1.9 2-2.5z"/></svg>',
+ "box":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>',
+ "key":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="4.2"/><path d="M11 11l8.5 8.5"/><path d="M16.5 16.5l2-2"/></svg>',
+ "briefcase":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="12.5" rx="2"/><path d="M8 7.5V5.8a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.7"/><path d="M3 12.5h18"/></svg>',
+ "cap":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 8.5 12 13l9.5-4.5L12 4z"/><path d="M6.5 10.7v4.3c0 1.2 2.5 2.5 5.5 2.5s5.5-1.3 5.5-2.5v-4.3"/><path d="M21.5 8.5v5"/></svg>',
+}
+CKG_CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.4 4.5L19.5 7"/></svg>'
+CKG_CSS=('<style>'
+  '.ckg-panel{position:relative;overflow:hidden;max-width:64rem;margin:1.6rem auto 0;border-radius:1.5rem;padding:1.9rem 1.3rem;background:linear-gradient(120deg,#6f7d89 0%,#697783 45%,#5d6a75 100%);border:1px solid rgba(255,255,255,.1);box-shadow:0 30px 70px -34px rgba(38,38,38,.55);list-style:none;display:grid;grid-template-columns:1fr;gap:.85rem}'
+  '@media(min-width:640px){.ckg-panel{grid-template-columns:1fr 1fr}}'
+  '@media(min-width:1024px){.ckg-panel{grid-template-columns:repeat(3,1fr);padding:2.2rem 1.9rem;gap:1rem}}'
+  '.ckg-panel::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 120% at 85% -10%,rgba(252,151,0,.16),rgba(252,151,0,0) 55%);pointer-events:none}'
+  '.ckg-panel::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.ckg-item{position:relative;overflow:hidden;display:flex;align-items:center;gap:.95rem;background:#fff;border:1px solid #E7E7E7;border-radius:.95rem;padding:1rem 1.1rem;box-shadow:0 2px 6px rgba(38,38,38,.05);transition:transform .3s cubic-bezier(.2,.7,.3,1),box-shadow .3s ease,border-color .3s ease}'
+  '.ckg-item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#FC9700,#F6BB06);transform:scaleY(0);transform-origin:top;transition:transform .3s ease}'
+  '.ckg-item:hover{transform:translateY(-4px);box-shadow:0 18px 36px -18px rgba(105,119,131,.5);border-color:#d9dde1}'
+  '.ckg-item:hover::before{transform:scaleY(1)}'
+  '.ckg-ico{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:.78rem;background:#E8E6DA;color:#697783;transition:background .3s ease,color .3s ease,transform .3s ease}'
+  '.ckg-item:hover .ckg-ico{background:#FC9700;color:#fff;transform:rotate(-6deg) scale(1.05)}'
+  '.ckg-ico svg{width:24px;height:24px}'
+  '.ckg-mark{position:absolute;bottom:-5px;right:-5px;display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:999px;background:#1b7f3b;color:#fff;border:2px solid #fff}'
+  '.ckg-mark svg{width:11px;height:11px}'
+  '.ckg-text{flex:1;min-width:0;color:#262626;font-weight:600;font-size:.96rem;line-height:1.32;text-align:left}'
+  '@media (prefers-reduced-motion:reduce){.ckg-item,.ckg-ico,.ckg-item::before{transition:none}.ckg-item:hover{transform:none}}'
+  '</style>')
+def checklist_grid(items, cols=None):
+    cells=""
+    for it in items:
+        ic,txt = (it[0],it[1]) if isinstance(it,(list,tuple)) else ("home",it)
+        cells+=('<li class="ckg-item"><span class="ckg-ico">'+AUD_ICONS.get(ic,AUD_ICONS["home"])
+                +'<span class="ckg-mark">'+CKG_CK+'</span></span><span class="ckg-text">'+txt+'</span></li>')
+    return CKG_CSS+'<ul class="ckg-panel">'+cells+'</ul>'
 
 def hero(img, alt, h1, sub, checks, big=True):
     h1cls = "text-4xl lg:text-6xl" if big else "text-3xl lg:text-5xl"
@@ -99,6 +136,15 @@ SPLIT_CSS=('<style>'
   '.sp-rule{display:block;width:54px;height:3px;border-radius:3px;background:linear-gradient(90deg,#FC9700,#F6BB06);margin:.85rem 0 1.05rem}'
   '@media (prefers-reduced-motion:reduce){.sp-img,.sp-img img{transition:none}.sp-figure:hover .sp-img{transform:none}.sp-figure:hover .sp-img img{transform:none}}'
   '</style>')
+# Accessibility contrast tweaks (WCAG 1.4.11 / 1.4.3) layered over the compiled theme.
+A11Y_CSS=('<style>'
+  '.top-0{top:0}'                                                # sticky-header offset (class absent from compiled site.min.css)
+  '@media(min-width:1024px){.lg\\:pt-12{padding-top:3rem}.lg\\:pb-12{padding-bottom:3rem}}'  # cov-sec desktop padding (classes absent from site.min.css)
+  '@media(min-width:1280px){.xl\\:text-sm{font-size:.875rem;line-height:1.25rem}}'           # process subtext size at xl (class absent from site.min.css)
+  '.text-green{color:#1b7f3b}'                                   # darker green ticks meet 3:1 graphical contrast
+  '.enquiry-form input,.enquiry-form select,.enquiry-form textarea{border:1px solid #6b7280}'  # 3:1 input borders
+  '.enquiry-form input::placeholder,.enquiry-form textarea::placeholder{color:#5b626b}'         # readable placeholder
+  '</style>')
 def split(bg, h2, paras, img, alt, reverse=False):
     body = "".join(f'<p>{p}</p>' for p in paras)
     txt = (f'<div class="col-span-12 lg:col-span-6 {"lg:col-start-6" if reverse else "lg:col-start-2"}">'
@@ -114,6 +160,106 @@ def centered(bg, h2, lead, inner=""):
     leadp = f'<p class="text-lg xl:text-xl font-medium mt-2 max-w-3xl mx-auto">{lead}</p>' if lead else ""
     return (f'<section class="relative {bg} w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container">'
             f'<div class="text-center mb-8 lg:mb-10"><h2 class="relative leading-tight text-black">{h2}</h2>{leadp}</div>{inner}</div></section>')
+
+CG_ICONS={
+ 'container':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8.5l-9-5-9 5v7l9 5 9-5z"/><path d="M3 8.5l9 5 9-5"/><path d="M12 13.5V21"/></svg>',
+ 'shield':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7.5 3.2v5c0 4.6-3.2 7.8-7.5 9.3-4.3-1.5-7.5-4.7-7.5-9.3v-5z"/><path d="M9 12l2.2 2.2L15.5 9.5"/></svg>',
+ 'badge':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5.2"/><path d="M9.2 13.3L7.5 21l4.5-2.6L16.5 21l-1.7-7.7"/><path d="M9.7 9l1.6 1.6L14.4 7.4"/></svg>',
+ 'boxes':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="10" width="8" height="8" rx="1.2"/><rect x="13" y="10" width="8" height="8" rx="1.2"/><rect x="8" y="3" width="8" height="6" rx="1.2"/></svg>',
+ 'pin':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5.5-8 12-8 12s-8-6.5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.8"/></svg>',
+ 'spark':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 3l1.7 4.6L18 9.3l-4.8 1.7L11.5 16l-1.7-5L5 9.3l4.8-1.7z"/><path d="M18 14l.8 2.3 2.2.8-2.2.8L18 20l-.8-2.1-2.2-.8 2.2-.8z"/></svg>',
+ 'tag':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0l-7-7A2 2 0 0 1 3 12.2V5a2 2 0 0 1 2-2h7.2a2 2 0 0 1 1.4.6l7 7a2 2 0 0 1 0 2.8z"/><circle cx="7.8" cy="7.8" r="1.3"/></svg>',
+ 'package':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5h18V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><rect x="2" y="5" width="20" height="3.5" rx="1"/><path d="M12 5v16"/><path d="M12 5S10.5 2 8.3 3 9.5 5 12 5z"/><path d="M12 5s1.5-3 3.7-2S14.5 5 12 5z"/></svg>',
+ 'truck':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v9H3z"/><path d="M14 9h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg>',
+ 'clock':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>',
+ 'family':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20a5 5 0 0 1 10 0"/><path d="M14.5 20a4 4 0 0 1 6.5-3.1"/></svg>',
+ 'home':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2"/><path d="M5 9.8V20h14V9.8"/><path d="M10 20v-5h4v5"/></svg>',
+}
+CG_CSS=('<style>'
+  '.cg-sec{position:relative;overflow:hidden;background:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.5px) 0 0/24px 24px,linear-gradient(120deg,#6f7d89 0%,#697783 45%,#5d6a75 100%)}'
+  '.cg-sec::before{content:"";position:absolute;inset:0;background:radial-gradient(130% 135% at 6% -18%,rgba(252,151,0,.24),rgba(252,151,0,0) 52%);pointer-events:none}'
+  '.cg-sec::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.cg-blob{position:absolute;right:-150px;bottom:-150px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(246,187,6,.13),rgba(246,187,6,0) 68%);pointer-events:none;z-index:0}'
+  '.cg-wrap{position:relative;z-index:1;max-width:74rem;margin:0 auto}'
+  '.cg-head{text-align:center;max-width:54rem;margin:0 auto}'
+  '.cg-ey{display:inline-flex;align-items:center;gap:.5rem;color:#F6BB06;font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;margin-bottom:.7rem}'
+  '.cg-ey::before,.cg-ey::after{content:"";width:18px;height:1px;background:rgba(246,187,6,.55)}'
+  '.cg-h2{color:#fff;font-weight:800;font-size:1.85rem;line-height:1.12;margin:0}'
+  '@media(min-width:1024px){.cg-h2{font-size:2.3rem}}'
+  '.cg-rule{width:62px;height:3px;border-radius:3px;background:linear-gradient(90deg,#FC9700,#F6BB06);margin:1.15rem auto 0}'
+  '.cg-lead{font-size:1.1rem;line-height:1.7;color:#ece9df;max-width:50rem;margin:1.15rem auto 0;text-align:center}'
+  '.cg-grid{display:grid;grid-template-columns:1fr;gap:1.2rem;margin-top:2.5rem;align-items:stretch}'
+  '@media(min-width:760px){.cg-grid{grid-template-columns:1fr 1fr;gap:1.4rem;margin-top:3rem}}'
+  '.cg-card{position:relative;overflow:hidden;background:#fff;border-radius:1.35rem;padding:1.9rem 1.7rem;box-shadow:0 26px 50px -28px rgba(20,28,36,.62);transition:transform .32s cubic-bezier(.2,.7,.3,1),box-shadow .32s ease}'
+  '.cg-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#FC9700,#F6BB06);transform:scaleY(0);transform-origin:top;transition:transform .35s ease}'
+  '.cg-card:hover{transform:translateY(-7px);box-shadow:0 36px 64px -26px rgba(20,28,36,.68)}'
+  '.cg-card:hover::before{transform:scaleY(1)}'
+  '.cg-num{position:absolute;top:.7rem;right:1.2rem;font-weight:800;font-size:3.1rem;line-height:1;color:#f1f3f5;letter-spacing:-.03em;z-index:0}'
+  '.cg-ico{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:1rem;background:#E8E6DA;color:#697783;margin-bottom:1.05rem;transition:background .3s ease,color .3s ease,transform .3s ease}'
+  '.cg-card:hover .cg-ico{background:linear-gradient(135deg,#FC9700,#F6BB06);color:#fff;transform:rotate(-6deg) scale(1.07)}'
+  '.cg-ico svg{width:27px;height:27px}'
+  '.cg-h{position:relative;z-index:1;font-weight:800;color:#26303a;font-size:1.16rem;line-height:1.25;margin:0 0 .55rem;padding-right:2.4rem}'
+  '.cg-p{position:relative;z-index:1;color:#56606b;font-size:.97rem;line-height:1.62;margin:0}'
+  '.cg-p a{color:#c97400;font-weight:700;text-decoration:underline;text-underline-offset:2px}'
+  '.cg-p a:hover{color:#697783}'
+  '.cg-statband{grid-column:1/-1;position:relative;overflow:hidden;border-radius:1.35rem;background:linear-gradient(120deg,rgba(255,255,255,.10),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.16);padding:1.5rem 1rem;display:grid;grid-template-columns:1fr 1fr;gap:1.1rem 0}'
+  '.cg-statband::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '@media(min-width:680px){.cg-statband{grid-template-columns:repeat(4,1fr);padding:1.7rem 1.4rem}}'
+  '.cg-stat{position:relative;text-align:center}'
+  '.cg-stat-n{display:block;font-weight:800;font-size:2rem;line-height:1;color:#F6BB06}'
+  '.cg-stat-l{display:block;margin-top:.45rem;font-size:.8rem;line-height:1.3;color:#e7e4d8;text-transform:uppercase;letter-spacing:.04em}'
+  '@media(min-width:680px){.cg-stat+.cg-stat::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:1px;background:rgba(255,255,255,.18)}}'
+  '.cg-feat{position:relative;overflow:hidden;background:#fff;border-radius:1.6rem;box-shadow:0 34px 66px -30px rgba(15,22,30,.74);display:grid;grid-template-columns:1fr;margin-bottom:1.3rem}'
+  '@media(min-width:820px){.cg-feat{grid-template-columns:43% 1fr}}'
+  '.cg-feat-img{position:relative;min-height:250px}'
+  '.cg-feat-img>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}'
+  '.cg-feat-img::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(34,44,54,.34),rgba(34,44,54,0) 56%)}'
+  '.cg-feat-tag{position:absolute;top:1.05rem;left:1.05rem;z-index:1;background:linear-gradient(135deg,#FC9700,#F6BB06);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:.68rem;padding:.42rem .8rem;border-radius:999px;box-shadow:0 8px 18px -6px rgba(252,151,0,.6)}'
+  '.cg-feat-body{position:relative;padding:2.1rem 1.9rem}'
+  '@media(min-width:820px){.cg-feat-body{padding:2.9rem 2.7rem;display:flex;flex-direction:column;justify-content:center}}'
+  '.cg-feat-k{font-weight:800;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:#c97400}'
+  '.cg-feat-h{font-weight:800;color:#222c36;font-size:1.5rem;line-height:1.16;margin:.6rem 0 .75rem}'
+  '@media(min-width:1024px){.cg-feat-h{font-size:1.78rem}}'
+  '.cg-feat-p{color:#56606b;font-size:1.02rem;line-height:1.62;margin:0}'
+  '.cg-photo{position:relative;overflow:hidden;border-radius:1.35rem;min-height:230px;box-shadow:0 26px 50px -28px rgba(15,22,30,.64)}'
+  '.cg-photo>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s ease}'
+  '.cg-photo:hover>img{transform:scale(1.05)}'
+  '.cg-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(16,23,31,.84),rgba(16,23,31,.05) 60%)}'
+  '.cg-photo-cap{position:absolute;left:1.2rem;right:1.2rem;bottom:1.1rem;z-index:1;color:#fff;font-weight:700;font-size:.97rem;line-height:1.3;display:flex;align-items:center;gap:.6rem}'
+  '.cg-photo-cap::before{content:"";flex:none;width:26px;height:3px;border-radius:2px;background:linear-gradient(90deg,#FC9700,#F6BB06)}'
+  '@media(prefers-reduced-motion:reduce){.cg-card,.cg-ico,.cg-card::before,.cg-photo>img{transition:none}}'
+  '</style>')
+def content_grid(eyebrow, h2, lead, items, feature=None, photos=None, stats=None, kicker="The managed difference"):
+    feat=""
+    if feature:
+        fic,fh,fp,fimg,falt,fw,fh_px=feature
+        feat=(f'<div class="cg-feat"><div class="cg-feat-img"><span class="cg-feat-tag">{kicker}</span>'
+              f'<img src="{IMG(fimg)}" alt="{falt}" width="{fw}" height="{fh_px}" loading="lazy" decoding="async"></div>'
+              f'<div class="cg-feat-body"><span class="cg-feat-k">01 &mdash; how we work</span>'
+              f'<h3 class="cg-feat-h">{fh}</h3><p class="cg-feat-p">{fp}</p></div></div>')
+    def photo_tile(spec):
+        pim,palt,pcap,pw,ph=spec
+        return (f'<div class="cg-photo"><img src="{IMG(pim)}" alt="{palt}" width="{pw}" height="{ph}" loading="lazy" decoding="async">'
+                f'<span class="cg-photo-cap">{pcap}</span></div>')
+    ph_list=photos or []
+    band=""
+    if stats:
+        band='<div class="cg-statband">'+"".join(
+          f'<div class="cg-stat"><span class="cg-stat-n">{n}</span><span class="cg-stat-l">{l}</span></div>' for n,l in stats)+'</div>'
+    out=""
+    for i,(ic,h,p) in enumerate(items):
+        c=(f'<div class="cg-card"><span class="cg-num">{i+2:02d}</span>'
+           f'<span class="cg-ico">{CG_ICONS.get(ic,CG_ICONS["container"])}</span>'
+           f'<h3 class="cg-h">{h}</h3><p class="cg-p">{p}</p></div>')
+        pc=photo_tile(ph_list[i]) if i<len(ph_list) else ""
+        out+=(c+pc) if i%2==0 else (pc+c)     # zigzag: alternate card/photo side each row
+        if band and i==2: out+=band            # full-width stat band after 3 rows
+    return (CG_CSS+'<section id="cg" class="cg-sec relative w-full pt-10 lg:pt-20 pb-10 lg:pb-20 border-border"><span class="cg-blob"></span><div class="container"><div class="cg-wrap">'
+      '<div class="cg-head">'
+      f'<span class="cg-ey">{eyebrow}</span>'
+      f'<h2 class="cg-h2">{h2}</h2><div class="cg-rule"></div></div>'
+      f'<p class="cg-lead">{lead}</p>'
+      f'{feat}<div class="cg-grid">{out}</div></div></div></section>')
 
 PROC_STEPS = [
  ("Free Quote &amp; Survey","On site, online or by phone","wolves-removals-process-home-survey-clipboard-icon.webp"),
@@ -134,7 +280,7 @@ def process():
                 f'<div class="uppercase font-bold text-black group-hover:text-white leading-snug text-sm xl:text-base">{t}</div>'
                 f'<div class="uppercase text-darkgrey group-hover:text-beige leading-snug text-xs xl:text-sm">{s}</div></div>'
                 f'<div class="ico-badge shrink-0 w-[5.25rem] h-[5.25rem] xl:w-24 xl:h-24 shadow-[0_8px_18px_-6px_rgba(0,0,0,0.16)]"><img src="/images/process/{icon}" alt="{t} &ndash; storage step icon" width="103" height="103" loading="lazy" decoding="async" class="w-14 h-14 xl:w-16 xl:h-16 object-contain"></div></div>')
-    dots="".join(f'<button type="button" class="proc-dot{" is-active" if i==0 else ""}" data-i="{i}" aria-label="Go to step {i+1}"></button>' for i in range(len(PROC_STEPS)))
+    dots="".join(f'<button type="button" class="proc-dot{" is-active" if i==0 else ""}" data-i="{i}" aria-current="{"true" if i==0 else "false"}" aria-label="Go to step {i+1}"></button>' for i in range(len(PROC_STEPS)))
     procnav_css=('<style>'
       '.proc-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.25rem}'
       '@media(min-width:768px){.proc-nav{display:none}}'
@@ -150,7 +296,7 @@ def process():
       '<div class="flex md:grid md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 auto-rows-fr overflow-x-auto md:overflow-visible snap-x snap-mandatory proc-scroll -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0">'+cards+'</div>'
       '<div class="proc-nav">'
       '<button type="button" class="proc-arrow proc-prev" aria-label="Previous step">'+ARRL+'</button>'
-      '<div class="proc-dots" role="tablist" aria-label="Storage step navigation">'+dots+'</div>'
+      '<div class="proc-dots" role="group" aria-label="Storage step navigation">'+dots+'</div>'
       '<button type="button" class="proc-arrow proc-next" aria-label="Next step">'+ARRR+'</button>'
       '</div></div>')
     return centered("bg-beige","Our Step-by-Step Storage Process","We handle the heavy lifting, literally &mdash; here&rsquo;s how storing with us works.",inner)
@@ -159,7 +305,7 @@ def faq(items):
     cards=""
     for q,a in items:
         cards+=('<div class="faq-card" x-data="{open:false}" :class="open && \'is-open\'">'
-                '<button type="button" class="faq-head" @click="open=!open" :aria-expanded="open">'
+                '<button type="button" class="faq-head" @click="open=!open" :aria-expanded="open ? \'true\' : \'false\'">'
                 '<span class="faq-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-6 h-6"><path d="M3 3h8v8H3zm10 5h8v13h-8zM3 13h8v8H3z"/></svg></span>'
                 f'<span class="faq-q">{q}</span>'
                 '<span class="faq-toggle" :class="open && \'is-open\'"><svg viewBox="0 0 20 20" class="w-5 h-5 fill-current" aria-hidden="true"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg></span></button>'
@@ -169,43 +315,64 @@ def faq(items):
             f'<div class="text-center mb-6 lg:mb-8"><h2 class="relative leading-tight text-black">Storage &mdash; Your Questions Answered</h2></div>{inner}</div></section>')
 
 GAL_ZOOM='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>'
+GAL_ARR_L='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>'
+GAL_ARR_R='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
 GAL_CSS=('<style>'
   '.gal-grid{display:grid;grid-template-columns:1fr;gap:1rem}'
   '@media (min-width:640px){.gal-grid{grid-template-columns:repeat(2,1fr)}}'
   '@media (min-width:1024px){.gal-grid{grid-template-columns:repeat(3,1fr);gap:1.25rem}}'
-  '.gal-tile{position:relative;display:block;width:100%;padding:0;border:0;cursor:pointer;overflow:hidden;border-radius:1.15rem;background:#000;aspect-ratio:4/3;box-shadow:0 14px 34px -18px rgba(38,38,38,.5);transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s ease}'
-  '.gal-tile:hover{transform:translateY(-5px);box-shadow:0 28px 56px -22px rgba(38,38,38,.55)}'
+  '.gal-tile{position:relative;display:block;width:100%;padding:0;border:0;cursor:pointer;overflow:hidden;border-radius:1.15rem;background:#262626;aspect-ratio:4/3;box-shadow:0 14px 34px -18px rgba(38,38,38,.5);transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s ease}'
+  '.gal-tile:hover{transform:translateY(-6px);box-shadow:0 30px 60px -22px rgba(38,38,38,.6)}'
   '.gal-tile:focus-visible{outline:2px solid #FC9700;outline-offset:3px}'
   '.gal-tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.3,1)}'
   '.gal-tile:hover img{transform:scale(1.07)}'
-  '.gal-tile::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(38,38,38,.82),rgba(38,38,38,.1) 46%,rgba(38,38,38,0) 72%);opacity:0;transition:opacity .35s ease}'
-  '.gal-tile:hover::after,.gal-tile:focus-visible::after{opacity:1}'
-  '.gal-cap{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:1rem 1.1rem;color:#fff;font-weight:600;font-size:.96rem;line-height:1.3;text-align:left;transform:translateY(10px);opacity:0;transition:transform .35s ease,opacity .35s ease}'
-  '.gal-cap::before{content:"";display:block;width:34px;height:3px;border-radius:3px;background:linear-gradient(90deg,#FC9700,#F6BB06);margin-bottom:.5rem}'
-  '.gal-tile:hover .gal-cap,.gal-tile:focus-visible .gal-cap{transform:none;opacity:1}'
-  '.gal-zoom{position:absolute;top:.7rem;right:.7rem;z-index:1;width:38px;height:38px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.92);color:#262626;opacity:0;transform:scale(.8);transition:opacity .3s ease,transform .3s ease}'
-  '.gal-tile:hover .gal-zoom{opacity:1;transform:none}'
+  '.gal-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to top,rgba(38,38,38,.86),rgba(38,38,38,.18) 44%,rgba(38,38,38,0) 70%)}'
+  '.gal-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:.95rem 1.05rem;color:#fff;font-weight:700;font-size:.95rem;line-height:1.3;text-align:left;display:flex;align-items:center;gap:.55rem}'
+  '.gal-cap::before{content:"";width:14px;height:3px;border-radius:3px;flex:none;background:linear-gradient(90deg,#FC9700,#F6BB06);transition:width .35s ease}'
+  '.gal-tile:hover .gal-cap::before,.gal-tile:focus-visible .gal-cap::before{width:28px}'
+  '.gal-badge{position:absolute;top:.7rem;right:.7rem;z-index:2;width:40px;height:40px;border-radius:.72rem;display:flex;align-items:center;justify-content:center;background:#E8E6DA;color:#697783;box-shadow:0 6px 16px -6px rgba(0,0,0,.5);opacity:0;transform:translateY(-4px) scale(.9);transition:opacity .3s ease,transform .3s ease,background .3s ease,color .3s ease}'
+  '.gal-tile:hover .gal-badge,.gal-tile:focus-visible .gal-badge{opacity:1;transform:none}.gal-tile:hover .gal-badge{background:#FC9700;color:#fff}'
+  '.gal-eyebrow{display:inline-block;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.55rem}'
   '.gal-lb[x-cloak]{display:none}'
-  '.gal-lb{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:rgba(20,20,20,.92);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}'
-  '.gal-lb img{max-width:min(1100px,92vw);max-height:88vh;border-radius:.9rem;box-shadow:0 30px 80px -20px rgba(0,0,0,.8)}'
-  '.gal-lb-close{position:absolute;top:1rem;right:1.3rem;color:#fff;font-size:2.4rem;line-height:1;background:none;border:0;cursor:pointer}'
-  '@media (prefers-reduced-motion:reduce){.gal-tile,.gal-tile img,.gal-cap,.gal-zoom{transition:none}.gal-tile:hover,.gal-tile:hover img{transform:none}}'
+  '.gal-lb{position:fixed;inset:0;z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;background:rgba(20,22,24,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}'
+  '.gal-lb-stage{position:relative;display:flex;align-items:center;justify-content:center;max-width:min(1100px,94vw)}'
+  '.gal-lb-stage img{max-width:100%;max-height:80vh;border-radius:.9rem;box-shadow:0 30px 80px -20px rgba(0,0,0,.8)}'
+  '.gal-lb-cap{margin-top:1.1rem;color:#E8E6DA;font-weight:600;font-size:.98rem;text-align:center;max-width:42rem}'
+  '.gal-lb-count{margin-top:.4rem;color:rgba(255,255,255,.55);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase}'
+  '.gal-lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);color:#fff;cursor:pointer;transition:background .25s ease,border-color .25s ease}'
+  '.gal-lb-nav:hover{background:#FC9700;border-color:#FC9700}.gal-lb-nav svg{width:22px;height:22px}'
+  '.gal-lb-prev{left:6px}.gal-lb-next{right:6px}'
+  '@media(min-width:768px){.gal-lb-prev{left:-66px}.gal-lb-next{right:-66px}}'
+  '.gal-lb-close{position:absolute;top:1.1rem;right:1.3rem;width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.7rem;line-height:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);cursor:pointer;transition:background .25s ease,border-color .25s ease}'
+  '.gal-lb-close:hover{background:#FC9700;border-color:#FC9700}'
+  '@media (prefers-reduced-motion:reduce){.gal-tile,.gal-tile img,.gal-badge{transition:none}.gal-tile:hover,.gal-tile:hover img{transform:none}}'
   '</style>')
-def gallery(imgs, heading="See Our Sussex Storage in Action", lead="Real photos of our own facility, containers, team and fleet."):
+def gallery(imgs, heading="See Our Sussex Storage in Action", lead="Real photos of our own facility, containers, team and fleet.", eyebrow="Inside Wolves Storage Sussex"):
     tiles=""
-    for it in imgs:
+    for ix,it in enumerate(imgs):
         s,a=it[0],it[1]; cap=it[2] if len(it)>2 else a
-        tiles+=(f'<button type="button" class="gal-tile" @click="lb=\'{s}\'" aria-label="View larger: {a}">'
+        tiles+=(f'<button type="button" class="gal-tile" @click="i={ix}" aria-label="View larger: {a}">'
                 f'<img src="{s}" alt="{a}" width="1200" height="900" loading="lazy" decoding="async">'
-                f'<span class="gal-zoom">{GAL_ZOOM}</span><span class="gal-cap">{cap}</span></button>')
+                f'<span class="gal-scrim" aria-hidden="true"></span><span class="gal-badge" aria-hidden="true">{GAL_ZOOM}</span>'
+                f'<span class="gal-cap">{cap}</span></button>')
+    n=len(imgs)
+    data=[{"s":it[0],"a":html.unescape(it[1]),"c":html.unescape(it[2] if len(it)>2 else it[1])} for it in imgs]
+    gjson=html.escape(json.dumps(data,ensure_ascii=False))
     leadp=f'<p class="text-lg xl:text-xl font-medium mt-2 max-w-3xl mx-auto">{lead}</p>' if lead else ""
-    return ('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border" x-data="{lb:null}">'
+    eb=f'<span class="gal-eyebrow">{eyebrow}</span>' if eyebrow else ""
+    return ('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border" x-data="{g:'+gjson+',i:-1}">'
             +GAL_CSS+
-            f'<div class="container"><div class="text-center mb-8 lg:mb-10"><h2 class="relative leading-tight text-black">{heading}</h2>{leadp}</div>'
+            f'<div class="container"><div class="text-center mb-8 lg:mb-10">{eb}<h2 class="relative leading-tight text-black">{heading}</h2>{leadp}</div>'
             f'<div class="gal-grid">{tiles}</div></div>'
-            '<div x-show="lb" x-cloak class="gal-lb" @keydown.escape.window="lb=null" @click="lb=null">'
-            '<button type="button" class="gal-lb-close" @click="lb=null" aria-label="Close">&times;</button>'
-            '<img :src="lb" alt="Wolves Storage Sussex gallery image" @click.stop></div>'
+            '<div x-show="i>=0" x-cloak class="gal-lb" @keydown.escape.window="i=-1" @keydown.arrow-left.window="if(i>=0)i=(i-1+g.length)%g.length" @keydown.arrow-right.window="if(i>=0)i=(i+1)%g.length" @click.self="i=-1">'
+            '<button type="button" class="gal-lb-close" @click="i=-1" aria-label="Close gallery">&times;</button>'
+            '<div class="gal-lb-stage">'
+            f'<button type="button" class="gal-lb-nav gal-lb-prev" @click="i=(i-1+g.length)%g.length" aria-label="Previous image">{GAL_ARR_L}</button>'
+            '<img :src="i>=0?g[i].s:\'\'" :alt="i>=0?g[i].a:\'\'">'
+            f'<button type="button" class="gal-lb-nav gal-lb-next" @click="i=(i+1)%g.length" aria-label="Next image">{GAL_ARR_R}</button>'
+            '</div>'
+            '<p class="gal-lb-cap" x-text="i>=0?g[i].c:\'\'"></p>'
+            f'<p class="gal-lb-count"><span x-text="i+1"></span> / {n}</p>'
             '</section>')
 
 VIDEO_POSTER="storage-container-promo-poster.webp"   # exact title-card frame baked from the clip
@@ -253,19 +420,21 @@ FORM = ('<form id="quote-form" class="enquiry-form mt-5" novalidate><div data-fo
  '<div data-form-success hidden class="mt-5 p-6 bg-lightgrey rounded-xl text-center"><p class="text-xl font-bold text-black">Thank you &mdash; your request is in!</p><p class="mt-2">A member of our family team will be in touch within 24 hours with your free quote.</p></div></form>')
 FORM_JS = ('<script>document.addEventListener("submit",async function(e){'
  'var f=e.target.closest(".enquiry-form");if(!f)return;e.preventDefault();'
- 'var ok=true;f.querySelectorAll("[required]").forEach(function(x){var bad=x.type==="checkbox"?!x.checked:!x.value.trim();x.style.borderColor=bad?"#c00":"";if(bad)ok=false;});if(!ok)return;'
+ 'function showErr(msg){var box=f.querySelector("[data-form-error]");if(!box){box=document.createElement("div");box.setAttribute("data-form-error","");box.setAttribute("role","alert");box.setAttribute("aria-live","assertive");box.style.cssText="margin-top:1rem;padding:1rem 1.25rem;border-radius:.75rem;background:#fdecec;color:#a11616;font-weight:600;font-size:.95rem";var anchor=f.querySelector("[data-form-fields]")||f;anchor.appendChild(box);}box.hidden=false;box.textContent=msg;}'
+ 'var prev=f.querySelector("[data-form-error]");if(prev)prev.hidden=true;'
+ 'var ok=true,first=null;f.querySelectorAll("[required]").forEach(function(x){var bad=x.type==="checkbox"?!x.checked:!x.value.trim();x.style.borderColor=bad?"#c00":"";x.setAttribute("aria-invalid",bad?"true":"false");if(bad){ok=false;if(!first)first=x;}});'
+ 'var em=f.querySelector("input[type=email]"),bademail=false;if(em&&em.value.trim()&&!/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(em.value.trim())){ok=false;bademail=true;em.style.borderColor="#c00";em.setAttribute("aria-invalid","true");if(!first)first=em;}'
+ 'if(!ok){showErr((bademail&&first===em)?"Please enter a valid email address.":"Please complete the highlighted required fields before sending.");if(first){try{first.focus();}catch(_){}if(first.scrollIntoView)first.scrollIntoView({behavior:"smooth",block:"center"});}return;}'
  'var btn=f.querySelector("button[type=submit]")||f.querySelector("button");var orig=btn?btn.innerHTML:"";'
  'var data={};new FormData(f).forEach(function(v,k){if(k in data){if(!Array.isArray(data[k]))data[k]=[data[k]];data[k].push(v);}else{data[k]=v;}});'
  'data.page=document.title;data.page_url=location.href;'
- 'var prev=f.querySelector("[data-form-error]");if(prev)prev.hidden=true;'
  'if(btn){btn.disabled=true;btn.innerHTML="Sending\\u2026";}'
  'try{var res=await fetch("/api/contact",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});'
  'var j={};try{j=await res.json();}catch(_){}'
- 'if(res.ok&&j&&j.ok){var fl=f.querySelector("[data-form-fields]");if(fl)fl.style.display="none";var s=f.querySelector("[data-form-success]");if(s)s.hidden=false;if(s&&s.scrollIntoView)s.scrollIntoView({behavior:"smooth",block:"center"});}'
- 'else{throw new Error((j&&j.error)||"send failed");}'
- '}catch(_){if(btn){btn.disabled=false;btn.innerHTML=orig;}'
- 'var box=f.querySelector("[data-form-error]");if(!box){box=document.createElement("div");box.setAttribute("data-form-error","");box.style.cssText="margin-top:1rem;padding:1rem 1.25rem;border-radius:.75rem;background:#fdecec;color:#a11616;font-weight:600;font-size:.95rem";var anchor=f.querySelector("[data-form-fields]")||f;anchor.appendChild(box);}'
- 'box.hidden=false;box.textContent="Sorry \\u2014 your message couldn\\u2019t be sent just now. Please call 01903 893731 or email info@sussexstoragecompany.co.uk.";}'
+ 'if(res.ok&&j&&j.ok){var fl=f.querySelector("[data-form-fields]");if(fl)fl.style.display="none";var s=f.querySelector("[data-form-success]");if(s){s.hidden=false;s.setAttribute("role","status");s.setAttribute("tabindex","-1");try{s.focus();}catch(_){}if(s.scrollIntoView)s.scrollIntoView({behavior:"smooth",block:"center"});}}'
+ 'else{var se=new Error((j&&j.error)||"send failed");se.fromServer=true;throw se;}'
+ '}catch(err){if(btn){btn.disabled=false;btn.innerHTML=orig;}'
+ 'showErr((err&&err.fromServer&&err.message&&err.message!=="send failed")?err.message:"Sorry \\u2014 your message couldn\\u2019t be sent just now. Please call 01903 893731 or email info@sussexstoragecompany.co.uk.");}'
  '});</script>')
 
 # ---------------- head / page assembly ----------------
@@ -295,7 +464,7 @@ def head(d):
     if d["file"]=="index.html":
         crumb=""
     else:
-        items=[{"@type":"ListItem","position":1,"name":"Home","item":BASE+"index.html"}]
+        items=[{"@type":"ListItem","position":1,"name":"Home","item":BASE}]
         if d.get("crumb_parent"):
             pf,pn=d["crumb_parent"]
             items.append({"@type":"ListItem","position":2,"name":pn,"item":BASE+pf})
@@ -303,22 +472,34 @@ def head(d):
         else:
             items.append({"@type":"ListItem","position":2,"name":d["nav"],"item":BASE+d["file"]})
         crumb='<script type="application/ld+json">'+json.dumps({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":items},ensure_ascii=False)+'</script>'
+    canon = BASE if d["file"]=="index.html" else BASE+d["file"]
+    gpos = d.get("geo_pos","50.9270;-0.4470"); gplace = d.get("geo_place","Ashington, Pulborough, West Sussex"); gicbm = gpos.replace(";",", ")
     return ('<!DOCTYPE html>\n<html lang="en-GB">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
         f'<title>{d["title"]}</title>\n<meta name="description" content="{d["meta"]}">\n<meta name="robots" content="index, follow">\n'
-        f'<link rel="canonical" href="{BASE}{d["file"]}">\n<meta name="theme-color" content="#697783">\n'+SPLIT_CSS+'\n'
-        '<meta name="geo.region" content="GB-WSX"><meta name="geo.placename" content="Ashington, Pulborough, West Sussex"><meta name="geo.position" content="50.9270;-0.4470"><meta name="ICBM" content="50.9270, -0.4470">\n'
-        f'<meta property="og:type" content="website"><meta property="og:site_name" content="Wolves Storage Sussex"><meta property="og:title" content="{d["title"]}"><meta property="og:description" content="{d["meta"]}"><meta property="og:url" content="{BASE}{d["file"]}"><meta property="og:image" content="{BASE}{d["hero"].lstrip("/")}"><meta property="og:locale" content="en_GB">\n'
+        f'<link rel="canonical" href="{canon}">\n<meta name="theme-color" content="#697783">\n'+SPLIT_CSS+'\n'
+        f'<meta name="geo.region" content="GB-WSX"><meta name="geo.placename" content="{gplace}"><meta name="geo.position" content="{gpos}"><meta name="ICBM" content="{gicbm}">\n'
+        f'<meta property="og:type" content="website"><meta property="og:site_name" content="Wolves Storage Sussex"><meta property="og:title" content="{d["title"]}"><meta property="og:description" content="{d["meta"]}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{BASE}{d["hero"].lstrip("/")}"><meta property="og:locale" content="en_GB">\n'
         f'<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{d["title"]}"><meta name="twitter:description" content="{d["meta"]}"><meta name="twitter:image" content="{BASE}{d["hero"].lstrip("/")}">\n'
         '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="manifest" href="/site.webmanifest">\n'
         '<link rel="preload" href="/fonts/Barlow-Regular.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/Barlow-Semibold.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/Barlow-Bold.woff2" as="font" type="font/woff2" crossorigin>\n'
-        f'<link rel="stylesheet" href="{CSSV}">\n<script type="application/ld+json">{ORG}</script>\n{crumb}\n{faqjson}\n{d.get("extra_schema","")}\n</head>')
+        f'<link rel="stylesheet" href="{CSSV}">'+A11Y_CSS+f'\n<script type="application/ld+json">{ORG}</script>\n{crumb}\n{faqjson}\n{d.get("extra_schema","")}\n</head>')
 
-SCRIPTS = '<script defer src="/js/alpine.min.js"></script><script defer src="/js/process-carousel.js"></script>'+FORM_JS
+SCRIPTS = '<script defer src="/js/alpine.min.js"></script><script defer src="/js/process-carousel.js?v=3"></script>'+FORM_JS
 
-TRUSTED_BY = '<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="text-center mb-10"><h2 class="relative leading-tight text-black">We&rsquo;re Trusted By</h2></div><div class="flex justify-center mb-10 lg:mb-12"><a href="https://lapada.org/dealers/wolves-removals/" target="_blank" rel="noopener" aria-label="Wolves Storage Sussex is LAPADA accredited" class="inline-block hover:opacity-80 transition-opacity"><img src="/images/photos/lapada-approved-service-provider.webp" alt="LAPADA Approved Service Provider, Association of Art &amp; Antiques Dealers" width="520" height="493" loading="lazy" decoding="async" class="h-32 sm:h-40 lg:h-44 w-auto"></a></div><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 items-center gap-2"><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/fine-and-country-recommend-wolves.png" alt="Fine &amp; Country estate agents recommend Wolves Storage Sussex" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/justin-lloyd-estate-agents-recommend.webp" alt="Justin Lloyd estate agents recommend Wolves Storage Sussex" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/mansell-mctaggart-estate-agents-partner.webp" alt="Mansell McTaggart estate agents recommend Wolves Storage Sussex" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/leaders-estate-agents-recommend.webp" alt="Leaders estate agents recommend Wolves Storage Sussex" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/alex-harvey-estate-agents-recommend.webp" alt="Alex Harvey estate agents recommend Wolves Storage Sussex" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/at-home-estate-lettings-recommend.webp" alt="At Home estate agents recommend Wolves Storage Sussex" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div></div></div></section>'
+TRUSTED_BY = '<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="text-center mb-10"><h2 class="relative leading-tight text-black">We&rsquo;re Trusted By</h2></div><div class="flex justify-center mb-10 lg:mb-12"><a href="https://lapada.org/dealers/wolves-removals/" target="_blank" rel="noopener" aria-label="Wolves Storage Sussex is LAPADA accredited" class="inline-block hover:opacity-80 transition-opacity"><img src="/images/photos/lapada-approved-service-provider.webp" alt="LAPADA Approved Service Provider, Association of Art &amp; Antiques Dealers" width="520" height="493" loading="lazy" decoding="async" class="h-32 sm:h-40 lg:h-44 w-auto"></a></div><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 items-center gap-2"><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/fine-and-country-recommend-wolves.webp" alt="Fine &amp; Country estate agents recommend Wolves Storage Sussex" width="500" height="250" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/justin-lloyd-estate-agents-recommend.webp" alt="Justin Lloyd estate agents recommend Wolves Storage Sussex" width="210" height="80" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/mansell-mctaggart-estate-agents-partner.webp" alt="Mansell McTaggart estate agents recommend Wolves Storage Sussex" width="179" height="81" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/leaders-estate-agents-recommend.webp" alt="Leaders estate agents recommend Wolves Storage Sussex" width="251" height="81" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/alex-harvey-estate-agents-recommend.webp" alt="Alex Harvey estate agents recommend Wolves Storage Sussex" width="400" height="200" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/at-home-estate-lettings-recommend.webp" alt="At Home estate agents recommend Wolves Storage Sussex" width="389" height="108" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div></div></div></section>'
+
+def fix_amps(html):
+    # Escape raw & -> &amp; in HTML text/attributes for valid markup, while leaving
+    # <script>/<style> blocks untouched (protects JSON-LD + JS), skipping && (Alpine/JS
+    # logical-and) and existing entities (&amp;, &rsquo;, &#39;, ...).
+    parts = re.split(r'(<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>)', html, flags=re.S|re.I)
+    for i in range(0, len(parts), 2):   # even indices = non-script/style segments
+        parts[i] = re.sub(r'(?<!&)&(?!&)(?!#?[A-Za-z0-9]+;)', '&amp;', parts[i])
+    return "".join(parts)
 
 def page(d):
-    body_open=f'<body class="font-body bg-white text-black overflow-x-clip text-base xl:text-lg page-{d["slug"]}"><div id="page" class="relative min-h-screen block" x-data="{{menuOpen:false}}">'
+    skip='<a href="#main" style="position:absolute;left:-999px;top:0;z-index:100;background:#262626;color:#fff;padding:.65rem 1.1rem;font-weight:600;border-radius:0 0 .5rem 0" onfocus="this.style.left=\'0\'" onblur="this.style.left=\'-999px\'">Skip to content</a>'
+    body_open=f'<body class="font-body bg-white text-black overflow-x-clip text-base xl:text-lg page-{d["slug"]}">{skip}<div id="page" class="relative min-h-screen block" x-data="{{menuOpen:false}}" x-effect="document.documentElement.classList.toggle(\'overflow-hidden\', menuOpen)" @keydown.escape.window="menuOpen=false">'
     return head(d)+"\n"+body_open+"\n"+HEADER+"\n<main id=\"main\">\n"+"\n".join(d["sections"])+("" if d["slug"] in ("404","legal") else "\n"+TRUSTED_BY)+"\n</main>\n"+FOOTER+"\n"+SCRIPTS+"\n</div></body></html>"
 
 IMG=lambda n:"/images/"+n
@@ -345,9 +526,77 @@ CALC_SECTION = ('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:
   '<div class="text-center mb-8 lg:mb-10"><h2 class="relative leading-tight text-black">Storage Cost Calculator</h2>'
   '<p class="text-lg xl:text-xl font-medium mt-2 max-w-3xl mx-auto">Add what you need to store or set the number of pods, and we&rsquo;ll estimate the space and weekly price you need &mdash; then get a free quote to confirm.</p></div>'
   +CALC_HTML+'</div></section>'
-  '<script defer src="/js/storage-calculator.js"></script>')
+  '<script defer src="/js/storage-calculator.js?v=2"></script>')
 
-CONTAINER_HTML = {'index.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Why Container Storage Beats a Self-Storage Unit</h2><p>More and more West Sussex families choose managed container storage over a drive-up self-storage unit, and it comes down to two things: how clean it stays and how secure it is. Your belongings are wrapped and sealed into your own wooden container inside our dry, ventilated facility in Ashington, rather than left in an unheated metal room you open every week.</p><p>Security is layered, not left to a single padlock. The building is alarmed and monitored, access is staff-controlled, and your container stays sealed for its whole stay. As a family-run, LAPADA-accredited and Checkatrade-verified business, we&rsquo;re fully insured and trusted by local estate agents &mdash; so your things are genuinely looked after.</p><ul class="tick-list"><li>Sealed, private containers &mdash; not shared, open-plan rooms</li><li>Dry, ventilated storage that protects against damp and dust</li><li>Alarmed, 24/7 CCTV and staff-controlled access</li><li>Fully insured, family-run and LAPADA accredited</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>', 'storage-solutions.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Why Container Storage Is Cleaner &amp; More Secure Than Self-Storage</h2><p>Cleanliness and security are the two reasons customers most often switch to us from a self-storage unit. Our West Sussex warehouse is dry, ventilated and managed, so your goods aren&rsquo;t exposed to the damp that creeps into unheated metal rooms over winter. Because each container is sealed once it&rsquo;s loaded, dust, pests and moisture have far fewer ways in than in a unit you open weekly.</p><p>We treat the warehouse as a working facility, not a self-service car park. The building is alarmed and monitored, access is staff-controlled rather than open to the public, and your individual container stays sealed throughout its stay. As a LAPADA-member and Checkatrade-verified company we are fully insured, and we&rsquo;re recommended by respected local agents including Fine &amp; Country, Justin Lloyd and Mansell McTaggart.</p><ul class="tick-list"><li>Individually sealed containers &mdash; no shared, open-plan rooms</li><li>Dry, ventilated warehouse that protects against damp</li><li>Alarmed, monitored and staff-controlled access</li><li>Fully insured with LAPADA and Checkatrade backing</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>', 'long-term-storage.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Why Containers Protect Your Belongings for the Long Term</h2><p>When your things are stored for months or even years, the difference between a sealed container and an open self-storage unit really shows. Our warehouse is dry, ventilated and stable, so furniture, fabrics and electronics don&rsquo;t sit through damp Sussex winters in an unheated metal box. Sealed once and left undisturbed, your container keeps dust, pests and moisture out far better than a unit you keep reopening.</p><p>Long-term storage also needs long-term peace of mind. The facility is alarmed, monitored and staff-controlled, your container stays sealed for its entire stay, and everything is fully insured throughout. You don&rsquo;t need to visit, check or worry &mdash; and when you&rsquo;re finally ready, we simply bring it all back.</p><ul class="tick-list"><li>Dry, ventilated storage &mdash; ideal for months or years</li><li>Sealed once and left undisturbed, keeping damp and dust out</li><li>Alarmed, monitored and fully insured for the long haul</li><li>No need to visit &mdash; we redeliver when you&rsquo;re ready</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>', 'short-term-storage.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Cleaner, Easier &amp; More Secure Than a Self-Storage Unit</h2><p>Even for a few weeks between moves, a sealed container beats hiring a self-storage unit. There&rsquo;s no van to rent, no driving back and forth, and no lugging boxes down a shared corridor &mdash; we pack, collect and seal everything into your own container. It stays clean and dry in our managed Ashington warehouse until the day you need it back.</p><p>It&rsquo;s also more secure than a padlock-and-go unit. The building is alarmed and staff-controlled, your container is sealed throughout, and it&rsquo;s all fully insured &mdash; even for a short stay. When your move date lands, give us 24 hours&rsquo; notice and we redeliver to your door.</p><ul class="tick-list"><li>No van to hire and no boxes to carry yourself</li><li>Sealed, private container kept clean and dry</li><li>Alarmed, staff-controlled and fully insured</li><li>Fast collection and 24-hour redelivery</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>', 'business-storage.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Why Businesses Choose Containers Over Self-Storage</h2><p>For stock, archives and equipment, a managed container is a safer home than an open self-storage unit. Your items are sealed into a logged container in our dry, ventilated warehouse, protected from the damp and dust that can ruin paperwork, electronics and packaging. Nothing is handled or disturbed until you ask for it back, so your inventory stays in the condition it arrived in.</p><p>Security and accountability matter for business goods. The facility is alarmed, monitored and staff-controlled, every container is logged, and everything is fully insured. We collect from and redeliver to your premises, so freeing up expensive floor space doesn&rsquo;t cost your team time.</p><ul class="tick-list"><li>Sealed, logged containers &mdash; not shared open units</li><li>Dry, ventilated storage that protects stock and archives</li><li>Alarmed, monitored, staff-controlled and fully insured</li><li>Collection and redelivery to your premises</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>', 'pricing.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Why Container Storage Is Better Value Than Self-Storage</h2><p>Self-storage can look cheap until you add up the extras &mdash; the van hire, the fuel, the time spent driving back and forth, and paying for floor space you never fully use. With managed container storage you only pay for the space you actually need, from just &pound;15 a week, and collection and redelivery are included &mdash; with no deposit and no hidden fees.</p><p>You also get more for your money. Your belongings are sealed into your own container in our dry, ventilated, alarmed warehouse in Ashington, not left in an unheated metal room you have to visit yourself. As a family-run, LAPADA-accredited and Checkatrade-verified business, everything is fully insured &mdash; so the price you&rsquo;re quoted genuinely covers a clean, secure, fully managed service.</p><ul class="tick-list"><li>Pay only for the container space you use</li><li>Collection &amp; redelivery included &mdash; no van to hire</li><li>No deposit and no hidden fees</li><li>Sealed, dry, alarmed and fully insured</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>'}
+CX_BOX='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>'
+CX_CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.4 4.5L19.5 7"/></svg>'
+CX_CSS=('<style>'
+  '.cx-sec{position:relative;overflow:hidden;background:linear-gradient(120deg,#6f7d89 0%,#697783 45%,#5d6a75 100%)}'
+  '.cx-sec::before{content:"";position:absolute;inset:0;background:radial-gradient(110% 120% at 12% -10%,rgba(252,151,0,.18),rgba(252,151,0,0) 55%);pointer-events:none}'
+  '.cx-sec::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.cx-sec .container{position:relative;z-index:1}'
+  '.cx-eyebrow{display:inline-block;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.55rem}'
+  '.cx-sec h2{color:#fff}'
+  '.cx-rule{display:block;width:54px;height:3px;border-radius:3px;background:linear-gradient(90deg,#FC9700,#F6BB06);margin:.85rem 0 1.15rem}'
+  '.cx-sec p{color:rgba(255,255,255,.85)}'
+  '.cx-list{list-style:none;margin:1.5rem 0 0;padding:0;display:flex;flex-direction:column;gap:.8rem}'
+  '.cx-list li{display:flex;align-items:flex-start;gap:.7rem;color:#fff;font-weight:600;font-size:1rem;line-height:1.4}'
+  '.cx-tick{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:999px;background:rgba(70,217,138,.18);color:#5ee0a0;margin-top:.02rem}'
+  '.cx-tick svg{width:14px;height:14px}'
+  '.cx-figure{position:relative;text-align:center}'
+  '.cx-img{position:relative;overflow:hidden;border-radius:1.15rem;background:#fff;padding:12px;box-shadow:0 28px 64px -26px rgba(0,0,0,.62);transition:transform .4s cubic-bezier(.2,.7,.3,1),box-shadow .4s ease}'
+  '.cx-img::after{content:"";position:absolute;left:0;right:0;top:0;height:4px;z-index:2;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.cx-img img{display:block;width:100%;height:auto;border-radius:.6rem}'
+  '.cx-figure:hover .cx-img{transform:translateY(-5px);box-shadow:0 38px 78px -28px rgba(0,0,0,.68)}'
+  '.cx-spec{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.1rem;padding:.5rem .95rem;border-radius:.6rem;background:#262626;color:#fff;font-size:.78rem;font-weight:700;box-shadow:0 10px 22px -10px rgba(0,0,0,.55)}'
+  '.cx-spec svg{width:15px;height:15px;color:#FC9700;flex:none}'
+  '@media (prefers-reduced-motion:reduce){.cx-img{transition:none}.cx-figure:hover .cx-img{transform:none}}'
+  '</style>')
+def container_explainer(heading,paras,ticks,eyebrow="The container advantage"):
+    body="".join('<p>'+p+'</p>' for p in paras)
+    lis="".join('<li><span class="cx-tick">'+CX_CK+'</span><span>'+t+'</span></li>' for t in ticks)
+    return ('<section class="cx-sec relative w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden">'+CX_CSS+
+            '<div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-12 items-center">'
+            '<div class="col-span-12 lg:col-span-6 lg:col-start-2">'
+            '<span class="cx-eyebrow">'+eyebrow+'</span>'
+            '<h2 class="relative leading-tight">'+heading+'</h2><span class="cx-rule" aria-hidden="true"></span>'
+            +body+'<ul class="cx-list">'+lis+'</ul></div>'
+            '<div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="cx-figure"><div class="cx-img">'
+            '<img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async">'
+            '</div><span class="cx-spec">'+CX_BOX+'250 cu ft &middot; 5&times;7&times;8.6ft</span>'
+            '</div></div></div></div></section>')
+CONTAINER_DATA={
+ 'index.html':("Why Container Storage Beats a Self-Storage Unit",
+   ["More and more West Sussex families choose managed container storage over a drive-up self-storage unit, and it comes down to two things: how clean it stays and how secure it is. Your belongings are wrapped and sealed into your own wooden container inside our dry, ventilated facility in Ashington, rather than left in an unheated metal room you open every week.",
+    "Security is layered, not left to a single padlock. The building is alarmed and monitored, access is staff-controlled, and your container stays sealed for its whole stay. As a family-run, LAPADA-accredited and Checkatrade-verified business, we&rsquo;re fully insured and trusted by local estate agents &mdash; so your things are genuinely looked after."],
+   ["Sealed, private containers &mdash; not shared, open-plan rooms","Dry, ventilated storage that protects against damp and dust","Alarmed, 24/7 CCTV and staff-controlled access","Fully insured, family-run and LAPADA accredited"]),
+ 'storage-solutions.html':("Why Container Storage Is Cleaner &amp; More Secure Than Self-Storage",
+   ["Cleanliness and security are the two reasons customers most often switch to us from a self-storage unit. Our West Sussex warehouse is dry, ventilated and managed, so your goods aren&rsquo;t exposed to the damp that creeps into unheated metal rooms over winter. Because each container is sealed once it&rsquo;s loaded, dust, pests and moisture have far fewer ways in than in a unit you open weekly.",
+    "We treat the warehouse as a working facility, not a self-service car park. The building is alarmed and monitored, access is staff-controlled rather than open to the public, and your individual container stays sealed throughout its stay. As a LAPADA-member and Checkatrade-verified company we are fully insured, and we&rsquo;re recommended by respected local agents including Fine &amp; Country, Justin Lloyd and Mansell McTaggart."],
+   ["Individually sealed containers &mdash; no shared, open-plan rooms","Dry, ventilated warehouse that protects against damp","Alarmed, monitored and staff-controlled access","Fully insured with LAPADA and Checkatrade backing"]),
+ 'long-term-storage.html':("Why Containers Protect Your Belongings for the Long Term",
+   ["When your things are stored for months or even years, the difference between a sealed container and an open self-storage unit really shows. Our warehouse is dry, ventilated and stable, so furniture, fabrics and electronics don&rsquo;t sit through damp Sussex winters in an unheated metal box. Sealed once and left undisturbed, your container keeps dust, pests and moisture out far better than a unit you keep reopening.",
+    "Long-term storage also needs long-term peace of mind. The facility is alarmed, monitored and staff-controlled, your container stays sealed for its entire stay, and everything is fully insured throughout. You don&rsquo;t need to visit, check or worry &mdash; and when you&rsquo;re finally ready, we simply bring it all back."],
+   ["Dry, ventilated storage &mdash; ideal for months or years","Sealed once and left undisturbed, keeping damp and dust out","Alarmed, monitored and fully insured for the long haul","No need to visit &mdash; we redeliver when you&rsquo;re ready"]),
+ 'short-term-storage.html':("Cleaner, Easier &amp; More Secure Than a Self-Storage Unit",
+   ["Even for a few weeks between moves, a sealed container beats hiring a self-storage unit. There&rsquo;s no van to rent, no driving back and forth, and no lugging boxes down a shared corridor &mdash; we pack, collect and seal everything into your own container. It stays clean and dry in our managed Ashington warehouse until the day you need it back.",
+    "It&rsquo;s also more secure than a padlock-and-go unit. The building is alarmed and staff-controlled, your container is sealed throughout, and it&rsquo;s all fully insured &mdash; even for a short stay. When your move date lands, give us 24 hours&rsquo; notice and we redeliver to your door."],
+   ["No van to hire and no boxes to carry yourself","Sealed, private container kept clean and dry","Alarmed, staff-controlled and fully insured","Fast collection and 24-hour redelivery"]),
+ 'business-storage.html':("Why Businesses Choose Containers Over Self-Storage",
+   ["For stock, archives and equipment, a managed container is a safer home than an open self-storage unit. Your items are sealed into a logged container in our dry, ventilated warehouse, protected from the damp and dust that can ruin paperwork, electronics and packaging. Nothing is handled or disturbed until you ask for it back, so your inventory stays in the condition it arrived in.",
+    "Security and accountability matter for business goods. The facility is alarmed, monitored and staff-controlled, every container is logged, and everything is fully insured. We collect from and redeliver to your premises, so freeing up expensive floor space doesn&rsquo;t cost your team time."],
+   ["Sealed, logged containers &mdash; not shared open units","Dry, ventilated storage that protects stock and archives","Alarmed, monitored, staff-controlled and fully insured","Collection and redelivery to your premises"]),
+ 'pricing.html':("Why Container Storage Is Better Value Than Self-Storage",
+   ["Self-storage can look cheap until you add up the extras &mdash; the van hire, the fuel, the time spent driving back and forth, and paying for floor space you never fully use. With managed container storage you only pay for the space you actually need, from just &pound;15 a week, and collection and redelivery are included &mdash; with no deposit and no hidden fees.",
+    "You also get more for your money. Your belongings are sealed into your own container in our dry, ventilated, alarmed warehouse in Ashington, not left in an unheated metal room you have to visit yourself. As a family-run, LAPADA-accredited and Checkatrade-verified business, everything is fully insured &mdash; so the price you&rsquo;re quoted genuinely covers a clean, secure, fully managed service."],
+   ["Pay only for the container space you use","Collection &amp; redelivery included &mdash; no van to hire","No deposit and no hidden fees","Sealed, dry, alarmed and fully insured"]),
+ 'furniture-storage.html':("Why Container Storage Protects Furniture Best",
+   ["Furniture is exactly what suffers in an open self-storage unit &mdash; damp, dust and being shifted around all take their toll. We blanket-wrap and pad every piece, then seal it into your own wooden container inside our dry, ventilated, alarmed warehouse, so sofas, tables and wardrobes come back in the condition they left.",
+    "Because the container is sealed once and left undisturbed, your furniture isn&rsquo;t handled again until it comes home. As a LAPADA-accredited, Checkatrade-verified family business we&rsquo;re fully insured and experienced with fine and antique pieces &mdash; so even treasured furniture is genuinely looked after."],
+   ["Blanket-wrapped &amp; padded before sealing","Dry, ventilated storage that protects against damp","Sealed once and left undisturbed &mdash; no scuffs","LAPADA-accredited care for antique &amp; fine furniture"]),
+}
+CONTAINER_HTML={f:container_explainer(*v) for f,v in CONTAINER_DATA.items()}
+_OLD_CONTAINER_HTML = {'index.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Why Container Storage Beats a Self-Storage Unit</h2><p>More and more West Sussex families choose managed container storage over a drive-up self-storage unit, and it comes down to two things: how clean it stays and how secure it is. Your belongings are wrapped and sealed into your own wooden container inside our dry, ventilated facility in Ashington, rather than left in an unheated metal room you open every week.</p><p>Security is layered, not left to a single padlock. The building is alarmed and monitored, access is staff-controlled, and your container stays sealed for its whole stay. As a family-run, LAPADA-accredited and Checkatrade-verified business, we&rsquo;re fully insured and trusted by local estate agents &mdash; so your things are genuinely looked after.</p><ul class="tick-list"><li>Sealed, private containers &mdash; not shared, open-plan rooms</li><li>Dry, ventilated storage that protects against damp and dust</li><li>Alarmed, 24/7 CCTV and staff-controlled access</li><li>Fully insured, family-run and LAPADA accredited</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>', 'storage-solutions.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Why Container Storage Is Cleaner &amp; More Secure Than Self-Storage</h2><p>Cleanliness and security are the two reasons customers most often switch to us from a self-storage unit. Our West Sussex warehouse is dry, ventilated and managed, so your goods aren&rsquo;t exposed to the damp that creeps into unheated metal rooms over winter. Because each container is sealed once it&rsquo;s loaded, dust, pests and moisture have far fewer ways in than in a unit you open weekly.</p><p>We treat the warehouse as a working facility, not a self-service car park. The building is alarmed and monitored, access is staff-controlled rather than open to the public, and your individual container stays sealed throughout its stay. As a LAPADA-member and Checkatrade-verified company we are fully insured, and we&rsquo;re recommended by respected local agents including Fine &amp; Country, Justin Lloyd and Mansell McTaggart.</p><ul class="tick-list"><li>Individually sealed containers &mdash; no shared, open-plan rooms</li><li>Dry, ventilated warehouse that protects against damp</li><li>Alarmed, monitored and staff-controlled access</li><li>Fully insured with LAPADA and Checkatrade backing</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>', 'long-term-storage.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Why Containers Protect Your Belongings for the Long Term</h2><p>When your things are stored for months or even years, the difference between a sealed container and an open self-storage unit really shows. Our warehouse is dry, ventilated and stable, so furniture, fabrics and electronics don&rsquo;t sit through damp Sussex winters in an unheated metal box. Sealed once and left undisturbed, your container keeps dust, pests and moisture out far better than a unit you keep reopening.</p><p>Long-term storage also needs long-term peace of mind. The facility is alarmed, monitored and staff-controlled, your container stays sealed for its entire stay, and everything is fully insured throughout. You don&rsquo;t need to visit, check or worry &mdash; and when you&rsquo;re finally ready, we simply bring it all back.</p><ul class="tick-list"><li>Dry, ventilated storage &mdash; ideal for months or years</li><li>Sealed once and left undisturbed, keeping damp and dust out</li><li>Alarmed, monitored and fully insured for the long haul</li><li>No need to visit &mdash; we redeliver when you&rsquo;re ready</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>', 'short-term-storage.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Cleaner, Easier &amp; More Secure Than a Self-Storage Unit</h2><p>Even for a few weeks between moves, a sealed container beats hiring a self-storage unit. There&rsquo;s no van to rent, no driving back and forth, and no lugging boxes down a shared corridor &mdash; we pack, collect and seal everything into your own container. It stays clean and dry in our managed Ashington warehouse until the day you need it back.</p><p>It&rsquo;s also more secure than a padlock-and-go unit. The building is alarmed and staff-controlled, your container is sealed throughout, and it&rsquo;s all fully insured &mdash; even for a short stay. When your move date lands, give us 24 hours&rsquo; notice and we redeliver to your door.</p><ul class="tick-list"><li>No van to hire and no boxes to carry yourself</li><li>Sealed, private container kept clean and dry</li><li>Alarmed, staff-controlled and fully insured</li><li>Fast collection and 24-hour redelivery</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>', 'business-storage.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Why Businesses Choose Containers Over Self-Storage</h2><p>For stock, archives and equipment, a managed container is a safer home than an open self-storage unit. Your items are sealed into a logged container in our dry, ventilated warehouse, protected from the damp and dust that can ruin paperwork, electronics and packaging. Nothing is handled or disturbed until you ask for it back, so your inventory stays in the condition it arrived in.</p><p>Security and accountability matter for business goods. The facility is alarmed, monitored and staff-controlled, every container is logged, and everything is fully insured. We collect from and redeliver to your premises, so freeing up expensive floor space doesn&rsquo;t cost your team time.</p><ul class="tick-list"><li>Sealed, logged containers &mdash; not shared open units</li><li>Dry, ventilated storage that protects stock and archives</li><li>Alarmed, monitored, staff-controlled and fully insured</li><li>Collection and redelivery to your premises</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>', 'pricing.html': '<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-start lg:items-center"><div class="col-span-12 lg:col-span-6 lg:col-start-2"><h2 class="relative leading-tight text-black">Why Container Storage Is Better Value Than Self-Storage</h2><p>Self-storage can look cheap until you add up the extras &mdash; the van hire, the fuel, the time spent driving back and forth, and paying for floor space you never fully use. With managed container storage you only pay for the space you actually need, from just &pound;15 a week, and collection and redelivery are included &mdash; with no deposit and no hidden fees.</p><p>You also get more for your money. Your belongings are sealed into your own container in our dry, ventilated, alarmed warehouse in Ashington, not left in an unheated metal room you have to visit yourself. As a family-run, LAPADA-accredited and Checkatrade-verified business, everything is fully insured &mdash; so the price you&rsquo;re quoted genuinely covers a clean, secure, fully managed service.</p><ul class="tick-list"><li>Pay only for the container space you use</li><li>Collection &amp; redelivery included &mdash; no van to hire</li><li>No deposit and no hidden fees</li><li>Sealed, dry, alarmed and fully insured</li></ul></div><div class="col-span-12 lg:col-span-4 lg:col-start-8"><div class="bg-white rounded-xl shadow-custom p-6"><img src="/images/photos/storage-pod-size-guide.webp" alt="Wolves Storage Sussex 5ft x 7ft x 8.6ft storage container size guide, 250 cubic feet (about a one-bedroom flat)" width="900" height="760" loading="lazy" decoding="async" class="w-full h-auto"></div></div></div></div></section>'}
 
 # ---------------- "Why store with us" trust card (image + copy + CTA) -------
 def _wl(href,text):
@@ -393,6 +642,11 @@ WHYUS_CONTENT = {
    "Stock, archives and equipment deserve more than an open self-storage unit. We&rsquo;ve helped Sussex businesses free up space since 2016, sealing every item into a logged, fully insured container and collecting from &mdash; and redelivering to &mdash; your premises so your team loses no time.",
    "The facility is alarmed, monitored and "+_wl("about.html","LAPADA accredited")+", and you scale up or down with no long lease. Find out "+_wl("how-it-works.html","how the managed service works")+" or get tailored "+_wl("pricing.html","business pricing")+" within 24 hours.",
    "/images/hero-containers-van.webp","Business storage containers and Wolves Storage Sussex van ready for collection and redelivery"),
+ 'furniture-storage.html':(
+   "Why Trust Us With Your Furniture",
+   "Furniture deserves more than being shoved around an open self-storage unit. As a family-run Sussex team since 2016, we blanket-wrap every piece, seal it into its own logged container and keep it in our dry, alarmed warehouse &mdash; fully insured, and handled by one dedicated coordinator from collection to redelivery.",
+   "We&rsquo;re "+_wl("about.html","LAPADA accredited")+" for fine and antique furniture, Checkatrade-verified and rated 5.0 by hundreds of customers. See exactly "+_wl("how-it-works.html","how it works")+" or check our honest "+_wl("pricing.html","prices")+" from just &pound;15 a week.",
+   "/images/carrying-furniture-past-storage-van.webp","Wolves Storage Sussex movers carrying furniture past the branded van during a collection in West Sussex"),
  'how-it-works.html':(
    "Why Our Fully Managed Service Works",
    "Fully managed means you never hire a van or lift a box. Since 2016 our family-run Sussex team has quoted, packed, collected, stored and redelivered &mdash; with one dedicated coordinator as your single point of contact from the first call to the day it all comes home.",
@@ -584,28 +838,292 @@ TOWN_SERVICES_DATA=[
  ("furniture-storage.html","sofa","Furniture Storage","Blanket-wrapped, sealed and handled with proper care."),
  ("how-it-works.html","van","Packing &amp; Collection","We bring the materials, pack and collect from your door."),
 ]
-def town_services(tn):
-    cells="".join(
-        f'<a href="{h}" class="tsvc-card" aria-label="{t} in {tn}">'
-        f'<span class="tsvc-ico">{TSVC_ICONS[ic]}</span>'
-        f'<h3 class="tsvc-name">{t}</h3><p class="tsvc-desc">{d}</p>'
-        f'<span class="tsvc-cta">Learn more {TSVC_ARROW}</span></a>'
-        for h,ic,t,d in TOWN_SERVICES_DATA)
-    return centered("bg-lightgrey","Storage Services in "+tn,"Whatever you need to store in "+tn+", we tailor a fully managed, fully insured solution &mdash; collected from your door from just &pound;15 a week.",TSVC_CSS+'<div class="tsvc-grid">'+cells+'</div>')
-def town_usps(tn):
-    usps=[("Fully Insured &amp; Alarmed","Sealed containers in a 24/7 CCTV, alarmed indoor warehouse, fully insured throughout your stay."),
-          ("Family-Run Since 2016","A local, LAPADA-accredited family team that treats your belongings like our own."),
-          ("From &pound;15/week, No Deposit","Honest weekly pricing with no deposit and no hidden fees &mdash; pay only for the space you use."),
-          ("We Come to You","No unit to drive to &mdash; we pack, collect from your "+tn+" door and redeliver on 24 hours&rsquo; notice.")]
-    cells="".join(f'<div class="col-span-12 sm:col-span-6 lg:col-span-3"><div class="bg-white rounded-2xl shadow-custom p-6 h-full"><h3 class="font-bold text-black text-lg mb-2">{t}</h3><p class="text-darkgrey mb-0">{d}</p></div></div>' for t,d in usps)
-    return centered("bg-lightgrey","Why "+tn+" Chooses Wolves Storage","Local, managed and genuinely cared for &mdash; the reasons "+tn+" stores with us.",'<div class="grid grid-cols-12 gap-4 lg:gap-6">'+cells+'</div>')
+# True, data-driven per-town detail (distance from base + nearest towns) so the
+# shared template sections read uniquely per town — real facts only (E-E-A-T).
+def near_towns(t,n=3):
+    try: here=(float(t["lat"]),float(t["lng"]))
+    except (KeyError,TypeError,ValueError): return []
+    others=[x for x in TOWNS if x.get("slug")!=t.get("slug") and x.get("lat")]
+    near=sorted(others,key=lambda x:(float(x["lat"])-here[0])**2+(float(x["lng"])-here[1])**2)[:n]
+    return [x["town"] for x in near]
+def dist_phrase(t):
+    m=cov_miles(t)
+    return "based right here in "+t["town"] if m<=1 else f"just about {m} miles from {t['town']}"
+SVCX_CSS=('<style>'
+  '.svcx{position:relative;overflow:hidden;background:linear-gradient(120deg,#6f7d89 0%,#697783 45%,#5d6a75 100%)}'
+  '.svcx::before{content:"";position:absolute;inset:0;background:radial-gradient(110% 120% at 15% -10%,rgba(252,151,0,.18),rgba(252,151,0,0) 55%);pointer-events:none}'
+  '.svcx::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.svcx-head{position:relative;z-index:1;text-align:center;margin-bottom:2.4rem}'
+  '.svcx-eyebrow{display:inline-block;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.7rem}'
+  '.svcx-head h2{color:#fff;margin:0}'
+  '.svcx-lead{color:rgba(255,255,255,.82);font-size:1.05rem;font-weight:500;max-width:50rem;margin:.7rem auto 0}'
+  '.svcx-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr;gap:1.1rem}'
+  '@media(min-width:640px){.svcx-grid{grid-template-columns:1fr 1fr}}'
+  '@media(min-width:1024px){.svcx-grid{grid-template-columns:repeat(3,1fr);gap:1.3rem}}'
+  '.svcx-card{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:.7rem;border-radius:1.25rem;padding:1.7rem 1.5rem 1.5rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 18px 40px -24px rgba(0,0,0,.5);text-decoration:none;transition:transform .35s cubic-bezier(.2,.7,.3,1),background .35s ease,border-color .35s ease,box-shadow .35s ease}'
+  '.svcx-card:hover{transform:translateY(-7px);background:rgba(255,255,255,.11);border-color:rgba(252,151,0,.5);box-shadow:0 32px 62px -26px rgba(0,0,0,.6)}'
+  '.svcx-card:focus-visible{outline:2px solid #FC9700;outline-offset:3px}'
+  '.svcx-ico{display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:.95rem;color:#697783;background:#E8E6DA;box-shadow:0 10px 22px -10px rgba(0,0,0,.45);transition:transform .35s ease,color .3s ease}'
+  '.svcx-card:hover .svcx-ico{transform:rotate(-6deg) scale(1.06);color:#FC9700}'
+  '.svcx-ico svg{width:26px;height:26px}'
+  '.svcx-name{color:#fff;font-weight:800;font-size:1.12rem;line-height:1.18;margin:0}'
+  '.svcx-desc{color:rgba(255,255,255,.8);font-size:.96rem;line-height:1.55;margin:0;flex:1}'
+  '.svcx-cta{display:inline-flex;align-items:center;gap:.45rem;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;margin-top:.2rem}'
+  '.svcx-cta svg{transition:transform .3s ease}.svcx-card:hover .svcx-cta svg{transform:translateX(5px)}'
+  '@media (prefers-reduced-motion:reduce){.svcx-card,.svcx-ico,.svcx-cta svg{transition:none}.svcx-card:hover{transform:none}}'
+  '</style>')
+def town_services(t):
+    tn=t["town"]
+    cards="".join(
+        '<a class="svcx-card" href="'+h+'" aria-label="'+st+' in '+tn+'">'
+        '<span class="svcx-ico">'+TSVC_ICONS[ic]+'</span>'
+        '<h3 class="svcx-name">'+st+'</h3><p class="svcx-desc">'+sd+'</p>'
+        '<span class="svcx-cta">Learn more '+TSVC_ARROW+'</span></a>'
+        for h,ic,st,sd in TOWN_SERVICES_DATA)
+    near=near_towns(t,2)
+    nearbit=(" We collect right across "+tn+", over to "+" and ".join(near)+" too.") if len(near)>=2 else ""
+    lead=("Whatever you need to store in "+tn+", we tailor a fully managed, fully insured solution &mdash; "
+          "collected from your door from just &pound;15 a week and sealed into your own wooden container at our alarmed Ashington warehouse."+nearbit)
+    return ('<section class="svcx relative w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border">'+SVCX_CSS+
+            '<div class="container"><div class="svcx-head">'
+            '<span class="svcx-eyebrow">Fully managed storage</span>'
+            '<h2 class="relative leading-tight">Storage Services in '+tn+'</h2>'
+            '<p class="svcx-lead">'+lead+'</p>'
+            '</div><div class="svcx-grid">'+cards+'</div></div></section>')
+USP_CSS=('<style>'
+  '.uspx{position:relative;overflow:hidden;background:linear-gradient(120deg,#6f7d89 0%,#697783 45%,#5d6a75 100%)}'
+  '.uspx::before{content:"";position:absolute;inset:0;background:radial-gradient(110% 120% at 85% -10%,rgba(252,151,0,.20),rgba(252,151,0,0) 55%);pointer-events:none}'
+  '.uspx::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.uspx-head{position:relative;z-index:1;text-align:center;margin-bottom:2.4rem}'
+  '.uspx-eyebrow{display:inline-block;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.7rem}'
+  '.uspx-head h2{color:#fff;margin:0}'
+  '.uspx-lead{color:rgba(255,255,255,.82);font-size:1.05rem;font-weight:500;max-width:46rem;margin:.7rem auto 0}'
+  '.uspx-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr;gap:1.1rem}'
+  '@media(min-width:640px){.uspx-grid{grid-template-columns:1fr 1fr}}'
+  '@media(min-width:1024px){.uspx-grid{grid-template-columns:repeat(4,1fr);gap:1.4rem}}'
+  '.uspx-card{position:relative;overflow:hidden;border-radius:1.25rem;padding:2rem 1.5rem 1.7rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 18px 40px -24px rgba(0,0,0,.5);transition:transform .35s cubic-bezier(.2,.7,.3,1),background .35s ease,border-color .35s ease,box-shadow .35s ease}'
+  '.uspx-card:hover{transform:translateY(-7px);background:rgba(255,255,255,.11);border-color:rgba(252,151,0,.5);box-shadow:0 32px 62px -26px rgba(0,0,0,.6)}'
+  '.uspx-num{position:absolute;top:.7rem;right:1rem;font-weight:800;font-size:2.6rem;line-height:1;color:rgba(255,255,255,.09);letter-spacing:-.02em}'
+  '.uspx-ico{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:1rem;color:#697783;background:#E8E6DA;box-shadow:0 10px 22px -10px rgba(0,0,0,.45);margin-bottom:1.2rem;transition:transform .35s ease,color .3s ease}'
+  '.uspx-card:hover .uspx-ico{transform:rotate(-6deg) scale(1.07);color:#FC9700}'
+  '.uspx-ico svg{width:28px;height:28px}'
+  '.uspx-card h3{position:relative;z-index:1;color:#fff;font-weight:800;font-size:1.08rem;line-height:1.22;margin:0 0 .55rem}'
+  '.uspx-card p{position:relative;z-index:1;color:rgba(255,255,255,.8);font-size:.95rem;line-height:1.55;margin:0}'
+  '@media (prefers-reduced-motion:reduce){.uspx-card,.uspx-ico{transition:none}.uspx-card:hover{transform:none}}'
+  '</style>')
+USP_ICONS={
+ "shield":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 5.7V11c0 4.6 3 7.8 7 9.3 4-1.5 7-4.7 7-9.3V5.7z"/><path d="M9 11.8l2 2 4-4"/></svg>',
+ "family":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.1"/><path d="M3.6 19.5a5.4 5.4 0 0 1 10.8 0"/><path d="M16 5.3a3.1 3.1 0 0 1 0 5.9"/><path d="M17.4 14.2a5.4 5.4 0 0 1 3 4.9"/></svg>',
+ "tag":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 12 4.8H4.5v7.5l8.6 8.6a1.6 1.6 0 0 0 2.3 0l5.2-5.2a1.6 1.6 0 0 0 0-2.3z"/><circle cx="8" cy="8" r="1.4"/></svg>',
+ "truck":'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 5.5h12v9h-12z"/><path d="M13.5 8.5h4l3 3.2v2.8h-7z"/><circle cx="5.5" cy="17.5" r="1.9"/><circle cx="17.5" cy="17.5" r="1.9"/></svg>',
+}
+def town_usps(t):
+    tn=t["town"]; reg=t.get("region","West Sussex")
+    usps=[("shield","Fully Insured &amp; Alarmed","Your belongings are sealed into their own wooden container in our 24/7 CCTV, alarmed indoor warehouse and stay fully insured throughout &mdash; whether it&rsquo;s a few boxes or an entire "+reg+" home."),
+          ("family","Local, Family-Run Since 2016","A LAPADA-accredited family team that knows "+tn+" and the surrounding area &mdash; so your collection and redelivery stay quick, careful and personal."),
+          ("tag","From &pound;15/week, No Deposit","Honest weekly pricing with no deposit and no hidden fees &mdash; you pay only for the container space your "+tn+" move actually needs."),
+          ("truck","We Come to You","No unit to drive to: we&rsquo;re "+dist_phrase(t)+", so we pack, collect from your "+tn+" door and redeliver on 24 hours&rsquo; notice.")]
+    cards="".join('<article class="uspx-card"><span class="uspx-num" aria-hidden="true">'+f'{i+1:02d}'+'</span><span class="uspx-ico">'+USP_ICONS[ic]+'</span><h3>'+ti+'</h3><p>'+de+'</p></article>' for i,(ic,ti,de) in enumerate(usps))
+    return ('<section class="uspx relative w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border">'+USP_CSS+
+            '<div class="container"><div class="uspx-head">'
+            '<span class="uspx-eyebrow">Why '+tn+' chooses us</span>'
+            '<h2 class="relative leading-tight">The Wolves Storage Difference in '+tn+'</h2>'
+            '<p class="uspx-lead">Local, managed and genuinely cared for &mdash; why '+tn+' homes and businesses choose us.</p>'
+            '</div><div class="uspx-grid">'+cards+'</div></div></section>')
 def town_nearby(t):
     try: here=(float(t["lat"]),float(t["lng"]))
     except: return ""
     others=[x for x in TOWNS if x.get("slug")!=t.get("slug") and x.get("lat")]
     near=sorted(others,key=lambda x:(float(x["lat"])-here[0])**2+(float(x["lng"])-here[1])**2)[:6]
     chips="".join(f'<a href="{x["slug"]}.html" class="inline-block bg-lightgrey rounded-full px-5 py-2 font-semibold text-black shadow-custom hover:text-orange">Storage in {x["town"]}</a>' for x in near)
-    return centered("bg-white","Areas Near "+t["town"]+" We Also Cover","Our managed collection service reaches right across the area &mdash; here are nearby towns we store for too.",'<div class="flex flex-wrap gap-3 justify-center">'+chips+'</div>')
+    leads=["Our managed collection reaches well beyond "+t["town"]+" &mdash; here are nearby towns we store for too.",
+           "We don&rsquo;t just cover "+t["town"]+"; these neighbouring towns rely on the same door-to-door managed storage.",
+           "Storing near "+t["town"]+"? We collect across these nearby towns on the same simple weekly terms."]
+    lead=leads[sum(ord(c) for c in t["slug"])%len(leads)]
+    return centered("bg-white","Areas Near "+t["town"]+" We Also Cover",lead,'<div class="flex flex-wrap gap-3 justify-center">'+chips+'</div>')
+
+# ---- Deeper town-page content (gated; add slugs to EXPAND_TOWNS to roll out) ----
+TOWN_INFO = {}                          # slug -> {pc, tag, group}; populated in build() from area_groups
+EXPAND_TOWNS = "ALL"                    # ROLLED OUT: every town gets the full advanced treatment
+EXPAND_SERVICES = {"long-term-storage.html","storage-solutions.html","short-term-storage.html","business-storage.html"}  # ROLLED OUT to all service() pages
+AREA_CSS=('<style>'
+  '.acov-panel{position:relative;overflow:hidden;max-width:66rem;margin:0 auto;border-radius:1.5rem;padding:2rem 1.4rem 2.2rem;background:linear-gradient(155deg,#edece4 0%,#e3e0d2 100%);border:1px solid #dcd8c8;box-shadow:0 26px 64px -34px rgba(38,38,38,.4)}'
+  '@media(min-width:768px){.acov-panel{padding:2.4rem 2.2rem 2.6rem}}'
+  '.acov-panel::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.acov-eyebrow{display:flex;align-items:center;justify-content:center;gap:.65rem;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;margin:0 0 1.5rem}'
+  '.acov-eyebrow::before,.acov-eyebrow::after{content:"";width:26px;height:2px;border-radius:2px;background:#FC9700;opacity:.55}'
+  '.acov-grid{display:grid;grid-template-columns:1fr;gap:.85rem}'
+  '@media(min-width:640px){.acov-grid{grid-template-columns:1fr 1fr}}'
+  '@media(min-width:1024px){.acov-grid{grid-template-columns:repeat(3,1fr);gap:1rem}}'
+  '.acov-card{position:relative;overflow:hidden;display:flex;align-items:center;gap:.9rem;background:#fff;border:1px solid #E7E7E7;border-radius:1rem;padding:.95rem 1.1rem;text-decoration:none;box-shadow:0 2px 8px rgba(38,38,38,.06);transition:transform .32s cubic-bezier(.2,.7,.3,1),box-shadow .32s ease,background .32s ease,border-color .32s ease}'
+  '.acov-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#FC9700,#F6BB06);transform:scaleY(0);transform-origin:top;transition:transform .32s ease}'
+  '.acov-card:hover{transform:translateY(-5px);background:linear-gradient(150deg,#74828d 0%,#697783 60%,#5d6a75 100%);border-color:transparent;box-shadow:0 24px 46px -20px rgba(105,119,131,.62)}'
+  '.acov-card:hover::before{transform:scaleY(1)}'
+  '.acov-card:focus-visible{outline:2px solid #FC9700;outline-offset:3px}'
+  '.acov-pin{flex:none;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:.72rem;background:#E8E6DA;color:#697783;transition:background .32s ease,color .32s ease,transform .32s ease}'
+  '.acov-card:hover .acov-pin{background:#FC9700;color:#fff;transform:rotate(-6deg) scale(1.05)}'
+  '.acov-body{flex:1;min-width:0;text-align:left}'
+  '.acov-name{display:block;font-weight:700;color:#262626;line-height:1.15;transition:color .32s ease}'
+  '.acov-card:hover .acov-name{color:#fff}'
+  '.acov-pc{display:inline-block;margin-top:.3rem;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#697783;background:#F9F8F6;border:1px solid #E7E7E7;border-radius:999px;padding:.14rem .55rem;transition:color .32s ease,background .32s ease,border-color .32s ease}'
+  '.acov-card:hover .acov-pc{color:#fff;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.32)}'
+  '.acov-arr{flex:none;color:#FC9700;transition:color .32s ease,transform .32s ease}'
+  '.acov-card:hover .acov-arr{color:#fff;transform:translateX(3px)}'
+  '@media (prefers-reduced-motion:reduce){.acov-card,.acov-pin,.acov-arr,.acov-card::before{transition:none}.acov-card:hover{transform:none}}'
+  '</style>')
+AREA_PIN='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5.5-8 12-8 12s-8-6.5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.8"/></svg>'
+AREA_ARR='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>'
+def town_areas(t):
+    tn=t["town"]; reg=t.get("region","West Sussex"); pc=TOWN_INFO.get(t["slug"],{}).get("pc","")
+    try: here=(float(t["lat"]),float(t["lng"]))
+    except (KeyError,TypeError,ValueError): here=None
+    cards=""
+    if here:
+        others=[x for x in TOWNS if x.get("slug")!=t.get("slug") and x.get("lat")]
+        near=sorted(others,key=lambda x:(float(x["lat"])-here[0])**2+(float(x["lng"])-here[1])**2)[:6]
+        for x in near:
+            xpc=TOWN_INFO.get(x["slug"],{}).get("pc","")
+            pcb='<span class="acov-pc">'+xpc+'</span>' if xpc else ''
+            cards+=('<a class="acov-card" href="'+x["slug"]+'.html" aria-label="Storage in '+x["town"]+'">'
+                    '<span class="acov-pin">'+AREA_PIN+'</span>'
+                    '<span class="acov-body"><span class="acov-name">Storage in '+x["town"]+'</span>'+pcb+'</span>'
+                    '<span class="acov-arr">'+AREA_ARR+'</span></a>')
+    covbit=("right across the "+pc+" postcode area, "+tn+" itself and the surrounding villages" if pc
+            else "right across "+tn+" and the surrounding villages")
+    lead=("We collect "+covbit+" &mdash; there&rsquo;s no self-storage unit to drive to. Just tell us your postcode and our family team packs, seals and stores your belongings, then redelivers across "+reg+" on 24 hours&rsquo; notice.")
+    inner=AREA_CSS+'<div class="acov-panel"><p class="acov-eyebrow">Nearby towns we also cover</p><div class="acov-grid">'+cards+'</div></div>'
+    return centered("bg-white","Areas &amp; Postcodes We Cover Around "+tn,lead,inner)
+TPRICE_CSS=('<style>'
+  '.tp-wrap{position:relative;display:grid;grid-template-columns:1fr;background:#fff;border:1px solid #E7E7E7;border-radius:1.5rem;box-shadow:0 28px 64px -32px rgba(38,38,38,.4);overflow:hidden;text-align:left}'
+  '@media(min-width:1024px){.tp-wrap{grid-template-columns:minmax(0,400px) 1fr}}'
+  '.tp-price{position:relative;padding:2.6rem 2rem;color:#fff;background:linear-gradient(150deg,#76838e 0%,#697783 52%,#586571 100%);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}'
+  '.tp-price::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 80% -10%,rgba(252,151,0,.22),rgba(252,151,0,0) 55%);pointer-events:none}'
+  '.tp-price::after{content:"";position:absolute;left:0;top:0;right:0;height:4px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.tp-eyebrow{position:relative;z-index:1;text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:700;color:#E8E6DA}'
+  '.tp-amount{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:center;gap:.12rem;margin:.45rem 0 .15rem;line-height:1}'
+  '.tp-pound{font-size:1.8rem;font-weight:700;margin-top:.5rem}'
+  '.tp-num{font-size:4.4rem;font-weight:800;letter-spacing:-.02em}'
+  '.tp-per{align-self:flex-end;margin-bottom:.75rem;font-size:1.05rem;font-weight:600;color:#E8E6DA}'
+  '.tp-sub{position:relative;z-index:1;margin:.1rem 0 1.5rem;color:#E8E6DA;font-size:.95rem}'
+  '.tp-trust{position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-top:1.5rem}'
+  '.tp-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.34rem .72rem;border-radius:999px;font-size:.74rem;font-weight:600;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22)}'
+  '.tp-chip .st{color:#F6BB06}'
+  '.tp-detail{padding:2.3rem 2rem;display:grid;grid-template-columns:1fr;gap:1.8rem 2.5rem}'
+  '@media(min-width:640px){.tp-detail{grid-template-columns:1fr 1fr}}'
+  '.tp-h{position:relative;font-weight:800;color:#262626;font-size:1.02rem;text-transform:uppercase;letter-spacing:.04em;padding-bottom:.6rem;margin:0 0 1.05rem}'
+  '.tp-h::after{content:"";position:absolute;left:0;bottom:0;width:38px;height:3px;border-radius:3px;background:linear-gradient(90deg,#FC9700,#F6BB06)}'
+  '.tp-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.72rem}'
+  '.tp-list li{display:flex;align-items:flex-start;gap:.6rem;color:#262626;font-size:1rem;line-height:1.4}'
+  '.tp-tick{flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:999px;background:rgba(27,127,59,.12);color:#1b7f3b;margin-top:.04rem}'
+  '.tp-tick svg{width:13px;height:13px}'
+  '.tp-spec{display:inline-flex;align-items:center;gap:.45rem;margin:-.35rem 0 1.05rem;padding:.36rem .72rem;border-radius:.6rem;background:#F9F8F6;border:1px solid #E7E7E7;font-size:.76rem;font-weight:700;letter-spacing:.01em;color:#697783}'
+  '.tp-spec svg{width:15px;height:15px;color:#FC9700;flex:none}'
+  '@media (prefers-reduced-motion:no-preference){.tp-wrap{transition:box-shadow .35s ease,transform .35s ease}.tp-wrap:hover{transform:translateY(-4px);box-shadow:0 40px 84px -34px rgba(38,38,38,.45)}}'
+  '</style>')
+TP_CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.4 4.5L19.5 7"/></svg>'
+TP_BOX='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>'
+def town_pricing(t, heading=None, lead=None, eyebrow=None, quote=None, fits=None):
+    tn=t["town"]
+    eyebrow=eyebrow or ("Storage in "+tn+" from"); quote=quote or ("Get Your "+tn+" Quote")
+    inc=["Door-to-door collection &amp; redelivery","Your own private sealed container","24/7 CCTV &amp; alarmed indoor store","Full insurance cover throughout","No deposit and no hidden fees","Flexible weekly &amp; 4-week terms"]
+    fits=fits or ["A typical one-bedroom flat","Around 30&ndash;40 standard boxes","A sofa, bed, drawers &amp; boxes","The contents of a single garage"]
+    def lis(items): return "".join('<li><span class="tp-tick">'+TP_CK+'</span><span>'+x+'</span></li>' for x in items)
+    price=('<div class="tp-price">'
+           '<span class="tp-eyebrow">'+eyebrow+'</span>'
+           '<span class="tp-amount"><span class="tp-pound">&pound;</span><span class="tp-num">15</span><span class="tp-per">/week</span></span>'
+           '<p class="tp-sub">No deposit &middot; collection &amp; redelivery included</p>'
+           +btn(quote,"contact.html","px-8")+
+           '<div class="tp-trust"><span class="tp-chip"><span class="st">&#9733;</span> 5.0 from 478 reviews</span>'
+           '<span class="tp-chip">Fully insured</span></div></div>')
+    detail=('<div class="tp-detail">'
+            '<div><h3 class="tp-h">What&rsquo;s included</h3><ul class="tp-list">'+lis(inc)+'</ul></div>'
+            '<div><h3 class="tp-h">What fits in a container</h3>'
+            '<span class="tp-spec">'+TP_BOX+'250 cu ft &middot; 5ft &times; 7ft &times; 8.6ft</span>'
+            '<ul class="tp-list">'+lis(fits)+'</ul></div></div>')
+    inner=TPRICE_CSS+'<div class="tp-wrap">'+price+detail+'</div>'
+    heading=heading or ("Storage Prices in "+tn)
+    lead=lead or ("Honest, simple pricing for "+tn+" &mdash; from just &pound;15 a week with everything included and no deposit. Need more room? We simply add another container, so you only pay for the space you use.")
+    return centered("bg-beige",heading,lead,inner)
+SIT_CSS=('<style>'
+  '.sit-panel{position:relative;overflow:hidden;max-width:74rem;margin:1.6rem auto 0;border-radius:1.5rem;padding:1.9rem 1.3rem;background:linear-gradient(120deg,#6f7d89 0%,#697783 45%,#5d6a75 100%);border:1px solid rgba(255,255,255,.1);box-shadow:0 30px 70px -34px rgba(38,38,38,.55);display:grid;grid-template-columns:1fr;gap:.95rem}'
+  '@media(min-width:640px){.sit-panel{grid-template-columns:1fr 1fr}}'
+  '@media(min-width:1024px){.sit-panel{grid-template-columns:repeat(4,1fr);padding:2.1rem 1.7rem;gap:1rem}}'
+  '.sit-panel::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 120% at 15% -10%,rgba(252,151,0,.16),rgba(252,151,0,0) 55%);pointer-events:none}'
+  '.sit-panel::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.sit-card{position:relative;z-index:1;display:flex;flex-direction:column;gap:.65rem;background:#fff;border:1px solid #E7E7E7;border-radius:1rem;padding:1.5rem 1.25rem;box-shadow:0 6px 16px rgba(0,0,0,.2);transition:transform .3s cubic-bezier(.2,.7,.3,1),box-shadow .3s ease}'
+  '.sit-card:hover{transform:translateY(-5px);box-shadow:0 24px 46px -18px rgba(0,0,0,.32)}'
+  '.sit-ico{display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:.78rem;background:#E8E6DA;color:#697783;margin-bottom:.2rem;transition:background .3s ease,color .3s ease,transform .3s ease}'
+  '.sit-card:hover .sit-ico{background:#FC9700;color:#fff;transform:rotate(-6deg) scale(1.05)}'
+  '.sit-ico svg{width:24px;height:24px}'
+  '.sit-name{font-weight:800;color:#262626;font-size:1.05rem;line-height:1.18;margin:0}'
+  '.sit-desc{color:#697783;font-size:.92rem;line-height:1.5;margin:0}'
+  '@media (prefers-reduced-motion:reduce){.sit-card,.sit-ico{transition:none}.sit-card:hover{transform:none}}'
+  '</style>')
+def town_situations(t):
+    tn=t["town"]; tag=TOWN_INFO.get(t["slug"],{}).get("tag","").lower()
+    POOL=[(("business","gatwick","commerc","largest"),"briefcase","Business &amp; stock","Stock, archives, tools and seasonal equipment &mdash; collected from your "+tn+" premises and redelivered when you need them."),
+          (("antique","furniture","downs"),"sofa","Antiques &amp; furniture","Blanket-wrapped, sealed and given proper LAPADA-accredited care &mdash; ideal for fragile, high-value pieces."),
+          (("student","commuter","city","flats"),"cap","Students &amp; renters","Somewhere secure between tenancies or over the summer, collected from the door and brought back for the new term."),
+          (("coast","seaside","holiday","sunny","river","arun","adur"),"box","Holiday lets &amp; downsizing","Seasonal furniture or the contents of a downsized home, kept clean, dry and close to "+tn+".")]
+    GEN=[("home","House moves &amp; chain delays","Bridge the gap between completion dates, or store the overflow while you settle into your new "+tn+" home."),
+         ("box","Downsizing &amp; decluttering","Free up space without parting with what matters &mdash; sealed, insured and close by until you need it."),
+         ("wrench","Renovations &amp; extensions","Protect furniture and boxes from dust and damage while the work&rsquo;s underway, then have it all brought back."),
+         ("key","Probate &amp; house clearance","A calm, fully insured place to keep a loved one&rsquo;s belongings for as long as you need, with no pressure on timing.")]
+    picked=[(ic,ti,de) for keys,ic,ti,de in POOL if any(k in tag for k in keys)]
+    for g in GEN:
+        if len(picked)>=4: break
+        picked.append(g)
+    picked=picked[:4]
+    icons=dict(AUD_ICONS); icons["sofa"]=TSVC_ICONS.get("sofa") or AUD_ICONS["box"]
+    cards="".join('<div class="sit-card"><span class="sit-ico">'+icons.get(ic,AUD_ICONS["home"])+'</span><h3 class="sit-name">'+ti+'</h3><p class="sit-desc">'+de+'</p></div>' for ic,ti,de in picked)
+    return centered("bg-lightgrey","What "+tn+" Stores With Us","Whatever&rsquo;s behind your move, we&rsquo;ve got "+tn+" covered &mdash; fully managed, fully insured, from just &pound;15 a week.",SIT_CSS+'<div class="sit-panel">'+cards+'</div>')
+def svc_situations(heading, lead, items):
+    icons=dict(AUD_ICONS); icons["sofa"]=TSVC_ICONS.get("sofa") or AUD_ICONS["box"]
+    cards="".join('<div class="sit-card"><span class="sit-ico">'+icons.get(ic,AUD_ICONS["home"])+'</span><h3 class="sit-name">'+ti+'</h3><p class="sit-desc">'+de+'</p></div>' for ic,ti,de in items)
+    return centered("bg-white",heading,lead,SIT_CSS+'<div class="sit-panel">'+cards+'</div>')
+def svc_whychoose(nav, points=None):
+    usps=points or [("shield","Fully Insured &amp; Alarmed","Your belongings are sealed into their own wooden container in our 24/7 CCTV, alarmed indoor warehouse and stay fully insured throughout your stay."),
+          ("family","Family-Run Since 2016","A LAPADA-accredited West Sussex family team that treats your belongings like our own &mdash; careful, personal and genuinely local."),
+          ("tag","From &pound;15/week, No Deposit","Honest weekly pricing with no deposit and no hidden fees &mdash; you only pay for the container space you actually use."),
+          ("truck","We Come to You","No unit to drive to: we bring the materials, pack, collect from your door and redeliver on 24 hours&rsquo; notice.")]
+    cards="".join('<article class="uspx-card"><span class="uspx-num" aria-hidden="true">'+f'{i+1:02d}'+'</span><span class="uspx-ico">'+USP_ICONS[ic]+'</span><h3>'+ti+'</h3><p>'+de+'</p></article>' for i,(ic,ti,de) in enumerate(usps))
+    return ('<section class="uspx relative w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border">'+USP_CSS+
+            '<div class="container"><div class="uspx-head">'
+            '<span class="uspx-eyebrow">Why choose Wolves</span>'
+            '<h2 class="relative leading-tight">Why West Sussex Chooses Wolves for '+nav+'</h2>'
+            '<p class="uspx-lead">Local, managed and genuinely cared for &mdash; the Wolves Storage Sussex difference.</p>'
+            '</div><div class="uspx-grid">'+cards+'</div></div></section>')
+def service_schema(file,nav):
+    return ('<script type="application/ld+json">'+json.dumps({
+        "@context":"https://schema.org","@type":"Service","serviceType":nav,
+        "name":nav+" in West Sussex",
+        "description":"Fully managed "+nav.lower()+" across West Sussex from Wolves Storage Sussex &mdash; collected from your door, sealed into your own wooden container, securely stored and redelivered.",
+        "provider":{"@type":["SelfStorage","MovingCompany"],"name":"Wolves Storage Sussex","telephone":"+441903893731","url":BASE,
+            "image":BASE+"images/wolves-storage-logo@480.webp","address":ADDR_LD,
+            "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"478","bestRating":"5"}},
+        "areaServed":{"@type":"AdministrativeArea","name":"West Sussex"},
+        "url":BASE+file,
+        "offers":{"@type":"Offer","price":"15","priceCurrency":"GBP","priceSpecification":{"@type":"UnitPriceSpecification","price":"15","priceCurrency":"GBP","referenceQuantity":{"@type":"QuantitativeValue","value":"1","unitText":"WEEK"}}}
+    },ensure_ascii=False)+'</script>')
+def _faq_key(q,tn):
+    return ''.join(c for c in q.lower().replace(tn.lower(),'') if c.isalpha())
+def _faq_dup(k,keys):
+    for e in keys:
+        if k==e: return True
+        if len(k)>14 and len(e)>14 and (k.startswith(e) or e.startswith(k)): return True  # "...cost?" vs "...cost in town?"
+    return False
+def merged_faqs(t):
+    tn=t["town"]; out=list(t.get("faqs",[])); have=[_faq_key(q,tn) for q,_ in out]
+    std=[("How much does storage cost in "+tn+"?","From just &pound;15 per week per container, with no deposit and no hidden fees &mdash; collection and redelivery across "+tn+" are included, and your free quote is confirmed within 24 hours."),
+         ("Is this self-storage or managed storage?","Managed &mdash; there&rsquo;s no unit to drive to. We bring the materials, pack and wrap your belongings, seal them into your own wooden container and store them in our alarmed Ashington warehouse, then redeliver to your "+tn+" door when you ask."),
+         ("How big is a storage container?","Each private wooden container is 250 cu ft (5ft &times; 7ft &times; 8.6ft) &mdash; about the contents of a one-bedroom flat. Need more space? We simply use additional containers, so you only pay for what you use."),
+         ("How quickly can you collect in "+tn+"?","Often within a few days &mdash; tell us your timescale on your free quote, and we redeliver on just 24 hours&rsquo; notice."),
+         ("Are my belongings insured?","Yes &mdash; everything is kept in a sealed container in our alarmed, 24/7 CCTV indoor warehouse and is fully insured throughout, with optional extended cover for higher-value items.")]
+    for q,a in std:
+        if len(out)>=8: break
+        k=_faq_key(q,tn)
+        if not _faq_dup(k,have): out.append((q,a)); have.append(k)
+    return out
 
 # Rotating photo pool for the three split sections on every area (town) page.
 # Mixes the new 2026 inventory shots with strong existing warehouse/container
@@ -648,24 +1166,94 @@ def area_imgs(t):
     return [(IMG(fn), f"{alt} &mdash; Wolves Storage Sussex serving {tn}")
             for fn,alt in (AREA_POOL[(base+k)%n] for k in range(3))]
 
+def town_local(t, data):
+    h2, body = data
+    return ('<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="max-w-4xl mx-auto">'
+            '<span class="block text-orange font-bold uppercase tracking-wider text-sm mb-2">Storage in '+t["town"]+'</span>'
+            '<h2 class="leading-tight text-black">'+h2+'</h2>'
+            '<div class="mt-5 text-darkgrey text-lg">'+body+'</div></div></div></section>')
+
 def town(t):
     h1="Storage in "+t["town"]+", "+t.get("region","West Sussex")
     ai=area_imgs(t); th=town_hero(t)
+    expand = (EXPAND_TOWNS == "ALL") or (t["slug"] in EXPAND_TOWNS)
+    fq = merged_faqs(t) if expand else t["faqs"]
     secs=[
         hero(th[0],th[1],h1,t["sub"],t["checks"],big=False),
         town_stats(t["town"]),
         split("bg-white",t["s1_h2"],t["s1"],ai[0][0],ai[0][1]),
-        town_services(t["town"]),
+        town_services(t),
         split("bg-white",t["s2_h2"],t["s2"],ai[1][0],ai[1][1],reverse=True),
-        town_usps(t["town"]),
-        split("bg-white",t["s3_h2"],t["s3"],ai[2][0],ai[2][1]),
     ]
+    if expand: secs.append(town_pricing(t))
+    secs.append(town_usps(t))
+    secs.append(split("bg-white",t["s3_h2"],t["s3"],ai[2][0],ai[2][1]))
+    if t["slug"] in TOWN_LOCAL: secs.append(town_local(t, TOWN_LOCAL[t["slug"]]))
     if t.get("extra"): secs.append(t["extra"])
-    secs+=[process(),town_map(t),town_nearby(t),faq(t["faqs"]),cta_band(t["cta"],IMG("gallery-warehouse-b.webp"))]
+    elif expand: secs.append(town_situations(t))
+    areas = town_areas(t) if expand else town_nearby(t)
+    secs+=[process(),town_map(t),areas,faq(fq),cta_band(t["cta"],IMG("gallery-warehouse-b.webp"))]
+    gd={}
+    if t.get("lat") and t.get("lng"):
+        gd=dict(geo_pos=f'{t["lat"]};{t["lng"]}', geo_place=f'{t["town"]}, {t.get("region","West Sussex")}')
     return dict(file=t["slug"]+".html",slug="town",nav="Storage in "+t["town"],
-        title=t["title"],meta=t["meta"],hero=th[0],faqs=t["faqs"],
+        title=t["title"],meta=t["meta"],hero=th[0],faqs=fq,
         crumb_parent=("areas-we-cover.html","Areas We Cover"),extra_schema=town_service_schema(t),
-        sections=secs)
+        sections=secs,**gd)
+
+TOWN_LOCAL = {
+ "storage-ashington": ("What Ashington Households &amp; Businesses Store With Us",
+  '<p>Living a few minutes from our warehouse has real advantages for Ashington residents. Period cottages along the old London Road and the newer closes off the A24 all face the same squeeze for space, and being on the doorstep means we can usually collect within the same week and have your belongings back the very next day. We store for families renovating older village homes, downsizers clearing a lifetime of belongings, and tradespeople along the A24 corridor who need a secure home for tools and stock between jobs.</p>'
+  '<p>Because everything is sealed into your own wooden container and logged in our alarmed warehouse, it makes no difference whether you&rsquo;re putting away a few boxes of garden furniture for winter or the entire contents of a house between completion dates. Add <a href="short-term-storage.html">short-term</a> flexibility, <a href="business-storage.html">business storage</a> for local traders, and full insurance throughout, and you have storage that genuinely fits village life &mdash; all from just &pound;15 a week with no deposit.</p>'),
+ "storage-billingshurst": ("Local Storage for Billingshurst &amp; the Stane Street Villages",
+  '<p>Billingshurst grew up along Stane Street, the old Roman road that&rsquo;s now the A29, and that easy north&ndash;south link is exactly why our team can reach you so quickly. From the village centre and the railway station to the surrounding RH14 hamlets, we collect from your door and bring everything back on 24 hours&rsquo; notice &mdash; no battling the A29 to an out-of-town unit with a hired van.</p>'
+  '<p>The mix of growing new-build estates and established family homes around Billingshurst means storage needs vary widely. We help families freeing up a room for a new arrival or a home office, sellers de-cluttering to show a property at its best, and commuters downsizing before a move. Landlords across the RH14 villages use us to turn rentals around quickly, while local businesses store stock and archives to free up working space.</p>'
+  '<p>Whatever the reason, you get the same fully managed service: we pack, wrap and seal your belongings into their own container, store them in our dry, alarmed warehouse, and redeliver whenever you&rsquo;re ready &mdash; from just &pound;15 a week with no deposit. Not sure how much room you&rsquo;ll need? Our <a href="storage-size-guide.html">storage size guide</a> makes it easy to estimate.</p>'),
+ "storage-bognor-regis": ("Seaside Storage for Bognor Regis Homes &amp; Holiday Lets",
+  '<p>Bognor&rsquo;s mix of seafront flats, family homes and holiday lets gives storage a distinctly coastal rhythm. We help owners clearing out between guests and seasons, retirees downsizing from larger PO21 and PO22 properties, and families making room while they renovate close to the front. With salt air and space at a premium near the coast, keeping belongings in our dry, alarmed inland warehouse often makes far more sense than a damp garage or an over-stuffed spare room.</p>'
+  '<p>As ever, it&rsquo;s fully managed: we collect from your Bognor address, seal everything into your own container, and redeliver on 24 hours&rsquo; notice, from &pound;15 a week with no deposit. Heading away for the season or letting your place out? <a href="long-term-storage.html">Long-term storage</a> keeps it all safe and fully insured until you&rsquo;re ready for it back.</p>'),
+ "storage-brighton": ("City Storage for Brighton &amp; Hove Flats &amp; Students",
+  '<p>Storage in Brighton and Hove comes with its own challenges: narrow streets around the Lanes and the Kemptown terraces, tight parking, and small city flats with nowhere to put anything spare. Our managed model is built for exactly that &mdash; we bring the van and the team, pack and load at your door, and take everything away to our secure warehouse, so you don&rsquo;t have to find storage space the city simply doesn&rsquo;t have.</p>'
+  '<p>We&rsquo;re a popular choice with students moving between term-time lets across BN1 to BN3, professionals downsizing or moving in together, and anyone caught between flats. Store for a few summer weeks or the whole year on flexible, fully insured terms, from just &pound;15 a week &mdash; <a href="short-term-storage.html">short-term storage</a> is ideal for the student holidays, with collection and redelivery included.</p>'),
+ "storage-east-grinstead": ("Storage Where Sussex Meets Surrey &amp; Kent",
+  '<p>Perched in the High Weald where three counties meet, East Grinstead has one of the longest medieval high streets in England and a real mix of period timber-framed homes and newer RH19 estates. Older properties often mean awkward access and little storage space, which is where a fully managed service earns its keep &mdash; we handle the packing, the lifting and the logistics, and your belongings end up sealed and safe in our alarmed warehouse rather than crammed into a loft.</p>'
+  '<p>Commuters moving for the London line, families renovating period homes, and businesses freeing up space all store with us here. Collection and redelivery are included, terms are flexible, and it all starts from just &pound;15 a week with no deposit &mdash; see exactly <a href="how-it-works.html">how it works</a> before you decide.</p>'),
+ "storage-henfield": ("Village Storage for Henfield, Small Dole &amp; Woodmancote",
+  '<p>Henfield has the feel of a proper Sussex village &mdash; a busy high street, a strong community, and homes that range from characterful cottages to newer family houses around the edges. What it doesn&rsquo;t always have is spare space, and that&rsquo;s where we come in. A short run down the A281 from our base, Henfield and its neighbours Small Dole and Woodmancote get our complete managed service, with collection from your door and redelivery on just 24 hours&rsquo; notice.</p>'
+  '<p>We store for villagers moving within the area or further afield, families clearing rooms for renovation or a new arrival, and downsizers keeping the pieces that matter while they decide. Local businesses and tradespeople use us to keep stock, tools and seasonal equipment secure without paying for a permanent unit. Antiques and inherited furniture are handled with the same care &mdash; as a LAPADA-accredited team, that&rsquo;s exactly the sort of thing we&rsquo;re trusted with.</p>'
+  '<p>Everything is sealed into your own wooden container and kept in our dry, alarmed, 24/7 CCTV warehouse, fully insured, from just &pound;15 a week with no deposit. Browse our full range of <a href="storage-solutions.html">storage solutions</a> to find the right fit for your move.</p>'),
+ "storage-horsham": ("Storage Across Horsham, from the Carfax to Southwater",
+  '<p>Horsham is the busiest town in our catchment, and our managed model suits it especially well. The town centre around the Carfax and the streets near Horsham Park are full of period and terraced homes with little storage to spare, while the growing communities at Broadbridge Heath, Southwater and Roffey bring a steady stream of families moving, extending and downsizing. Rather than hiring a van and driving your belongings to an industrial-estate unit, you let us come to you &mdash; we pack, wrap and seal everything into your own container at your door.</p>'
+  '<p>That convenience matters in a town where parking and access can be tight and time is short. We collect from right across the RH12 and RH13 postcodes, store your container in our dry, alarmed warehouse, and redeliver on 24 hours&rsquo; notice whenever you&rsquo;re ready. It works for families bridging a delayed completion, sellers de-cluttering to show a home at its best, and anyone renovating one of Horsham&rsquo;s older properties.</p>'
+  '<p>Horsham&rsquo;s thriving business community uses us too. With offices and trades spread between the town centre and the surrounding business parks, our <a href="business-storage.html">business storage</a> frees up expensive floor space for stock, archives and equipment, collected and redelivered to your premises so it never costs your team time. Households choosing between <a href="short-term-storage.html">short-term</a> and <a href="long-term-storage.html">long-term</a> storage get the same flexible, fully insured service throughout.</p>'
+  '<p>It all starts from just &pound;15 a week with no deposit and no hidden fees. As a family-run, LAPADA-accredited and Checkatrade-verified team trusted by Horsham estate agents, we treat every collection as if it were our own &mdash; compare our honest <a href="pricing.html">storage prices</a> or get a free quote confirmed within 24 hours.</p>'),
+ "storage-lancing": ("Coastal Storage Between Worthing &amp; Shoreham",
+  '<p>Lancing sits on the coast between Worthing and Shoreham, with the landmark chapel of Lancing College watching over the Adur valley above the village. Homes here run from seafront and beach-green properties to the busy streets around North Lancing, and storage space is often in short supply close to the water. Keeping belongings in our dry, alarmed inland warehouse beats a damp garage or a cramped spare room, especially through a salty coastal winter.</p>'
+  '<p>We collect from across the BN15 area, seal everything into your own container, and redeliver on 24 hours&rsquo; notice &mdash; ideal for families moving along the coast, downsizers, and anyone caught between homes. Store short or long term, fully insured, from just &pound;15 a week with no deposit. See what fits inside a container with our handy <a href="storage-size-guide.html">size guide</a>.</p>'),
+ "storage-pulborough": ("Managed Storage for Pulborough &amp; the Arun Valley",
+  '<p>Pulborough shares our own RH20 postcode, sitting just up the A283 and A29 where the River Arun winds through the Brooks. That makes it one of the quickest collections we do &mdash; we&rsquo;re practically neighbours, so a Pulborough pick-up often happens within days and your belongings can be back the very next day after a call. Its position on the main rail line also makes it popular with commuters, who frequently store with us when relocating for work.</p>'
+  '<p>The town and its surrounding villages have a real mix of riverside cottages, period homes and newer houses, and storage needs vary just as widely. We help families moving along the Arun Valley, downsizers clearing larger homes, and people heading abroad or working away who need somewhere secure for months or years. The low-lying ground near the river makes a dry, alarmed warehouse particularly appealing &mdash; far better than risking damp in a garage or outbuilding.</p>'
+  '<p>As always, it&rsquo;s fully managed: we bring the materials, pack and wrap your belongings, seal them into your own wooden container, and store them securely with 24/7 CCTV and full insurance, from just &pound;15 a week with no deposit. Choose <a href="long-term-storage.html">long-term storage</a> while you&rsquo;re away or <a href="short-term-storage.html">short-term</a> for a move, and we&rsquo;ll fit around your timescale. See every <a href="areas-we-cover.html">area we cover</a> nearby, or simply call and tell us what you need to store &mdash; we&rsquo;ll talk you through the options with no pressure and no obligation.</p>'),
+ "storage-rustington": ("Seaside Village Storage for Rustington",
+  '<p>Rustington is one of the leafier spots on the coast, a seaside village tucked between Littlehampton and Angmering with a strong community and a good number of retired residents. Downsizing is a common reason people store with us here &mdash; moving from a long-held family home into something smaller often means keeping treasured furniture and belongings safe while decisions are made, and that&rsquo;s exactly what managed storage is for.</p>'
+  '<p>We collect from across the BN16 area, pack and seal everything into your own container, and keep it in our dry, alarmed warehouse with 24/7 CCTV and full insurance. Whether it&rsquo;s a few weeks during a move or longer-term storage for inherited or antique pieces &mdash; handled with LAPADA-accredited care &mdash; you only pay for the space you use, from just &pound;15 a week. We redeliver to your Rustington door on 24 hours&rsquo; notice, so your belongings are never more than a phone call away. Read more <a href="about.html">about our family business</a>.</p>'),
+ "storage-steyning": ("Storage for Steyning, Bramber &amp; Upper Beeding",
+  '<p>The historic market town of Steyning, with its timber-framed high street and its neighbours Bramber and Upper Beeding, sits in a beautiful but tightly-built corner beneath the South Downs. Many of the homes here are old, characterful and short on storage, and the narrow streets aren&rsquo;t always easy to manoeuvre a hired van around &mdash; which is precisely why a fully managed service makes sense. We bring everything to your door, do the packing and lifting, and take it all away to our secure warehouse a few minutes up the A283.</p>'
+  '<p>We store for families renovating period properties, downsizers, people moving in or out of the area, and businesses along the high street needing room for stock or records. Antique and inherited furniture &mdash; common in Steyning&rsquo;s older homes &mdash; is wrapped and handled with the specialist care our LAPADA accreditation demands, so even the most delicate pieces are in safe hands.</p>'
+  '<p>Everything is sealed into your own wooden container, logged, and stored in our dry, alarmed, 24/7 CCTV warehouse, fully insured, from just &pound;15 a week with no deposit. We redeliver on 24 hours&rsquo; notice across Steyning, Bramber and Upper Beeding &mdash; see exactly <a href="how-it-works.html">how it works</a>, then get a free, no-obligation quote confirmed within 24 hours.</p>'),
+ "storage-storrington": ("Doorstep Storage for Storrington &amp; the Downs Villages",
+  '<p>A short hop along the A283 from our Ashington warehouse, Storrington is firmly on our doorstep &mdash; and that closeness shows in how quickly we can help. This bustling village at the foot of the Downs, with Sullington and the surrounding hamlets, gets our fastest collections and next-day redeliveries, so storage never feels like a chore.</p>'
+  '<p>Storrington&rsquo;s mix of period cottages, bungalows and family homes brings the full range of storage needs. We help downsizers and retirees freeing up space, families between moves or mid-renovation, and people clearing a relative&rsquo;s home after a bereavement &mdash; a job we handle with patience and no pressure on timing. Local businesses and tradespeople store stock, tools and seasonal equipment without committing to a permanent unit.</p>'
+  '<p>Whatever the reason, the service is the same: we pack, wrap and seal your belongings into their own container, store them in our dry, alarmed warehouse, and bring them back on 24 hours&rsquo; notice, from just &pound;15 a week. Compare our honest <a href="pricing.html">storage prices</a> or get a free quote today.</p>'),
+ "storage-washington": ("Storage Minutes From Your Door in Washington",
+  '<p>Washington sits right beside our Ashington base at the foot of the South Downs, where the A24 meets the A283 and Chanctonbury Ring rises on the skyline. Being practically next door means we&rsquo;re about as local as storage gets &mdash; collections are quick, redeliveries take just 24 hours&rsquo; notice, and there&rsquo;s never any need to drive your belongings to an out-of-town unit.</p>'
+  '<p>The village and its scattered Downland homes bring a steady mix of storage needs: families renovating older cottages, walkers and commuters downsizing, and people moving in or out of this sought-after corner of the Downs. We also help those clearing space for building work or holding furniture between homes, with antiques and valuables wrapped and handled with LAPADA-accredited care.</p>'
+  '<p>Everything is packed at your door, sealed into your own wooden container, and stored in our dry, alarmed, 24/7 CCTV warehouse, fully insured and from just &pound;15 a week with no deposit. Whether you need <a href="short-term-storage.html">short-term storage</a> for a move or <a href="long-term-storage.html">long-term storage</a> while you&rsquo;re away, we&rsquo;ll fit neatly around your plans &mdash; just tell us your timescale and we&rsquo;ll handle the rest, from the first box we pack to the final redelivery.</p>'),
+ "storage-worthing": ("Storage Across Worthing, from the Seafront to Durrington",
+  '<p>Worthing is one of the largest towns we serve, and its sweep of streets from the seafront and pier back through the town centre to Broadwater, Tarring and Durrington brings a constant flow of storage needs. The town&rsquo;s many Victorian and Edwardian houses &mdash; often converted into flats &mdash; tend to be long on character and short on storage, while a strong retired community means downsizing is a regular reason people call us.</p>'
+  '<p>Our managed model is ideal for a busy coastal town: we bring the van and the team, pack and load at your door anywhere across the BN11 to BN14 postcodes, and take everything away to our secure inland warehouse, well away from the salt air. That suits seafront flat-owners short on space, families moving or renovating, students between term-time lets, and landlords turning over rentals along the coast.</p>'
+  '<p>Every job is fully managed and fully insured: belongings are wrapped, sealed into your own wooden container, and kept in our dry, alarmed, 24/7 CCTV facility, from just &pound;15 a week with no deposit. Store for a few weeks or several years on flexible terms, with collection and redelivery included &mdash; explore our full range of <a href="storage-solutions.html">storage solutions</a> or get a free quote confirmed within 24 hours. Wherever you are in Worthing, a member of our family team is ready to help you store with confidence.</p>'),
+}
 
 TOWNS = [
  dict(slug="storage-ashington",town="Ashington",lat="50.9270",lng="-0.4470",
@@ -694,7 +1282,7 @@ TOWNS = [
         ("Is my storage insured and secure?","Yes &mdash; sealed wooden containers in an alarmed, 24/7 CCTV indoor warehouse, fully insured, LAPADA accredited and Checkatrade-verified.")]),
  dict(slug="storage-washington",town="Washington",lat="50.9090",lng="-0.4170",
   title="Storage in Washington | Wolves Storage Sussex",
-  meta="Secure managed storage in Washington, West Sussex from £15/week. Minutes from our Ashington base — we collect, store and redeliver. No deposit. Free 24-hour quote.",
+  meta="Secure managed storage in Washington, West Sussex from £15/week. Minutes from our Ashington base — we collect, store and redeliver. Fully insured. Free quote.",
   hero="hero-containers-van.webp",hero_alt="Wolves Storage Sussex containers and van serving Washington, West Sussex",
   sub="Just down the A24 from our base, Washington gets the same fast, fully managed container storage &mdash; we collect from your door, store securely and redeliver, from &pound;15 a week.",
   checks=["Minutes from our Ashington (RH20) base","Door-to-door collection &amp; redelivery","Sealed containers, alarmed &amp; insured","From &pound;15/week, no deposit"],
@@ -742,7 +1330,7 @@ TOWNS = [
         ("Is my container secure?","Yes &mdash; sealed and stored in an alarmed, 24/7 CCTV indoor warehouse, fully insured.")]),
  dict(slug="storage-pulborough",town="Pulborough",lat="50.9580",lng="-0.5130",
   title="Storage in Pulborough | Wolves Storage Sussex",
-  meta="Secure managed storage in Pulborough, West Sussex from £15/week. On your doorstep (RH20) — we pack, collect, store and redeliver. Fully insured. Free 24-hour quote.",
+  meta="Secure managed storage in Pulborough, West Sussex from £15/week. On your doorstep (RH20) — we pack, collect, store and redeliver. Fully insured. Free quote.",
   hero="hero-fleet.webp",hero_alt="Wolves Storage Sussex van fleet serving Pulborough, West Sussex",
   sub="Pulborough shares our RH20 postcode &mdash; managed container storage right on your doorstep, from &pound;15 a week, with packing, collection and redelivery all included.",
   checks=["Same RH20 area as our base","Packing, collection &amp; redelivery included","Sealed, dry, alarmed &amp; insured","From &pound;15/week, no deposit"],
@@ -790,7 +1378,7 @@ TOWNS = [
         ("Is everything insured and secure?","Yes &mdash; sealed containers in an alarmed, 24/7 CCTV indoor warehouse, fully insured and LAPADA accredited.")]),
  dict(slug="storage-steyning",town="Steyning",lat="50.8900",lng="-0.3290",
   title="Storage in Steyning | Wolves Storage Sussex",
-  meta="Secure managed storage in Steyning, West Sussex from £15/week. We collect from your door, seal and store — fully insured, no deposit. Free quote within 24 hours.",
+  meta="Secure managed storage in Steyning, West Sussex from £15/week. We collect from your door, seal and store securely — fully insured, no deposit. Free quote.",
   hero="hero-containers-van.webp",hero_alt="Wolves Storage Sussex containers and van serving Steyning, West Sussex",
   sub="Storage for Steyning, Bramber and Upper Beeding &mdash; we collect from your door, seal your belongings into secure containers and redeliver when you need them, from &pound;15 a week.",
   checks=["Covering Steyning, Bramber &amp; Beeding","Door collection &amp; redelivery included","Sealed, dry, alarmed &amp; insured","From &pound;15/week, no deposit"],
@@ -813,7 +1401,7 @@ TOWNS = [
         ("How quickly can I access my items?","Give us 24 hours&rsquo; notice and we&rsquo;ll redeliver to your Steyning address."),
         ("Is my storage insured?","Yes &mdash; sealed containers kept in an alarmed, 24/7 CCTV indoor facility, fully insured.")]),
  dict(slug="storage-billingshurst",town="Billingshurst",lat="51.0220",lng="-0.4530",
-  title="Storage in Billingshurst | Wolves Storage",
+  title="Storage in Billingshurst | Wolves Storage Sussex",
   meta="Managed container storage in Billingshurst (RH14) from £15/week. We pack, collect, store and redeliver — no deposit, fully insured. Free quote in 24 hours.",
   hero="hero-team-loading.webp",hero_alt="Wolves Storage Sussex team loading a container for Billingshurst",
   sub="Managed storage for Billingshurst and the RH14 villages &mdash; we pack, collect and seal your belongings into secure containers, then redeliver when you&rsquo;re ready, from &pound;15 a week.",
@@ -838,7 +1426,7 @@ TOWNS = [
         ("Is my container secure and insured?","Yes &mdash; sealed and stored in an alarmed, 24/7 CCTV indoor warehouse, fully insured.")]),
  dict(slug="storage-horsham",town="Horsham",lat="51.0630",lng="-0.3270",
   title="Storage in Horsham | Wolves Storage Sussex",
-  meta="Managed storage in Horsham, West Sussex from £15/week. We collect across RH12 and RH13, store securely and redeliver — no deposit, fully insured. Free 24-hour quote.",
+  meta="Managed storage in Horsham, West Sussex from £15/week. We collect across RH12 and RH13, store securely and redeliver — no deposit, fully insured. Free quote.",
   hero="hero-facility-van.webp",hero_alt="Wolves Storage Sussex facility and van serving Horsham, West Sussex",
   sub="Fully managed container storage across Horsham &mdash; we collect from anywhere in RH12 and RH13, store your sealed belongings securely and redeliver on request, from &pound;15 a week.",
   checks=["Collecting across RH12 &amp; RH13","Packing, collection &amp; redelivery included","Sealed, alarmed, 24/7 CCTV &amp; insured","From &pound;15/week, no deposit"],
@@ -855,7 +1443,7 @@ TOWNS = [
       "We also cover nearby <a href=\"storage-billingshurst.html\">Billingshurst</a> and <a href=\"storage-washington.html\">Washington</a> &mdash; and you can size up your move with our <a href=\"storage-size-guide.html\">storage size guide</a>."],
   img4="gallery-warehouse-a.webp",img4_alt="Inside the secure Wolves Storage Sussex warehouse serving Horsham",
   extra=centered("bg-lightgrey","Who We Help Across Horsham","From busy professionals to growing businesses, our managed storage fits homes and offices right across the RH12 and RH13 postcodes.",
-        checklist(["Families moving home or caught in a chain delay","Homeowners renovating or extending","Downsizers and people clearing a property","Landlords and tenants between tenancies","Businesses freeing up office or retail space","Students and people working away from home"],center=True)),
+        checklist_grid([("home","Families moving home or caught in a chain delay"),("wrench","Homeowners renovating or extending"),("box","Downsizers and people clearing a property"),("key","Landlords and tenants between tenancies"),("briefcase","Businesses freeing up office or retail space"),("cap","Students and people working away from home")])),
   cta="Need Storage in Horsham? Get a Free Quote",
   faqs=[("Do you cover all of Horsham?","Yes &mdash; we collect, store and redeliver right across the RH12 and RH13 postcodes, including Roffey, Broadbridge Heath and Southwater."),
         ("Is this self-storage or managed storage?","Managed &mdash; you don&rsquo;t drive to a unit. We pack, collect and store your sealed container, then redeliver when you ask."),
@@ -864,7 +1452,7 @@ TOWNS = [
         ("Are my belongings insured in Horsham?","Yes &mdash; sealed containers in an alarmed, 24/7 CCTV indoor warehouse, fully insured and LAPADA accredited.")]),
  dict(slug="storage-worthing",town="Worthing",lat="50.8180",lng="-0.3720",
   title="Storage in Worthing | Wolves Storage Sussex",
-  meta="Managed storage in Worthing, West Sussex from £15/week. We collect across BN11–BN14 — ideal for moves, downsizing & students. Free quote.",
+  meta="Managed storage in Worthing, West Sussex from £15/week. We collect across BN11–BN14 — ideal for moves, downsizing & students. No deposit. Free quote.",
   hero="hero-fleet.webp",hero_alt="Wolves Storage Sussex van fleet serving Worthing, West Sussex",
   sub="Fully managed container storage across Worthing &mdash; we collect from anywhere in BN11 to BN14, store your sealed belongings securely and redeliver on request, from &pound;15 a week.",
   checks=["Collecting across BN11&ndash;BN14","Packing, collection &amp; redelivery included","Sealed, alarmed, 24/7 CCTV &amp; insured","From &pound;15/week, no deposit"],
@@ -933,8 +1521,8 @@ def size_guide_page():
           ("Do I pay for space I don&rsquo;t use?","No &mdash; managed storage means you pay per container, not for a half-empty room, so it&rsquo;s often better value than self-storage.")]
     inner1=('<p class="text-lg xl:text-xl font-medium mt-2 max-w-3xl mx-auto">Not sure how much storage you need? Use this quick guide to estimate how many containers your home or business will fill &mdash; then get an exact figure on your free quote.</p>'+size_cards())
     return dict(file="storage-size-guide.html",slug="guide",nav="Storage Size Guide",
-      title="How Much Storage Do I Need? Size Guide | Wolves",
-      meta="How much storage do you need? Our West Sussex size guide shows what fits in a 250 cu ft container, by home size. From £15/week. Free quote.",
+      title="How Much Storage Do I Need? | Wolves Storage Sussex",
+      meta="How much storage do you need? Our West Sussex size guide shows what fits in a 250 cu ft container, room by room. From £15/week, no deposit. Free quote.",
       hero=IMG(HERO_WAREHOUSE[0]),faqs=faqs,
       crumb_parent=("how-it-works.html","How It Works"),
       sections=[
@@ -959,13 +1547,16 @@ def furniture_page():
           ("Can you collect my furniture?","Yes &mdash; we bring the materials, wrap and load your furniture, and take it away. You never hire a van or lift a thing."),
           ("How much does furniture storage cost?","From &pound;15 per week per container, with no deposit and no hidden fees, including collection and redelivery."),
           ("Is my furniture insured?","Yes &mdash; everything is fully insured while it&rsquo;s with us, in an alarmed, 24/7 CCTV facility. We&rsquo;re LAPADA accredited for handling fine and antique furniture."),
-          ("How long can I store furniture for?","As long as you like &mdash; flexible weekly and 4-week rolling terms suit both <a href=\"short-term-storage.html\">short</a> and <a href=\"long-term-storage.html\">long-term</a> furniture storage.")]
+          ("How long can I store furniture for?","As long as you like &mdash; flexible weekly and 4-week rolling terms suit both <a href=\"short-term-storage.html\">short</a> and <a href=\"long-term-storage.html\">long-term</a> furniture storage."),
+          ("How big is a storage container?","Each wooden container is 250 cu ft (5ft &times; 7ft &times; 8.6ft) &mdash; about a one-bedroom flat&rsquo;s worth of furniture. Larger homes simply use additional containers."),
+          ("Do you handle antiques and fragile pieces?","Yes &mdash; as a LAPADA-accredited team we give antique, fragile and high-value furniture specialist wrapping and white-glove handling."),
+          ("Is this self-storage or managed storage?","Managed &mdash; there&rsquo;s no unit to drive to. We wrap, collect and seal your furniture into your own container, then redeliver when you&rsquo;re ready.")]
     return dict(file="furniture-storage.html",slug="furniture",nav="Furniture Storage",
-      title="Furniture Storage West Sussex | Collected & Sealed",
-      meta="Furniture storage in West Sussex from £15/week. We blanket-wrap, collect & seal your furniture in secure containers. Fully insured, LAPADA accredited.",
+      title="Furniture Storage West Sussex | Wolves Storage Sussex",
+      meta="Furniture storage in West Sussex from £15/week. We blanket-wrap, collect & seal furniture in secure containers. Fully insured. Get a free quote.",
       hero=IMG(HERO_FURNITURE[0]),faqs=faqs,
       crumb_parent=("storage-solutions.html","Storage Solutions"),
-      extra_schema=town_service_schema({"town":"West Sussex","slug":"furniture-storage","lat":"50.9270","lng":"-0.4470"}),
+      extra_schema=service_schema("furniture-storage.html","Furniture Storage"),
       sections=[
         hero(IMG(HERO_FURNITURE[0]),HERO_FURNITURE[1],"Furniture Storage in West Sussex",
           "Storing a sofa, a houseful or a few treasured pieces? We blanket-wrap your furniture, seal it into its own container and keep it clean, dry and secure &mdash; from just &pound;15 a week.",
@@ -974,11 +1565,21 @@ def furniture_page():
           ["Furniture hates damp, dust and being shoved around an open unit. We wrap each piece in blankets and padding, then seal it into your own wooden container kept in our dry, ventilated, alarmed warehouse &mdash; so it comes back exactly as it left.",
            "It&rsquo;s fully managed: we collect from your door, do all the lifting, and redeliver on 24 hours&rsquo; notice. See <a href=\"how-it-works.html\">how it works</a> or our <a href=\"pricing.html\">prices</a>."],
           IMG("furniture-wrapped-furni-soft-dining-set.webp"),"A dining table and chairs blanket-wrapped in Furni-soft by Wolves Storage Sussex before storage"),
+        town_pricing({"town":"West Sussex","slug":"furniture"},heading="Furniture Storage Prices in West Sussex",eyebrow="Furniture Storage from",quote="Get Your Furniture Quote",lead="Furniture storage in West Sussex from just &pound;15 a week &mdash; blanket-wrapped, sealed and fully insured, with no deposit. Store a single sofa or a whole home.",fits=["A sofa, armchairs &amp; a coffee table","A double bedroom suite &amp; mattress","A dining table &amp; six chairs","The furniture from a one-bed flat"]),
         split("bg-lightgrey","Ideal for Moves, Renovations &amp; Downsizing",
           ["Furniture storage is perfect between house moves, during a renovation, while staging a home for sale, or when downsizing and deciding what to keep. Store a single sofa or an entire home &mdash; you only pay for the containers you use.",
            "As a LAPADA-accredited team we also handle fine and antique furniture with specialist care. Not sure how much space you need? Try our <a href=\"storage-size-guide.html\">size guide</a>."],
           IMG("wrapping-framed-picture-furni-soft.webp"),"A Wolves Storage Sussex packer wrapping a framed picture in Furni-soft padding before storage",reverse=True),
+        svc_situations("When Furniture Storage Helps","Whatever&rsquo;s behind your move, our fully managed furniture storage is built for it &mdash; wrapped, sealed and fully insured, from just &pound;15 a week.",[("home","Between homes","Store a sofa or a whole houseful between moves &mdash; blanket-wrapped, sealed and brought back when you&rsquo;re in."),("wrench","Renovating &amp; redecorating","Protect furniture from dust and damage while the work&rsquo;s done, then have it all returned."),("box","Downsizing","Keep the pieces you&rsquo;re not ready to part with, safely stored until you decide."),("sofa","Antiques &amp; fine pieces","LAPADA-accredited care for antique, fragile and high-value furniture &mdash; wrapped and handled properly.")]),
+        svc_whychoose("Furniture Storage",[("shield","Blanket-Wrapped &amp; Sealed","Every piece is wrapped and padded, then sealed into your own container in a dry, alarmed warehouse &mdash; no scuffs, no damp."),("family","LAPADA-Accredited Care","Trusted to handle fine, antique and fragile furniture &mdash; a family team rated 5.0 from 478 reviews."),("truck","We Collect &amp; Redeliver","We bring the materials, do all the lifting and wrapping, and redeliver on 24 hours&rsquo; notice."),("tag","From &pound;15/week, No Deposit","Store a single sofa or a whole home &mdash; pay only for the container space you use, with no hidden fees.")]),
         process(),
+        gallery([(IMG("wrapping-chair-protective-blanket-container.webp"),"A Wolves Storage Sussex packer wrapping a chair in a protective blanket for container storage","Wrapped ready for storage"),
+                 (IMG("taping-furni-guard-around-furniture-lounge.webp"),"A Wolves Storage Sussex packer taping Furni-guard protection around furniture","Padded &amp; protected"),
+                 (IMG("wrapping-marble-table-furni-guard.webp"),"A Wolves Storage Sussex packer protecting a marble-topped table with Furni-guard","Fragile pieces, handled properly"),
+                 (IMG("team-carrying-wrapped-armchair-to-van.webp"),"Two Wolves Storage Sussex movers carrying a blanket-wrapped armchair to the van","Collected from your door"),
+                 (IMG("wrapping-fragile-item-protective-paper.webp"),"A Wolves Storage Sussex packer wrapping a fragile item in protective paper before storage","Fragile items protected"),
+                 (IMG("white-glove-antique-painting-handling.webp"),"Wolves Storage Sussex team handling an antique painting with white gloves","Specialist antique handling")],
+                heading="Furniture Storage in Action",lead="Real photos of our team wrapping, protecting and storing furniture across West Sussex."),
         faq(faqs),
         cta_band("Need Furniture Storage in West Sussex?",IMG("gallery-warehouse-b.webp")),
       ])
@@ -1080,29 +1681,91 @@ def review_cards():
                 '<p class="text-sm text-darkgrey mt-0 mb-0">Verified Google review</p></div></div>')
     return '<div class="grid grid-cols-12 gap-4 lg:gap-6">'+cells+'</div>'
 def reviews_page():
-    rs=('<script type="application/ld+json">'+json.dumps({"@context":"https://schema.org","@type":["SelfStorage","LocalBusiness"],
-        "@id":BASE+"#business","name":"Wolves Storage Sussex","url":BASE+"reviews.html","image":BASE+"images/wolves-storage-logo@480.webp",
-        "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"478","bestRating":"5"},
+    # Attach the review array to the single site-wide #business entity (declared in ORG)
+    # via an @id reference only — no duplicate @type/url/aggregateRating (rule 18).
+    rs=('<script type="application/ld+json">'+json.dumps({"@context":"https://schema.org",
+        "@id":BASE+"#business",
         "review":[{"@type":"Review","author":{"@type":"Person","name":n},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5","worstRating":"1"},"reviewBody":html.unescape(r)} for n,r in REVIEWS]},ensure_ascii=False)+'</script>')
     return dict(file="reviews.html",slug="reviews",nav="Reviews",
         title="Reviews | 5.0 Stars from 478 | Wolves Storage Sussex",
-        meta="Read Wolves Storage Sussex reviews — rated 5.0 from 478 verified reviews on Google, Checkatrade & Facebook. Family-run, LAPADA accredited & fully insured.",
+        meta="Read Wolves Storage Sussex reviews — rated 5.0 from 478 verified reviews on Google, Checkatrade & Facebook. Family-run & fully insured. Get a free quote.",
         hero=IMG(HERO_ANTIQUE[0]),extra_schema=rs,
         sections=[
-          hero(IMG(HERO_ANTIQUE[0]),HERO_ANTIQUE[1],"Our Customers Rate Us 5.0",
+          hero(IMG(HERO_ANTIQUE[0]),HERO_ANTIQUE[1],"Our Storage Customers Rate Us 5.0",
             "Don&rsquo;t just take our word for it &mdash; here&rsquo;s what West Sussex families and businesses say about storing with our family team.",
             ["5.0 stars from 478 reviews","Verified on Google, Checkatrade &amp; Facebook","LAPADA accredited &amp; fully insured","Trusted by West Sussex estate agents"],big=False),
           centered("bg-white","What Our Customers Say","Genuine, verified reviews from the families and businesses we&rsquo;ve helped across West Sussex.",review_cards()),
+          ('<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="max-w-4xl mx-auto">'
+           '<span class="block text-orange font-bold uppercase tracking-wider text-sm mb-2">5.0 from 478 reviews</span>'
+           '<h2 class="leading-tight text-black">A Reputation Built on Word of Mouth</h2>'
+           '<div class="mt-5 text-darkgrey text-lg">'
+           '<p>Storage is a business built entirely on trust &mdash; you&rsquo;re handing over the things that matter most and trusting someone to look after them properly. That&rsquo;s why we&rsquo;re proud that so much of our work comes from personal recommendations and repeat customers, and why we&rsquo;ve earned a 5.0-star rating across hundreds of verified reviews on Google, Checkatrade and Facebook. Every one of those reviews comes from a real West Sussex household or business we&rsquo;ve actually helped store, move or downsize.</p>'
+           '<h3 class="text-black font-bold text-xl mt-7 mb-2">What customers tell us matters most</h3>'
+           '<p>Read through our feedback and the same themes come up again and again: belongings returned in exactly the condition they left in, a friendly team that turns up when they say they will, clear and honest pricing with no surprises, and the reassurance of dealing with the same people from the first quote to the final redelivery. Because we&rsquo;re a small, family-run team rather than a faceless national chain, those details don&rsquo;t slip through the cracks.</p>'
+           '<h3 class="text-black font-bold text-xl mt-7 mb-2">Independently verified, not cherry-picked</h3>'
+           '<p>Our reviews are collected and verified through Trustindex, which gathers genuine, spam-checked feedback from multiple platforms in one place &mdash; so what you see is the real picture, not a hand-picked selection. We&rsquo;re also LAPADA-accredited, Checkatrade-verified and fully insured, and we&rsquo;re recommended by respected estate agents across the region.</p>'
+           '<h3 class="text-black font-bold text-xl mt-7 mb-2">Trusted right across West Sussex</h3>'
+           '<p>From <a href="storage-horsham.html">Horsham</a> and <a href="storage-crawley.html">Crawley</a> to the <a href="storage-worthing.html">Worthing</a> and <a href="storage-chichester.html">Chichester</a> coast, families and businesses across the county have chosen us for storage they don&rsquo;t have to worry about. Wherever you are, you can expect the same standard of care that earned those five-star reviews &mdash; see every <a href="areas-we-cover.html">area we cover</a>.</p>'
+           '<h3 class="text-black font-bold text-xl mt-7 mb-2">See for yourself, then store with confidence</h3>'
+           '<p>The best way to judge a storage company is by what its customers say once the job is done. Browse the reviews on this page, take a look inside our facility in the <a href="gallery.html">gallery</a>, or read more <a href="about.html">about our family business</a> and exactly <a href="how-it-works.html">how managed storage works</a>. When you&rsquo;re ready, <a href="contact.html">get a free quote</a> &mdash; and we&rsquo;ll do everything we can to earn a five-star review of our own.</p>'
+           '<h3 class="text-black font-bold text-xl mt-7 mb-2">New to storage? You&rsquo;re in good hands</h3>'
+           '<p>If you&rsquo;ve never used storage before, the reviews are the best place to start &mdash; they&rsquo;re written by people who were once in exactly your position, unsure how much space they&rsquo;d need or how the whole process worked. Time and again they mention how easy we made it: a clear quote up front, a team that did the heavy lifting, and belongings that came back exactly as they left. Many of those customers found us through a friend&rsquo;s or estate agent&rsquo;s recommendation, and a good number have stored with us more than once. We&rsquo;d love the chance to add you to them.</p>'
+           '</div></div></div></section>'),
           cta_band("Join Hundreds of Happy West Sussex Customers",IMG("gallery-warehouse-b.webp")),
         ])
 
+# Location silo: link the homepage and every service/money page down to ALL town pages.
+SILO_PAGES={"index.html","storage-solutions.html","long-term-storage.html","short-term-storage.html",
+            "business-storage.html","furniture-storage.html","how-it-works.html","pricing.html","storage-size-guide.html"}
+LTS_CSS=('<style>'
+  '.lts-panel{position:relative;overflow:hidden;max-width:74rem;margin:0 auto;border-radius:1.5rem;padding:1.6rem 1.4rem;background:linear-gradient(155deg,#edece4 0%,#e3e0d2 100%);border:1px solid #dcd8c8;box-shadow:0 26px 64px -34px rgba(38,38,38,.4)}'
+  '@media(min-width:768px){.lts-panel{padding:2rem 2rem}}'
+  '.lts-panel::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.lts-grid{display:grid;grid-template-columns:1fr;gap:1rem;text-align:left}'
+  '@media(min-width:640px){.lts-grid{grid-template-columns:1fr 1fr}}'
+  '@media(min-width:1024px){.lts-grid{grid-template-columns:repeat(3,1fr);gap:1.25rem}}'
+  '.lts-group{background:#fff;border:1px solid #E7E7E7;border-radius:1.1rem;padding:1.35rem 1.3rem 1.05rem;box-shadow:0 3px 10px rgba(38,38,38,.05);transition:transform .3s cubic-bezier(.2,.7,.3,1),box-shadow .3s ease}'
+  '.lts-group:hover{transform:translateY(-3px);box-shadow:0 18px 36px -18px rgba(105,119,131,.45)}'
+  '.lts-ghead{display:flex;align-items:center;gap:.6rem;margin:0 0 .85rem;padding-bottom:.8rem;border-bottom:1px solid #EDEBE3}'
+  '.lts-gtile{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:.6rem;background:#E8E6DA;color:#697783;flex:none}'
+  '.lts-gtile svg{width:16px;height:16px}'
+  '.lts-glabel{color:#FC9700;font-weight:700;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;line-height:1.2}'
+  '.lts-links{list-style:none;margin:0;padding:0}'
+  '.lts-link{display:flex;align-items:center;gap:.55rem;color:#262626;font-weight:600;font-size:.95rem;text-decoration:none;padding:.4rem .5rem;border-radius:.5rem;transition:background .2s ease,color .2s ease}'
+  '.lts-link:hover{background:#F9F8F6;color:#FC9700}'
+  '.lts-link:focus-visible{outline:2px solid #FC9700;outline-offset:2px}'
+  '.lts-dot{width:6px;height:6px;border-radius:999px;background:#FC9700;opacity:.45;flex:none;transition:opacity .2s ease}'
+  '.lts-link:hover .lts-dot{opacity:1}'
+  '.lts-ar{margin-left:auto;color:#FC9700;opacity:0;transform:translateX(-4px);transition:opacity .2s ease,transform .2s ease}'
+  '.lts-link:hover .lts-ar{opacity:1;transform:none}.lts-ar svg{width:14px;height:14px;display:block}'
+  '@media (prefers-reduced-motion:reduce){.lts-group,.lts-link,.lts-dot,.lts-ar{transition:none}.lts-group:hover{transform:none}}'
+  '</style>')
+def all_towns_strip():
+    pin='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5.5-8 12-8 12s-8-6.5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.6"/></svg>'
+    ar='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
+    groups={}
+    for t in TOWNS:
+        g=TOWN_INFO.get(t["slug"],{}).get("group","Across West Sussex")
+        groups.setdefault(g,[]).append(t)
+    cols=""
+    for label,ts in groups.items():
+        links="".join('<li><a class="lts-link" href="'+x["slug"]+'.html"><span class="lts-dot" aria-hidden="true"></span>Storage in '+x["town"]+'<span class="lts-ar" aria-hidden="true">'+ar+'</span></a></li>' for x in ts)
+        cols+='<div class="lts-group"><div class="lts-ghead"><span class="lts-gtile">'+pin+'</span><span class="lts-glabel">'+label+'</span></div><ul class="lts-links">'+links+'</ul></div>'
+    return centered("bg-white","Local Storage Across Sussex",
+        "Dedicated local pages for the towns and villages we cover right across West Sussex and just over the border &mdash; find yours.",
+        LTS_CSS+'<div class="lts-panel"><div class="lts-grid">'+cols+'</div></div>')
+
 def build():
     P=[]
+    HOME_FAQS=[("How much does storage cost in West Sussex?","Managed storage starts from just &pound;15 per week with no deposit and no hidden fees, on flexible weekly and 4-week terms. Your free quote is confirmed within 24 hours."),
+               ("How is my furniture stored?","Items are professionally packed and sealed into your own wooden container, kept clean, dry and secure in our alarmed, 24/7 CCTV facility &mdash; not loose on open shelving."),
+               ("Do I need to do anything?","No &mdash; our team brings the materials, packs and wraps your belongings, and loads everything into your container. You never lift a box."),
+               ("How quickly can I access my items?","Just give us 24 hours&rsquo; notice and we&rsquo;ll redeliver to your door anywhere across West Sussex.")]
     # HOME
     P.append(dict(file="index.html",slug="home",nav="Home",
       title="Secure Storage in West Sussex | Wolves Storage Sussex",
-      meta="Safe, secure & affordable managed storage in West Sussex from £15/week. We pack, collect, store & redeliver. LAPADA accredited, fully insured, 24/7 CCTV. Free quote.",
-      hero=IMG(HERO_WAREHOUSE[0]),extra_schema=VIDEO_SCHEMA,
+      meta="Secure managed storage in West Sussex from £15/week. We pack, collect, store & redeliver. LAPADA accredited, fully insured, 24/7 CCTV. Free quote.",
+      hero=IMG(HERO_WAREHOUSE[0]),extra_schema=VIDEO_SCHEMA,faqs=HOME_FAQS,
       sections=[
         hero(IMG(HERO_WAREHOUSE[0]),HERO_WAREHOUSE[1],"Secure Storage in West Sussex",
           "Need somewhere safe to keep your belongings? Our clean, dry, ultra-secure <strong>containerised storage</strong> suits home and business, short or long-term &mdash; fully managed, including packing, collection and delivery.",
@@ -1111,37 +1774,47 @@ def build():
           ["Whether you&rsquo;re between properties, downsizing, renovating or freeing up space, our containerised storage keeps your belongings safe and accessible. Items are professionally packed and sealed into containers, protected from damp and damage.",
            'Choose <a href="short-term-storage.html">short-term</a> for moving delays, <a href="long-term-storage.html">long-term</a> for extended needs, or <a href="business-storage.html">business storage</a> for stock and equipment &mdash; from just &pound;15 a week.'],
           IMG("hero-containers-van.webp"),"Storage containers and van at the Wolves Storage Sussex facility"),
-        split("bg-lightgrey","Why Store With Wolves Storage Sussex?",
+        split("bg-lightgrey","More Than Storage &mdash; We Look After Your Home",
           ["We don&rsquo;t just store boxes &mdash; we look after your home. Our trained, fully insured family team treats every item as if it were our own, from professional packing to careful stacking in our secure West Sussex facility.",
            "LAPADA accredited and Checkatrade members, with 24/7 CCTV, an alarmed store and full insurance &mdash; trusted by Sussex families and businesses for over 10 years."],
           IMG("forklift-loading-storage-container-sussex.webp"),"Wolves Storage Sussex operator loading a sealed wooden storage container with a CAT forklift at our secure West Sussex facility",reverse=True),
+        ('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="max-w-4xl mx-auto">'
+         '<span class="block text-orange font-bold uppercase tracking-wider text-sm mb-2">Secure storage in West Sussex</span>'
+         '<h2 class="leading-tight text-black">Storage in West Sussex, Without the Hassle</h2>'
+         '<div class="mt-5 text-darkgrey text-lg">'
+         '<p>When you need extra space in West Sussex you really have two choices: rent an empty self-storage unit and do all the lifting yourself, or let a managed team handle the lot. We&rsquo;re firmly in the second camp. From our base in <a href="storage-ashington.html">Ashington</a> we bring the boxes and materials to your door, pack and wrap your belongings, seal them into your own wooden container and store them in our dry, alarmed, 24/7 CCTV warehouse &mdash; then bring everything back whenever you&rsquo;re ready. There&rsquo;s no van to hire, no mileage and no heavy lifting.</p>'
+         '<p class="mt-4">It&rsquo;s a flexible, fully insured service that suits almost any situation &mdash; <a href="short-term-storage.html">short-term storage</a> for a delayed move or renovation, <a href="long-term-storage.html">long-term storage</a> while you&rsquo;re working away, <a href="business-storage.html">business storage</a> for stock and archives, or specialist <a href="furniture-storage.html">furniture storage</a> for the pieces that matter most. You only pay for the container space you use, from just &pound;15 a week with no deposit, and you can store for a single week or several years on simple rolling terms.</p>'
+         '<p class="mt-4">Being local and family-run is the whole point: we&rsquo;ve looked after West Sussex households and businesses for over ten years, we&rsquo;re LAPADA-accredited and Checkatrade-verified, and we&rsquo;re trusted by estate agents right across the county. Not sure how much space you&rsquo;ll need? Try our <a href="storage-size-guide.html">size guide</a>, compare our honest <a href="pricing.html">prices</a>, or <a href="contact.html">get a free quote</a> confirmed within 24 hours &mdash; with no deposit and no obligation, whatever you decide.</p>'
+         '</div></div></div></section>'),
         process(),
         video_promo(),
         gallery([(IMG("wolves-operator-forklift-storage-containers.webp"),"Operator moving sealed storage containers by forklift"),(IMG("gallery-warehouse-a.webp"),"Stacked storage containers"),
                  (IMG("wolves-van-loading-at-storage-facility.webp"),"Van loading at our storage facility"),(IMG("furniture-loaded-sussex-removal-service.webp"),"Collecting furniture from a Sussex home for storage"),
                  (IMG("careful-packing-sussex-home-removal.webp"),"The Wolves Storage Sussex van fleet"),(IMG("wolves-removals-team-fleet-vans.webp"),"The family-run Wolves Storage Sussex team")]),
-        faq([("How much does storage cost in West Sussex?","Managed storage starts from just &pound;15 per week with no deposit and no hidden fees, on flexible weekly and 4-week terms. Your free quote is confirmed within 24 hours."),
-             ("How is my furniture stored?","Items are professionally packed and sealed into your own wooden container, kept clean, dry and secure in our alarmed, 24/7 CCTV facility &mdash; not loose on open shelving."),
-             ("Do I need to do anything?","No &mdash; our team brings the materials, packs and wraps your belongings, and loads everything into your container. You never lift a box."),
-             ("How quickly can I access my items?","Just give us 24 hours&rsquo; notice and we&rsquo;ll redeliver to your door anywhere across West Sussex.")]),
+        faq(HOME_FAQS),
         cta_band("Ready to Store With West Sussex&rsquo;s Trusted Family Team?",IMG("gallery-warehouse-b.webp")),
       ]))
     # generic builder for service pages
-    def service(file,slug,nav,title,meta,heroimg,heroalt,h1,sub,checks,p1,p2,faqs):
-        return dict(file=file,slug=slug,nav=nav,title=title,meta=meta,hero=heroimg,faqs=faqs,sections=[
-            hero(heroimg,heroalt,h1,sub,checks,big=False),
-            split("bg-white",p1[0],p1[1],IMG("hero-team-loading.webp"),"Wolves team loading a storage container"),
-            split("bg-lightgrey",p2[0],p2[1],IMG("hero-containers-van.webp"),"Storage containers at our facility",reverse=True),
-            process(),
+    def service(file,slug,nav,title,meta,heroimg,heroalt,h1,sub,checks,p1,p2,faqs,uses=None,why=None,uses_lead=None,fits=None):
+        exp = file in EXPAND_SERVICES
+        secs=[hero(heroimg,heroalt,h1,sub,checks,big=False),
+              split("bg-white",p1[0],p1[1],IMG("hero-team-loading.webp"),"Wolves team loading a storage container")]
+        if exp: secs.append(town_pricing({"town":"West Sussex","slug":slug},heading=nav+" Prices in West Sussex",eyebrow=nav+" from",quote="Get Your "+nav+" Quote",lead=nav+" in West Sussex from just &pound;15 a week &mdash; everything included, no deposit, and you only pay for the container space you use. Need more room? We simply add another container.",fits=fits))
+        secs.append(split("bg-lightgrey",p2[0],p2[1],IMG("hero-containers-van.webp"),"Storage containers at our facility",reverse=True))
+        if exp and uses: secs.append(svc_situations("When "+nav+" Helps",uses_lead or ("The situations our fully managed "+nav.lower()+" is built for &mdash; fully insured, from just &pound;15 a week."),uses))
+        if exp: secs.append(svc_whychoose(nav,why))
+        secs += [process(),
             gallery([(IMG("hero-facility-van.webp"),"Facility and van"),(IMG("gallery-warehouse-a.webp"),"Storage containers"),
                      (IMG("gallery-loading.webp"),"Loading a container"),(IMG("hero-forklift.webp"),"Forklift stacking"),
                      (IMG("gallery-warehouse-b.webp"),"Warehouse interior"),(IMG("hero-fleet.webp"),"Van fleet")]),
             faq(faqs),
-            cta_band("Need "+nav+" in West Sussex?",IMG("gallery-warehouse-b.webp")),
-        ])
+            cta_band("Need "+nav+" in West Sussex?",IMG("gallery-warehouse-b.webp"))]
+        d=dict(file=file,slug=slug,nav=nav,title=title,meta=meta,hero=heroimg,faqs=faqs,sections=secs)
+        if exp: d["extra_schema"]=service_schema(file,nav)
+        return d
     P.append(service("storage-solutions.html","storage","Storage Solutions",
       "Managed Storage in West Sussex | Wolves Storage Sussex",
-      "Secure, fully managed storage in West Sussex from £15/week. We pack, collect, store & redeliver. No deposit, fully insured, LAPADA accredited.",
+      "Secure, fully managed storage in West Sussex from £15/week. We pack, collect, store & redeliver. No deposit, fully insured. Get a free quote.",
       IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"Secure, Fully Managed Storage in Sussex",
       "From a few boxes to a whole house, household to business, short stays to long-term &mdash; we tailor secure managed storage to exactly what you need, all from our alarmed Ashington facility.",
       ["Cost-effective long- and short-term storage","Packing, collection &amp; delivery included","Fully secure, alarmed &amp; insured","No deposit, flexible weekly terms"],
@@ -1150,31 +1823,70 @@ def build():
       [("How much does storage cost?","From &pound;15 per week with no deposit and no hidden fees, on flexible weekly and 4-week rolling terms."),
        ("How big is a container?","Each wooden container is 5ft &times; 7ft &times; 8.6ft &mdash; 250 cu ft, roughly the contents of a one-bedroom flat. Need more? We simply use additional containers."),
        ("Is my stuff insured?","Yes &mdash; the facility is fully insured with optional extended cover, monitored by 24/7 CCTV and alarmed."),
-       ("How do I get my items back?","Give us 24 hours&rsquo; notice and we redeliver to your door anywhere in West Sussex.")]))
+       ("How do I get my items back?","Give us 24 hours&rsquo; notice and we redeliver to your door anywhere in West Sussex."),
+       ("Is this self-storage or managed storage?","Managed &mdash; there&rsquo;s no unit to drive to. We bring the materials, pack and seal your belongings into your own container and store it at our alarmed Ashington warehouse."),
+       ("Do you pack and collect for me?","Yes &mdash; collection, professional packing and redelivery are all included. You never hire a van or lift a box."),
+       ("How quickly can you collect?","Often within a few days &mdash; just tell us your timescale on your free quote."),
+       ("What can I store?","Household contents, furniture, business stock, archives and more &mdash; anything that fits safely in a sealed container.")],
+      uses_lead="From a few boxes to a whole home, household to business &mdash; these are the moves our fully managed storage is built for.",
+      uses=[("home","Household storage","A whole home or a few rooms while you move, renovate or free up space &mdash; packed, sealed and stored, then brought back."),
+            ("briefcase","Business storage","Stock, archives and equipment collected from your premises and redelivered the moment you need them."),
+            ("sofa","Furniture &amp; antiques","Blanket-wrapped and sealed with LAPADA-accredited care &mdash; ideal for fine, fragile and high-value pieces."),
+            ("cap","Students &amp; renters","Secure storage between tenancies or over the summer, collected from the door and brought back for term.")],
+      why=[("shield","Sealed, Not Shelved","Your own private wooden container, sealed and logged in our alarmed, 24/7 CCTV warehouse &mdash; never loose on open shelving."),
+           ("truck","Fully Managed, Door to Door","We bring the materials, pack, collect and redeliver &mdash; you never hire a van or lift a box."),
+           ("tag","From &pound;15/week, No Deposit","Pay only for the container space you use, on flexible weekly and 4-week terms with no hidden fees."),
+           ("family","Family-Run &amp; LAPADA Accredited","A local West Sussex family team, Checkatrade-verified and rated 5.0 from 478 reviews.")]))
     P.append(service("long-term-storage.html","longterm","Long-Term Storage",
       "Long-Term Storage West Sussex | Wolves Storage Sussex",
-      "Affordable long-term storage in West Sussex from £15/week. Fully insured, 24/7 CCTV, no deposit. Ideal for emigrating, renovations & downsizing.",
+      "Affordable long-term storage in West Sussex from £15/week. Fully insured, 24/7 CCTV, no deposit — ideal for emigrating, renovations & downsizing. Free quote.",
       IMG(HERO_AERIAL[0]),HERO_AERIAL[1],"Long-Term Storage in West Sussex",
       "Storing for months or years? Our containerised long-term storage keeps your belongings clean, dry and secure &mdash; with better value the longer you stay.",
       ["Better value the longer you store","Clean, dry, sealed containers","Fully insured &amp; 24/7 CCTV","No deposit, simple rolling terms"],
-      ("Who Long-Term Storage Suits",["Perfect for working abroad, major renovations, downsizing or settling an estate. Your belongings stay sealed, clean and insured for as long as you need.","Store with total peace of mind and access whenever you need it &mdash; we redeliver the moment you&rsquo;re ready."]),
-      ("Clean, Dry & Secure for the Long Haul",["Everything is wrapped and sealed in its own wooden container inside our dry, alarmed indoor facility, so it stays protected for the long term.","The longer you store, the better the value &mdash; ask about long-term rates on your free quote."]),
-      [("How much does long-term storage cost?","From &pound;15 per week with no deposit, and the longer you store the better the value."),
-       ("Will my belongings stay in good condition?","Yes &mdash; sealed wooden containers in a dry, alarmed indoor facility keep everything clean and protected."),
-       ("Can I access items during storage?","Absolutely &mdash; give us 24 hours&rsquo; notice and we&rsquo;ll redeliver what you need."),
-       ("Is there a minimum term?","No long tie-ins &mdash; store for as long as you like on flexible rolling terms.")]))
+      ("Who Long-Term Storage Suits",["Perfect for working abroad, major renovations, downsizing or settling an estate. Your belongings stay sealed, clean and insured for as long as you need.","Store with total peace of mind and access whenever you need it &mdash; we redeliver the moment you&rsquo;re ready.","Because each container is sealed and logged on collection, your belongings aren&rsquo;t handled again until they come home &mdash; cleaner and far safer over months or years than a drive-up unit you keep visiting yourself."]),
+      ("Clean, Dry & Secure for the Long Haul",["Everything is wrapped and sealed in its own wooden container inside our dry, alarmed indoor facility, so it stays protected for the long term.","The longer you store, the better the value &mdash; ask about long-term rates on your free quote.","We&rsquo;re LAPADA accredited and Checkatrade-verified, rated 5.0 from 478 reviews, with full insurance and 24/7 CCTV throughout &mdash; so your belongings are in genuinely trusted hands for the long haul. See exactly <a href=\"how-it-works.html\">how it works</a>."]),
+      [("How much does long-term storage cost?","From &pound;15 per week with no deposit, and the longer you store the better the value &mdash; ask about long-term rates on your free quote."),
+       ("Will my belongings stay in good condition?","Yes &mdash; sealed wooden containers in a dry, alarmed indoor facility keep everything clean and protected for years."),
+       ("Can I access items during storage?","Absolutely &mdash; give us 24 hours&rsquo; notice and we&rsquo;ll redeliver what you need, then store the rest."),
+       ("Is there a minimum term?","No long tie-ins &mdash; store for as long as you like on flexible weekly and 4-week rolling terms."),
+       ("How big is a storage container?","Each private wooden container is 250 cu ft (5ft &times; 7ft &times; 8.6ft) &mdash; about the contents of a one-bedroom flat. Need more space? We simply use additional containers."),
+       ("Do you collect and redeliver?","Yes &mdash; collection and redelivery across West Sussex are included. We bring the materials, pack, load and store; you never hire a van or lift a box."),
+       ("Do I have to pack everything myself?","No &mdash; our team brings the materials and does the packing, wrapping and loading, so long-term items are sealed properly and stay protected."),
+       ("Are my belongings insured the whole time?","Yes &mdash; everything is fully insured throughout your stay in an alarmed, 24/7 CCTV indoor warehouse, with optional extended cover for higher-value items.")],
+      uses=[("briefcase","Working or living abroad","Store a whole home securely while you&rsquo;re overseas &mdash; sealed, insured and waiting, with redelivery the day you&rsquo;re back."),
+            ("wrench","Major renovations","Clear the house for building work and keep furniture and boxes protected from dust and damage until the job&rsquo;s done."),
+            ("box","Downsizing","Keep the pieces that matter while you decide, without cramming a smaller home &mdash; you only pay for the space you use."),
+            ("key","Estate &amp; probate","A calm, fully insured place to hold a loved one&rsquo;s belongings for as long as you need, with no pressure on timing.")],
+      uses_lead="Storing for months or years? These are the situations our fully managed long-term storage is built for &mdash; fully insured, from just &pound;15 a week.",
+      why=[("tag","Better Value the Longer You Stay","Long stays cost less per week &mdash; ask about our long-term rates. Always no deposit and no hidden fees, however many months or years you store."),
+           ("shield","Sealed &amp; Protected for Years","Your own wooden container is sealed and logged, then kept in a dry, alarmed, 24/7 CCTV warehouse &mdash; built to protect furniture and boxes for the long haul."),
+           ("truck","Access Without the Hassle","Need something back mid-storage? Give us 24 hours&rsquo; notice and we redeliver it to your door, then keep the rest safe and sealed."),
+           ("family","LAPADA-Accredited Family Team","Trusted to store whole homes, furniture and antiques long-term &mdash; family-run since 2016 and rated 5.0 from 478 reviews.")]))
     P.append(service("short-term-storage.html","shortterm","Short-Term Storage",
       "Short-Term Storage West Sussex | Wolves Storage Sussex",
       "Flexible short-term storage in West Sussex from £15/week. No deposit, weekly terms, fast collection — perfect for moves & chain delays. Free quote.",
       IMG(HERO_LOADING[0]),HERO_LOADING[1],"Short-Term Storage in West Sussex",
       "Bridging a move, a broken chain or a quick renovation? Flexible weekly short-term storage with no deposit &mdash; we collect, store and bring it all back when you&rsquo;re ready.",
       ["Flexible weekly terms, no deposit","Fast collection &mdash; often within days","We pack, store and redeliver","Fully insured &amp; 24/7 CCTV"],
-      ("When Short-Term Storage Helps",["House move delayed? Staging your home for sale? Quick renovation? Short-term storage gives you flexible, secure space for exactly as long as you need.","You pay by the week and stop whenever you like, with collection and redelivery included."]),
+      ("Flexible Storage for Exactly As Long As You Need",["House move delayed? Staging your home for sale? Quick renovation? Short-term storage gives you flexible, secure space for exactly as long as you need.","You pay by the week and stop whenever you like, with collection and redelivery included."]),
       ("Quick, Flexible & Fully Managed",["Tell us your timescale and we&rsquo;ll fit around your move, often collecting within a few days.","Only pay for the time you actually need &mdash; no deposit, no long contracts."]),
       [("How short can I store for?","As little as a week &mdash; billed weekly with no deposit, so you only pay for the time you need."),
        ("How quickly can you collect?","Often within a few days. Tell us your timescale on your free quote."),
        ("What if my move date changes?","No problem &mdash; flexible rolling terms let you extend or end your storage whenever you need."),
-       ("Do you deliver it back?","Yes &mdash; give us 24 hours&rsquo; notice and we redeliver to your new address across West Sussex.")]))
+       ("Do you deliver it back?","Yes &mdash; give us 24 hours&rsquo; notice and we redeliver to your new address across West Sussex."),
+       ("How much does short-term storage cost?","From &pound;15 per week per container with no deposit and no hidden fees &mdash; collection and redelivery included."),
+       ("Is there a deposit or minimum term?","No deposit and no long tie-in &mdash; store for a single week or a few months on flexible rolling terms."),
+       ("How big is a storage container?","Each wooden container is 250 cu ft (5ft &times; 7ft &times; 8.6ft) &mdash; about a one-bedroom flat. Need more? We add containers."),
+       ("Is my furniture protected for a short stay?","Yes &mdash; everything is wrapped, sealed and fully insured in our alarmed, 24/7 CCTV warehouse, even for just a few weeks.")],
+      uses_lead="Bridging a move, a sale or a quick project? These are the situations our flexible short-term storage is built for.",
+      uses=[("home","Chain delays &amp; moves","Bridge the gap when your move date slips &mdash; store everything safely and we redeliver the day you complete."),
+            ("box","Selling &amp; staging","Declutter to show your home at its best, then store the overflow until you&rsquo;ve moved on."),
+            ("wrench","Quick renovations","Clear a room or the whole house for the works, then have it all brought back when the dust settles."),
+            ("key","Between tenancies","Somewhere secure for a few weeks between rentals, collected from your door and returned when you&rsquo;re ready.")],
+      why=[("truck","Fast Collection","Often within a few days &mdash; we bring the materials, pack and collect, with no van for you to hire."),
+           ("tag","Pay by the Week","Flexible weekly terms with no deposit &mdash; only pay for the time and the space you actually use."),
+           ("shield","Sealed &amp; Insured, Even Short-Term","Your container is sealed and fully insured in our alarmed, 24/7 CCTV warehouse, even for a few weeks."),
+           ("family","Local, Family-Run","A West Sussex family team that fits around your timescale, rated 5.0 from 478 reviews.")]))
     P.append(service("business-storage.html","business","Business Storage",
       "Business Storage West Sussex | Wolves Storage Sussex",
       "Secure business storage in West Sussex from £15/week — stock, archives & equipment. Fully insured, 24/7 CCTV, collection & redelivery. Free quote.",
@@ -1186,11 +1898,24 @@ def build():
       [("What can I store as a business?","Stock, ecommerce inventory, archives and documents, tools and equipment, seasonal items and more."),
        ("Can I scale storage as I grow?","Yes &mdash; we add or remove containers as your needs change, on flexible rolling terms with no long lease."),
        ("Can you collect and redeliver?","Absolutely &mdash; collection and redelivery are included, saving your team the hassle."),
-       ("How much does it cost?","From &pound;15 per week per container with no deposit &mdash; tailored to your needs within 24 hours.")]))
+       ("How much does it cost?","From &pound;15 per week per container with no deposit &mdash; tailored to your needs within 24 hours."),
+       ("Is my business stock insured?","Yes &mdash; every container is sealed, logged and fully insured in an alarmed, 24/7 CCTV facility, with optional extended cover."),
+       ("Can I access my stock during storage?","Yes &mdash; give us 24 hours&rsquo; notice and we redeliver what you need, then keep the rest sealed and secure."),
+       ("Do you store documents and archives securely?","Yes &mdash; files and records are sealed into logged containers in our dry, ventilated warehouse, protected from damp and dust."),
+       ("Is this self-storage or managed storage?","Managed &mdash; we collect from your premises, store your sealed containers off-site and redeliver when you ask. No unit for your team to drive to.")],
+      uses_lead="Stock, archives, equipment or overflow &mdash; these are the situations our managed business storage is built for.",
+      uses=[("box","Stock &amp; e-commerce","Store inventory and packaging off-site and scale up or down as orders change &mdash; collected and redelivered to you."),
+            ("briefcase","Archives &amp; documents","Free up office space; keep files and records sealed, logged and protected from damp and dust."),
+            ("wrench","Tools &amp; equipment","A secure home for trade tools, kit and machinery between jobs &mdash; alarmed and fully insured."),
+            ("key","Relocation &amp; overflow","Clearing or relocating premises? Store the overflow securely and redeliver when your new space is ready.")],
+      why=[("truck","Collected From Your Premises","We collect from and redeliver to your business, saving your team time and the cost of van hire."),
+           ("tag","Scale Up or Down &mdash; From &pound;15/week","Add or remove containers as your business changes; no long lease, no deposit, pay for what you use."),
+           ("shield","Logged, Alarmed &amp; Insured","Every container is logged and sealed in an alarmed, 24/7 CCTV warehouse, fully insured throughout."),
+           ("family","Family-Run &amp; Trusted","A West Sussex family team trusted by local businesses, Checkatrade-verified and rated 5.0 from 478 reviews.")]))
     # HOW IT WORKS
     P.append(dict(file="how-it-works.html",slug="how",nav="How It Works",
       title="How Our Managed Storage Works | Wolves Storage Sussex",
-      meta="How fully managed storage in West Sussex works: we quote, pack, collect, store in secure containers and redeliver. From £15/week, no deposit. Free quote in 24 hours.",
+      meta="How fully managed storage in West Sussex works: we quote, pack, collect, store in secure containers and redeliver. From £15/week, no deposit. Free quote.",
       hero=IMG(HERO_LOADING[0]),faqs=[("How quickly can you collect?","Often within a few days &mdash; tell us your timescale on your free quote."),("How do I access my belongings?","Give us 24 hours&rsquo; notice and we redeliver to your door across West Sussex."),("What&rsquo;s included?","Packing materials, professional packing, collection, secure container storage and redelivery.")],
       sections=[
         hero(IMG(HERO_LOADING[0]),HERO_LOADING[1],"How Our Managed Storage Works",
@@ -1199,13 +1924,30 @@ def build():
         process(),
         split("bg-white","What&rsquo;s Included",["Every managed storage job includes professional packing materials, careful wrapping, collection from your door, a sealed private container in our alarmed store, and redelivery when you&rsquo;re ready.","Optional extras include extended insurance cover and help unpacking."],IMG("hero-containers-van.webp"),"Storage containers at our facility"),
         split("bg-lightgrey","The Container Explained",["Each wooden container measures 5ft &times; 7ft &times; 8.6ft &mdash; 250 cu ft, roughly the contents of a one-bedroom flat. Containers are sealed, logged and stacked in our secure indoor facility.","Need more space? We simply use additional containers, so you only pay for what you use."],IMG("hero-packed-container.webp"),"A packed storage container",reverse=True),
+        ('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="max-w-4xl mx-auto">'
+         '<span class="block text-orange font-bold uppercase tracking-wider text-sm mb-2">The managed difference</span>'
+         '<h2 class="leading-tight text-black">What to Expect From Start to Finish</h2>'
+         '<div class="mt-5 text-darkgrey text-lg">'
+         '<p>Fully managed storage is designed to take the heavy lifting &mdash; literally and figuratively &mdash; off your plate. From the first phone call to the day your belongings come home, one dedicated team handles every step, so you always know who you&rsquo;re dealing with and exactly what happens next. Here&rsquo;s what working with us actually looks like.</p>'
+         '<h3 class="text-black font-bold text-xl mt-7 mb-2">It starts with an honest quote</h3>'
+         '<p>Tell us roughly what you need to store and your timescale, and we&rsquo;ll send a clear, fixed quote within 24 hours &mdash; from just &pound;15 a week, with no deposit and no hidden fees. Not sure how much space you&rsquo;ll need? Use our <a href="storage-size-guide.html">storage size guide</a> or the calculator on our <a href="pricing.html">pricing page</a> to estimate it in a couple of minutes, or simply tell us the rooms involved and we&rsquo;ll work it out for you.</p>'
+         '<h3 class="text-black font-bold text-xl mt-7 mb-2">We pack, wrap and collect</h3>'
+         '<p>On collection day we arrive with all the materials &mdash; boxes, tape, blankets and wrapping &mdash; and pack your belongings properly, paying particular attention to furniture, electronics and anything fragile. Everything is loaded and sealed into your own wooden container at your door, so there&rsquo;s no van for you to hire and nothing to carry down a shared corridor. As a LAPADA-accredited team, we&rsquo;re trusted with antiques and high-value items as readily as everyday boxes.</p>'
+         '<h3 class="text-black font-bold text-xl mt-7 mb-2">Your belongings stay sealed and secure</h3>'
+         '<p>Your sealed container is transported to our alarmed Ashington warehouse, logged, and stacked in a dry, ventilated, 24/7 CCTV-monitored facility. It stays sealed and undisturbed for the whole of its stay &mdash; we don&rsquo;t open it, and the public can&rsquo;t access it. That&rsquo;s what keeps your things protected from damp, dust and tampering, whether they&rsquo;re with us for a fortnight or several years.</p>'
+         '<h3 class="text-black font-bold text-xl mt-7 mb-2">Access and redelivery on your terms</h3>'
+         '<p>Need something back, or finished with storage altogether? Give us 24 hours&rsquo; notice and we&rsquo;ll redeliver to your door anywhere across <a href="areas-we-cover.html">West Sussex</a>. Terms are flexible and rolling, so you can extend or end whenever suits &mdash; ideal for <a href="short-term-storage.html">short-term</a> needs like a move or renovation, or <a href="long-term-storage.html">long-term</a> storage while you&rsquo;re away. When you&rsquo;re ready, <a href="contact.html">get a free quote</a> and we&rsquo;ll take care of the rest.</p>'
+         '<h3 class="text-black font-bold text-xl mt-7 mb-2">Built around your move or project</h3>'
+         '<p>Because we fit around you rather than the other way round, managed storage works for almost any situation &mdash; bridging a delayed completion, clearing a home for sale or renovation, making room for a new arrival, or holding a loved one&rsquo;s belongings after a bereavement. Whatever&rsquo;s behind it, the process stays the same: simple, fully insured, and handled with genuine care from start to finish.</p>'
+         '<p class="mt-4">Have a question we haven&rsquo;t answered yet? Just call us on <a href="tel:+441903893731">01903 893731</a> &mdash; you&rsquo;ll speak to the same family team that will handle your storage, and we&rsquo;re always happy to talk through the options before you commit to anything. You can also see what fits in a container with our <a href="storage-size-guide.html">size guide</a> or browse the full range of <a href="storage-solutions.html">storage solutions</a> we offer across West Sussex.</p>'
+         '</div></div></div></section>'),
         faq([("How quickly can you collect?","Often within a few days &mdash; tell us your timescale on your free quote."),("How do I access my belongings?","Give us 24 hours&rsquo; notice and we redeliver to your door across West Sussex."),("What&rsquo;s included?","Packing materials, professional packing, collection, secure container storage and redelivery.")]),
         cta_band("Ready to Get Started?",IMG("gallery-warehouse-b.webp")),
       ]))
     # PRICING
     P.append(dict(file="pricing.html",slug="pricing",nav="Pricing",
       title="Storage Prices West Sussex | Wolves Storage Sussex",
-      meta="Transparent storage pricing in West Sussex from £15/week. No deposit, no hidden fees, flexible weekly & 4-week terms. Collection & redelivery included. Free quote.",
+      meta="Transparent storage prices in West Sussex from £15/week. No deposit or hidden fees, flexible weekly & 4-week terms, collection included. Free quote.",
       hero=IMG(HERO_WAREHOUSE[0]),faqs=[("How much is storage?","From &pound;15 per week per container with no deposit and no hidden fees."),("Are there any extra fees?","No hidden fees. Optional extras are extended insurance cover and help unpacking."),("Is collection included?","Yes &mdash; collection and redelivery across West Sussex are included.")],
       sections=[
         hero(IMG(HERO_WAREHOUSE[0]),HERO_WAREHOUSE[1],"Simple, Transparent Storage Prices",
@@ -1258,76 +2000,233 @@ def build():
         ("storage-chichester","Chichester","PO19","Cathedral city storage, west of our patch."),
       ]),
     ]
+    for _lab,_items in area_groups:
+        for _slug,_tn,_pc,_tag in _items:
+            TOWN_INFO[_slug]={"pc":_pc,"tag":_tag,"group":_lab}
     LOC_CSS=('<style>'
-      '.loc-wrap{--o:#FC9700;--o2:#F6BB06;--dg:#697783;--beige:#E8E6DA;--lg:#F9F8F6;--bd:#E7E7E7;--ink:#262626;text-align:left}'
-      '.loc-group{margin-top:2.75rem}.loc-group:first-of-type{margin-top:.25rem}'
-      '.loc-ghead{display:flex;align-items:center;gap:.85rem;margin-bottom:1.35rem}'
-      '.loc-gpin{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--dg);color:#fff;flex:none}'
-      '.loc-glabel{font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--o);font-size:.9rem;white-space:nowrap}'
-      '.loc-grule{height:2px;flex:1;border-radius:2px;background:linear-gradient(90deg,var(--bd),rgba(231,231,231,0))}'
-      '.loc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.25rem}'
-      '.loc-card{position:relative;display:flex;flex-direction:column;gap:.85rem;background:#fff;border:1px solid var(--bd);border-radius:1.15rem;padding:1.6rem 1.6rem 1.4rem;overflow:hidden;text-decoration:none;box-shadow:0 1px 2px rgba(38,38,38,.04);transition:transform .28s cubic-bezier(.2,.7,.3,1),box-shadow .28s ease,border-color .28s ease}'
-      '.loc-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,var(--o),var(--o2));transform:scaleY(0);transform-origin:top;transition:transform .3s ease}'
-      '.loc-card:hover{transform:translateY(-6px);box-shadow:0 24px 50px -18px rgba(105,119,131,.55);border-color:var(--dg);background:var(--dg)}'
-      '.loc-card:hover::before{transform:scaleY(1)}'
-      '.loc-card:hover .loc-name{color:#fff}.loc-card:hover .loc-tag{color:var(--beige)}'
-      '.loc-card:hover .loc-pc{color:#fff;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.32)}'
-      '.loc-card:hover .loc-cta{color:#fff}'
-      '.loc-card:focus-visible{outline:2px solid var(--o);outline-offset:3px}'
-      '.loc-top{display:flex;align-items:center;gap:.9rem}'
-      '.loc-ico{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:.85rem;background:var(--beige);color:var(--dg);flex:none;transition:background .28s ease,color .28s ease,transform .28s ease}'
-      '.loc-card:hover .loc-ico{background:var(--o);color:#fff;transform:rotate(-6deg) scale(1.05)}'
-      '.loc-head{display:flex;flex-direction:column;gap:.35rem;min-width:0}'
-      '.loc-name{font-weight:700;color:var(--ink);font-size:1.2rem;line-height:1.15;transition:color .28s ease}'
-      '.loc-pc{align-self:flex-start;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--dg);background:var(--lg);border:1px solid var(--bd);border-radius:999px;padding:.12rem .55rem;transition:color .28s ease,background .28s ease,border-color .28s ease}'
-      '.loc-tag{color:var(--dg);font-size:.96rem;line-height:1.5;margin:0;flex:1;transition:color .28s ease}'
-      '.loc-cta{display:inline-flex;align-items:center;gap:.45rem;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--o);transition:color .28s ease}'
-      '.loc-cta svg{transition:transform .28s ease}.loc-card:hover .loc-cta svg{transform:translateX(5px)}'
-      '.loc-more{margin-top:2.75rem;padding-top:1.6rem;border-top:1px solid var(--bd)}'
-      '.loc-more-h{font-weight:700;color:var(--ink);margin:0 0 .9rem;font-size:1.02rem}'
+      '.loc-sec{position:relative;overflow:hidden;background:#697783}'
+      '.loc-sec::before{content:none}'
+      '.loc-sec::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#FC9700,#FC9700)}'
+      '.loc-blob{display:none}'
+      '.loc-wrap{position:relative;z-index:1;max-width:74rem;margin:0 auto;text-align:left}'
+      '.loc-head{text-align:center;max-width:52rem;margin:0 auto}'
+      '.loc-ey{display:inline-flex;align-items:center;gap:.5rem;color:#FC9700;font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;margin-bottom:.65rem}'
+      '.loc-ey::before,.loc-ey::after{content:"";width:18px;height:1px;background:rgba(252,151,0,.55)}'
+      '.loc-h2{color:#fff;font-weight:800;font-size:1.85rem;line-height:1.12;margin:0}'
+      '@media(min-width:1024px){.loc-h2{font-size:2.25rem}}'
+      '.loc-rule{width:62px;height:3px;border-radius:3px;background:linear-gradient(90deg,#FC9700,#FC9700);margin:1.05rem auto 0}'
+      '.loc-lead{font-size:1.08rem;line-height:1.65;color:#ece9df;max-width:46rem;margin:1.05rem auto 0;text-align:center}'
+      '.loc-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem 0;margin:2.2rem auto 0;max-width:58rem;position:relative;overflow:hidden;background:linear-gradient(120deg,rgba(255,255,255,.10),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.16);border-radius:1.2rem;padding:1.3rem 1rem}'
+      '.loc-stats::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,#FC9700,#FC9700,#FC9700)}'
+      '@media(min-width:680px){.loc-stats{grid-template-columns:repeat(4,1fr);padding:1.4rem 1.3rem}}'
+      '.loc-stat{position:relative;text-align:center}'
+      '.loc-stat-n{display:block;font-weight:800;font-size:1.7rem;line-height:1;color:#FC9700}'
+      '.loc-stat-l{display:block;margin-top:.35rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#e7e4d8}'
+      '@media(min-width:680px){.loc-stat+.loc-stat::before{content:"";position:absolute;left:0;top:14%;bottom:14%;width:1px;background:rgba(255,255,255,.18)}}'
+      # ---- interactive map layout ----
+      '.lm-mapwrap{position:relative;margin-top:2.4rem;border:1px solid rgba(255,255,255,.16);border-radius:1.2rem;overflow:hidden;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));box-shadow:0 24px 48px -28px rgba(0,0,0,.6)}'
+      '.lm-mapwrap::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#FC9700;z-index:2}'
+      '.lm-map{height:460px;width:100%;background:#e7ecf0;border-radius:1.2rem;z-index:1}'
+      '@media(max-width:879px){.lm-map{height:360px}}'
+      # directory card grid (cream/white tiles)
+      '.dt-group{margin-top:2.3rem}'
+      '.dt-ghead{display:flex;align-items:center;gap:.7rem;margin-bottom:1.05rem}'
+      '.dt-gpin{flex:none;width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);display:grid;place-items:center;color:#FC9700}'
+      '.dt-gpin svg{width:16px;height:16px}'
+      '.dt-glabel{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#FC9700;white-space:nowrap}'
+      '.dt-grule{flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.2),transparent)}'
+      '.dt-cards{display:grid;grid-template-columns:1fr;gap:1rem}'
+      '@media(min-width:560px){.dt-cards{grid-template-columns:1fr 1fr}}'
+      '@media(min-width:1024px){.dt-cards{grid-template-columns:repeat(4,1fr)}}'
+      '.dt-card{display:flex;flex-direction:column;gap:.7rem;padding:1.1rem;border-radius:.9rem;text-decoration:none;border:1px solid rgba(0,0,0,.06);box-shadow:0 4px 14px -8px rgba(0,0,0,.5);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}'
+      '.dt-card--white{background:#fff}'
+      '.dt-card--cream{background:#F0ECDF}'
+      '.dt-card:hover{transform:translateY(-3px);box-shadow:0 16px 28px -12px rgba(0,0,0,.6);border-color:#FC9700}'
+      '.dt-card:focus-visible{outline:none;border-color:#FC9700;box-shadow:0 0 0 3px rgba(252,151,0,.55)}'
+      '.dt-top{display:flex;align-items:flex-start;gap:.7rem}'
+      '.dt-ic{flex:none;width:38px;height:38px;border-radius:10px;background:#EAE5D6;border:1px solid rgba(0,0,0,.05);display:grid;place-items:center;color:#FC9700;transition:background .15s ease,color .15s ease}'
+      '.dt-card--cream .dt-ic{background:#fff}'
+      '.dt-card:hover .dt-ic{background:#FC9700;color:#fff}'
+      '.dt-ic svg{width:19px;height:19px}'
+      '.dt-tt{flex:1;min-width:0}'
+      '.dt-name{margin:0;font-size:.97rem;font-weight:800;color:#1f2733;line-height:1.2}'
+      '.dt-pc{display:inline-block;margin-top:.35rem;font-size:.6rem;font-weight:800;letter-spacing:.04em;color:#8a4d05;background:rgba(252,151,0,.14);border:1px solid rgba(252,151,0,.55);padding:2px 7px;border-radius:5px}'
+      '.dt-tag{margin:0;color:#5d6770;font-size:.82rem;line-height:1.45;flex:1}'
+      '.dt-cta{display:inline-flex;align-items:center;gap:.35rem;font-size:.67rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#FC9700}'
+      '.dt-cta svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.5;transition:transform .15s ease}'
+      '.dt-card:hover .dt-cta{color:#C7660A}'
+      '.dt-card:hover .dt-cta svg{transform:translateX(3px)}'
+      '@media(prefers-reduced-motion:reduce){.dt-card,.dt-ic,.dt-cta svg{transition:none}.dt-card:hover{transform:none}}'
+      '.loc-more{margin-top:2.6rem;padding-top:1.6rem;border-top:1px solid rgba(255,255,255,.14)}'
+      '.loc-more-h{font-weight:800;color:#fff;margin:0 0 .9rem;font-size:1.02rem}'
       '.loc-pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}'
-      '.loc-pill{font-size:.85rem;font-weight:600;color:var(--ink);background:var(--lg);border:1px solid var(--bd);border-radius:999px;padding:.4rem .85rem}'
-      '.loc-ask{color:var(--dg);margin:0}.loc-ask a{color:var(--o);font-weight:700;text-decoration:underline}'
-      '@media (prefers-reduced-motion:reduce){.loc-card,.loc-ico,.loc-cta svg,.loc-card::before{transition:none}}'
+      '.loc-pill{font-size:.84rem;font-weight:600;color:#f0ede3;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:.4rem .85rem;transition:background .2s ease,color .2s ease}'
+      '.loc-pill:hover{background:rgba(252,151,0,.18);color:#fff}'
+      '.loc-ask{color:#d9dde1;margin:0}.loc-ask a{color:#FC9700;font-weight:700;text-decoration:underline}'
+      '@media(prefers-reduced-motion:reduce){.lm-pulse{animation:none;opacity:0}.lm-dot,.lm-ring,.lm-lbl,.lm-trow{transition:none}}'
       '</style>')
     LOC_PIN='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5.5-8 12-8 12s-8-6.5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.8"/></svg>'
     LOC_GPIN='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5.5-8 12-8 12s-8-6.5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.8"/></svg>'
     LOC_ARR='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>'
+    LOC_CHEV='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
     more_towns=["Amberley","Bramber","Upper Beeding","West Chiltington","Wisborough Green","Lindfield","Hassocks","Hurstpierpoint","Pyecombe","Walberton","Small Dole","Ashurst"]
+    # ---- interactive West Sussex map: real lat/lng -> SVG viewBox 1000x540 ----
+    LM_COORDS={
+      "storage-ashington":(50.948,-0.385),"storage-washington":(50.908,-0.402),
+      "storage-storrington":(50.918,-0.452),"storage-pulborough":(50.962,-0.510),
+      "storage-steyning":(50.888,-0.328),"storage-findon":(50.862,-0.398),
+      "storage-billingshurst":(51.022,-0.452),"storage-horsham":(51.063,-0.327),
+      "storage-henfield":(50.929,-0.275),"storage-cowfold":(50.992,-0.272),
+      "storage-partridge-green":(50.973,-0.318),"storage-crawley":(51.112,-0.187),
+      "storage-east-grinstead":(51.126,-0.012),"storage-haywards-heath":(51.005,-0.103),
+      "storage-burgess-hill":(50.957,-0.132),"storage-arundel":(50.853,-0.554),
+      "storage-littlehampton":(50.808,-0.542),"storage-rustington":(50.808,-0.503),
+      "storage-bognor-regis":(50.782,-0.673),"storage-worthing":(50.814,-0.372),
+      "storage-lancing":(50.831,-0.330),"storage-shoreham-by-sea":(50.834,-0.272),
+      "storage-brighton":(50.827,-0.152),"storage-petworth":(50.986,-0.613),
+      "storage-midhurst":(50.986,-0.738),"storage-chichester":(50.836,-0.780),
+    }
+    LM_MAPICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 20l-6 3V6l6-3 6 3 6-3v17l-6 3-6-3z"/><path d="M9 3v17M15 6v17"/></svg>'
     def area_cards():
-        out=LOC_CSS+'<div class="loc-wrap">'
+        total=sum(len(items) for _,items in area_groups)
+        towns_js=json.dumps([{"n":tn,"pc":pc,"tag":tag,"u":slug+".html",
+            "lat":LM_COORDS[slug][0],"lng":LM_COORDS[slug][1],"hub":slug=="storage-ashington"}
+            for _lab,items in area_groups for slug,tn,pc,tag in items],ensure_ascii=False)
+        leaflet=('<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
+            'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>'
+            '<style>'
+            '.lm-mapwrap .leaflet-container{font-family:inherit;background:#e7ecf0}'
+            '.lm-mapwrap .leaflet-div-icon{background:transparent;border:none}'
+            '.lm-mk{display:block;position:relative;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFB04D,#FC9700);border:2.5px solid #fff;box-shadow:0 0 0 1.5px rgba(110,60,0,.3),0 2px 6px rgba(0,0,0,.4);cursor:pointer;transition:transform .12s ease}'
+            '.lm-mk:hover{transform:scale(1.22)}'
+            '.lm-mk--hub{width:34px;height:34px;border-width:3px;animation:lmhub 2.6s ease-out infinite}'
+            '.lm-mk--hub::after{content:"";position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;background:#fff;transform:translate(-50%,-50%)}'
+            '@keyframes lmhub{0%{box-shadow:0 0 0 3px rgba(252,151,0,.5),0 0 0 4px rgba(252,151,0,.4),0 3px 10px rgba(0,0,0,.6)}70%,100%{box-shadow:0 0 0 3px rgba(252,151,0,.5),0 0 0 22px rgba(252,151,0,0),0 3px 10px rgba(0,0,0,.6)}}'
+            '@media(prefers-reduced-motion:reduce){.lm-mk--hub{animation:none}.lm-mk{transition:none}}'
+            '.lm-mapwrap .leaflet-popup-content-wrapper{background:#1b232b;color:#eef1f4;border:1px solid rgba(255,255,255,.16);border-radius:14px;box-shadow:0 18px 40px -16px rgba(0,0,0,.7)}'
+            '.lm-mapwrap .leaflet-popup-tip{background:#1b232b}'
+            '.lm-mapwrap .leaflet-popup-content{margin:13px 15px;line-height:1.4}'
+            '.lm-mapwrap .leaflet-popup-close-button{color:#cdd3d8}'
+            '.lm-pop-t{font-weight:800;color:#fff;font-size:1.02rem}'
+            '.lm-pop-pc{display:inline-block;margin-left:.45rem;font-size:.66rem;font-weight:800;letter-spacing:.02em;color:#1f2a12;background:#FC9700;padding:2px 7px;border-radius:5px;vertical-align:middle}'
+            '.lm-pop-tag{color:#cdd3d8;font-size:.85rem;margin:.45rem 0 .65rem;max-width:230px}'
+            '.lm-pop-btn{display:inline-flex;align-items:center;gap:.3rem;font-weight:800;font-size:.8rem;color:#1f2a12;background:linear-gradient(135deg,#FC9700,#FC9700);padding:.45rem .8rem;border-radius:8px;text-decoration:none}'
+            '.lm-pop-btn:hover{filter:brightness(1.07)}'
+            '.lm-tt.leaflet-tooltip{background:#1b232b;color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:7px;font-weight:700;font-size:.8rem;box-shadow:0 6px 16px -6px rgba(0,0,0,.6)}'
+            '.lm-tt.leaflet-tooltip-top::before{border-top-color:#1b232b}'
+            '.lm-mapwrap .leaflet-bar a{background:#fff;color:#333;border-bottom-color:rgba(0,0,0,.12)}'
+            '.lm-mapwrap .leaflet-bar a:hover{background:#f2f2f2}'
+            '.lm-mapwrap .leaflet-control-attribution{background:rgba(255,255,255,.85);color:#555}'
+            '.lm-mapwrap .leaflet-control-attribution a{color:#C77800}'
+            '</style>'
+            '<div id="lmmap" class="lm-map" role="application" aria-label="Interactive map of West Sussex showing the towns we cover from our Ashington base"></div>'
+            '<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" '
+            'integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>'
+            '<script>(function(){var T='+towns_js+';'
+            'function go(){if(!window.L){return setTimeout(go,60);}'
+            'var map=L.map("lmmap",{scrollWheelZoom:false,zoomControl:true,attributionControl:true});'
+            'L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",'
+            '{subdomains:"abcd",maxZoom:20,attribution:\'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>\'}).addTo(map);'
+            'var pts=[];T.forEach(function(t){'
+            'var ic=L.divIcon({className:"",html:\'<span class="\'+(t.hub?"lm-mk lm-mk--hub":"lm-mk")+\'"></span>\',iconSize:t.hub?[34,34]:[20,20],iconAnchor:t.hub?[17,17]:[10,10]});'
+            'var m=L.marker([t.lat,t.lng],{icon:ic,riseOnHover:true,keyboard:true,alt:"Storage in "+t.n}).addTo(map);'
+            'var pop=\'<div class="lm-pop"><span class="lm-pop-t">\'+t.n+\'</span><span class="lm-pop-pc">\'+t.pc+\'</span>\''
+            '+(t.hub?\'<p class="lm-pop-tag">Our family-run storage base &mdash; we collect &amp; redeliver across West Sussex from here.</p>\':\'<p class="lm-pop-tag">\'+t.tag+\'</p>\')'
+            '+\'<a class="lm-pop-btn" href="\'+t.u+\'">View \'+t.n+\' storage &rarr;</a></div>\';'
+            'm.bindPopup(pop,{closeButton:true});m.bindTooltip(t.n,{direction:"top",offset:[0,-10],opacity:1,className:"lm-tt"});'
+            'pts.push([t.lat,t.lng]);});'
+            'map.setView([50.95,-0.34],map.getSize().x<760?9:10);'
+            'map.on("focus",function(){map.scrollWheelZoom.enable();});map.on("blur",function(){map.scrollWheelZoom.disable();});}'
+            'if(document.readyState!=="loading"){go();}else{document.addEventListener("DOMContentLoaded",go);}})();</script>')
+        grid=''
         for label,items in area_groups:
-            out+=f'<div class="loc-group"><div class="loc-ghead"><span class="loc-gpin">{LOC_GPIN}</span><span class="loc-glabel">{label}</span><span class="loc-grule"></span></div><div class="loc-grid">'
-            for slug,tn,pc,tag in items:
-                out+=(f'<a class="loc-card" href="{slug}.html" aria-label="Storage in {tn} ({pc})">'
-                      f'<div class="loc-top"><span class="loc-ico">{LOC_PIN}</span>'
-                      f'<span class="loc-head"><span class="loc-name">Storage in {tn}</span><span class="loc-pc">{pc}</span></span></div>'
-                      f'<p class="loc-tag">{tag}</p>'
-                      f'<span class="loc-cta">View {tn} storage {LOC_ARR}</span></a>')
-            out+='</div></div>'
-        out+=('<div class="loc-more"><p class="loc-more-h">Also serving across West Sussex</p><div class="loc-pills">'
-              +"".join(f'<span class="loc-pill">{t}</span>' for t in more_towns)+'</div>'
-              '<p class="loc-ask">Don&rsquo;t see your town? <a href="contact.html">Just ask</a> &mdash; if it&rsquo;s in West Sussex, we almost certainly cover it.</p></div></div>')
+            grid+=(f'<div class="dt-group"><div class="dt-ghead"><span class="dt-gpin">{LOC_GPIN}</span>'
+                   f'<span class="dt-glabel">{label}</span><span class="dt-grule"></span></div><div class="dt-cards">')
+            for j,(slug,tn,pc,tag) in enumerate(items):
+                grid+=(f'<a class="dt-card dt-card--white" href="{slug}.html" aria-label="Storage in {tn} ({pc})">'
+                       f'<span class="dt-top"><span class="dt-ic">{LOC_GPIN}</span>'
+                       f'<span class="dt-tt"><h3 class="dt-name">Storage in {tn}</h3><span class="dt-pc">{pc}</span></span></span>'
+                       f'<span class="dt-tag">{tag}</span>'
+                       f'<span class="dt-cta">View {tn} storage {LOC_ARR}</span></a>')
+            grid+='</div></div>'
+        out=(LOC_CSS+'<section class="loc-sec relative w-full pt-10 lg:pt-20 pb-10 lg:pb-20 border-border"><span class="loc-blob"></span><div class="container"><div class="loc-wrap">'
+             '<div class="loc-head"><span class="loc-ey">Areas we cover</span>'
+             '<h2 class="loc-h2">Find Storage in Your Sussex Town</h2><div class="loc-rule"></div>'
+             '<p class="loc-lead">Everything ships from our family-run hub in Ashington. Tap a pin on the map &mdash; or pick your town from the list &mdash; for local storage details, or get a free quote.</p></div>'
+             '<div class="loc-stats">'
+             f'<div class="loc-stat"><span class="loc-stat-n">{total}</span><span class="loc-stat-l">Towns covered</span></div>'
+             f'<div class="loc-stat"><span class="loc-stat-n">{len(area_groups)}</span><span class="loc-stat-l">Local areas</span></div>'
+             '<div class="loc-stat"><span class="loc-stat-n">&pound;15</span><span class="loc-stat-l">Per week, no deposit</span></div>'
+             '<div class="loc-stat"><span class="loc-stat-n">24hr</span><span class="loc-stat-l">Redelivery notice</span></div>'
+             '</div>'
+             '<div class="lm-mapwrap">'+leaflet+'</div>'+grid+
+             '<div class="loc-more"><p class="loc-more-h">Also serving across West Sussex</p><div class="loc-pills">'
+             +"".join(f'<span class="loc-pill">{t}</span>' for t in more_towns)+'</div>'
+             '<p class="loc-ask">Don&rsquo;t see your town? <a href="contact.html">Just ask</a> &mdash; if it&rsquo;s in West Sussex, we almost certainly cover it.</p></div>'
+             '</div></div></section>')
         return out
     area_itemlist=('<script type="application/ld+json">'+json.dumps({"@context":"https://schema.org","@type":"ItemList","name":"Storage locations across West Sussex",
         "itemListElement":[{"@type":"ListItem","position":i+1,"name":"Storage in "+tn,"url":BASE+slug+".html"}
           for i,(slug,tn,pc,tag) in enumerate([x for _,items in area_groups for x in items])]},ensure_ascii=False)+'</script>')
     P.append(dict(file="areas-we-cover.html",slug="areas",nav="Areas We Cover",
-      title="Storage Across West Sussex | Areas We Cover | Wolves",
-      meta="Managed storage across West Sussex — Ashington, Storrington, Pulborough, Horsham, Worthing, Steyning, Henfield & more. We collect & redeliver from £15/week.",
+      title="Storage Across West Sussex | Wolves Storage Sussex",
+      meta="Managed storage across West Sussex — Ashington, Storrington, Pulborough, Horsham, Worthing & more. We collect & redeliver from £15/week. Free quote.",
       hero=IMG(HERO_AERIAL[0]),extra_schema=area_itemlist,
       sections=[
         hero(IMG(HERO_AERIAL[0]),HERO_AERIAL[1],"Storage Across West Sussex",
           "Based in Ashington, we collect from and redeliver across West Sussex &mdash; the managed model means we come to you, wherever you are. Find your town below.",
           ["We collect and redeliver to your door","Dedicated pages for towns across West Sussex","Local, family-run service","From &pound;15/week, no deposit"],big=False),
-        centered("bg-lightgrey","Find Storage in Your West Sussex Town","From our Ashington base we serve homes and businesses right across West Sussex. Choose your town for local storage details, or get a free quote.",area_cards()),
+        area_cards(),
         split("bg-white","Local &amp; Family-Run Matters",["Because we&rsquo;re based in the heart of West Sussex, we know the area inside out &mdash; and we treat your belongings like our own.","The managed model means there&rsquo;s no unit to drive to: we come to you, pack and seal everything, and bring it back on 24 hours&rsquo; notice."],IMG("gallery-van.webp"),"Wolves storage van serving towns across West Sussex"),
+        ('<style>'
+         '.cc-sec{position:relative;background:#F7F5EF}'
+         '.cc-wrap{max-width:74rem;margin:0 auto}'
+         '.cc-grid{display:grid;grid-template-columns:1fr;gap:2.2rem}'
+         '@media(min-width:980px){.cc-grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:3.4rem;align-items:start}}'
+         '@media(min-width:980px){.cc-aside{position:sticky;top:2rem}}'
+         '.cc-eyebrow{display:inline-flex;align-items:center;gap:.6rem;color:#FC9700;font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:.8rem}'
+         '.cc-eyebrow::before{content:"";width:28px;height:2px;background:#FC9700;display:inline-block}'
+         '.cc-h2{font-size:clamp(1.9rem,4.2vw,2.7rem);line-height:1.08;font-weight:800;color:#23282d;margin:1rem 0 0;letter-spacing:-.01em}'
+         '.cc-h2 em{font-style:normal;color:#FC9700}'
+         '.cc-lead{margin-top:1.4rem;font-size:1.12rem;line-height:1.72;color:#404952}'
+         '.cc-lead::first-letter{float:left;font-size:3.6rem;line-height:.82;font-weight:800;color:#FC9700;margin:.3rem .6rem 0 0}'
+         '.cc-lead a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.55);text-underline-offset:3px}'
+         '.cc-lead a:hover{color:#FC9700}'
+         '.cc-cta{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.7rem;background:#FC9700;color:#fff;font-weight:800;font-size:.95rem;padding:.85rem 1.5rem;border-radius:.7rem;text-decoration:none;box-shadow:0 12px 26px -12px rgba(252,151,0,.7);transition:transform .15s ease,box-shadow .15s ease}'
+         '.cc-cta svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s ease}'
+         '.cc-cta:hover{transform:translateY(-2px);box-shadow:0 16px 32px -12px rgba(252,151,0,.8)}'
+         '.cc-cta:hover svg{transform:translateX(3px)}'
+         '.cc-trust{list-style:none;margin:1.7rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.55rem 1.1rem}'
+         '.cc-trust li{display:inline-flex;align-items:center;gap:.45rem;font-size:.82rem;font-weight:700;color:#5a636c}'
+         '.cc-trust li::before{content:"";width:6px;height:6px;border-radius:50%;background:#FC9700;flex:none}'
+         '.cc-body p{font-size:1.02rem;line-height:1.78;color:#46505a;margin:0 0 1.15rem}'
+         '.cc-body p:last-child{margin-bottom:0}'
+         '@media(min-width:980px){.cc-body{border-left:1px solid rgba(35,40,45,.13);padding-left:3.4rem}}'
+         '.cc-body strong{color:#FC9700;font-weight:800;letter-spacing:.01em}'
+         '.cc-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.5);text-underline-offset:3px}'
+         '.cc-body a:hover{color:#FC9700}'
+         '@media(prefers-reduced-motion:reduce){.cc-cta,.cc-cta svg{transition:none}.cc-cta:hover{transform:none}}'
+         '</style>'
+         '<section class="cc-sec relative w-full pt-10 lg:pt-20 pb-10 lg:pb-20 border-border"><div class="container"><div class="cc-wrap"><div class="cc-grid">'
+         '<div class="cc-aside">'
+         '<span class="cc-eyebrow">County-wide coverage</span>'
+         '<h2 class="cc-h2">Local Storage in <em>Every Corner</em> of West Sussex</h2>'
+         '<p class="cc-lead">Because every order is collected and redelivered, where you live never limits the storage you can get. From our base in <a href="storage-ashington.html">Ashington</a> we run our own vans right across West Sussex and just over the county line &mdash; so whether you&rsquo;re in a town-centre flat, a Downland village or out on the coast, the same fully managed service comes to your door. There&rsquo;s no unit to drive to and no mileage to worry about: we bring the materials, pack and seal your belongings into their own wooden container, and store them in our alarmed, 24/7 CCTV warehouse.</p>'
+         '<a class="cc-cta" href="contact.html">Get a free quote <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg></a>'
+         '<ul class="cc-trust"><li>Family-run since 2016</li><li>LAPADA accredited</li><li>Checkatrade verified</li><li>24/7 CCTV monitored</li></ul>'
+         '</div>'
+         '<div class="cc-body">'
+         '<p>Our regular collection routes cover the <strong>RH postcodes</strong> around <a href="storage-horsham.html">Horsham</a>, <a href="storage-crawley.html">Crawley</a> and the Mid Sussex towns, the <strong>BN postcodes</strong> along the <a href="storage-worthing.html">Worthing</a>, <a href="storage-shoreham-by-sea.html">Shoreham</a> and <a href="storage-brighton.html">Brighton</a> coast, the <strong>PO postcodes</strong> around <a href="storage-bognor-regis.html">Bognor Regis</a> and <a href="storage-chichester.html">Chichester</a>, and the <strong>GU villages</strong> near <a href="storage-petworth.html">Petworth</a> and <a href="storage-midhurst.html">Midhurst</a>. If your town isn&rsquo;t listed above, it&rsquo;s almost certainly still on a route we already drive &mdash; just ask.</p>'
+         '<p>Households between moves, downsizers, landlords turning over rentals, businesses freeing up floor space and students storing over the holidays all use the same flexible service. Choose <a href="short-term-storage.html">short-term storage</a> for a move or renovation, <a href="long-term-storage.html">long-term storage</a> for months or years away, <a href="business-storage.html">business storage</a> for stock and archives, or dedicated <a href="furniture-storage.html">furniture storage</a> for the pieces that matter most. Every option is fully insured, starts from just &pound;15 a week with no deposit, and includes collection and redelivery.</p>'
+         '<p>We&rsquo;ve stored for West Sussex families since 2016, and being local genuinely matters: we know the lanes, the parking and the access quirks of the towns we serve, and as a family-run, <a href="about.html">LAPADA-accredited</a> and Checkatrade-verified team we treat every collection as if it were our own. See exactly <a href="how-it-works.html">how it works</a>, compare our honest <a href="pricing.html">storage prices</a>, or <a href="contact.html">get a free quote</a> for your town today.</p>'
+         '</div>'
+         '</div></div></div></section>'),
         cta_band("Storing in West Sussex? Get a Free Quote",IMG("gallery-warehouse-b.webp")),
       ]))
     # GALLERY
     P.append(dict(file="gallery.html",slug="gallery",nav="Gallery",
-      title="Storage Gallery | Wolves Storage Sussex",
-      meta="Photos of the Wolves Storage Sussex facility, containers, team and fleet. Secure, alarmed, fully insured managed storage in West Sussex from £15/week.",
+      title="Storage Gallery West Sussex | Wolves Storage Sussex",
+      meta="Photos of the Wolves Storage Sussex facility, containers, team and fleet — secure, alarmed, fully insured storage in West Sussex from £15/week. Free quote.",
       hero=IMG(HERO_ANTIQUE[0]),
       sections=[
         hero(IMG(HERO_ANTIQUE[0]),HERO_ANTIQUE[1],"Our West Sussex Storage Facility",
@@ -1352,14 +2251,189 @@ def build():
     # ABOUT
     P.append(dict(file="about.html",slug="about",nav="About",
       title="About Wolves Storage Sussex | West Sussex Storage",
-      meta="Wolves Storage Sussex is a family-run, LAPADA-accredited storage business in Ashington, West Sussex with 10+ years' experience. Fully insured, 24/7 CCTV.",
+      meta="Family-run, LAPADA-accredited storage business in Ashington, West Sussex with 10+ years' experience. Fully insured, 24/7 CCTV. Get a free storage quote.",
       hero=IMG(HERO_VAN_COLLECT[0]),faqs=[("Are you insured and accredited?","Yes &mdash; fully insured, LAPADA accredited and Checkatrade members."),("How long have you been going?","Over 10 years serving West Sussex as a family-run business.")],
       sections=[
-        hero(IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"A Trusted Family Name in West Sussex",
+        hero(IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"A Trusted Name in West Sussex Storage",
           "Wolves Storage Sussex is part of the family-run Wolves Removals business, serving West Sussex for over a decade from our base in Ashington.",
           ["Family-run, 10+ years&rsquo; experience","LAPADA accredited &amp; Checkatrade","Fully insured, 24/7 CCTV","Trusted by Sussex families &amp; businesses"],big=False),
         split("bg-white","Our Story",["What began as a local removals business grew into trusted, fully managed storage &mdash; built on the same family values of care, honesty and genuine local service.","Today we look after the belongings of hundreds of West Sussex families and businesses, from a few boxes to entire homes."],IMG("gallery-loading.webp"),"Wolves team loading a storage container"),
         split("bg-lightgrey","Why You Can Trust Us",["LAPADA accreditation means we&rsquo;re trusted to pack, store and handle high-value items. Add full insurance, 24/7 CCTV and an alarmed facility, and your belongings are in safe hands.","We&rsquo;re trusted by local estate agents and rated 5.0 from hundreds of reviews."],IMG("gallery-clipboard.webp"),"Wolves Removals and Storage branded clipboard",reverse=True),
+        """<style>
+.ab-section{background:#F7F5EF;color:#46505a;padding:4.5rem 1.25rem;line-height:1.65}
+.ab-wrap{max-width:1080px;margin:0 auto}
+.ab-eyebrow{display:inline-flex;align-items:center;gap:.85rem;font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#FC9700;margin:0 0 1.1rem}
+.ab-eyebrow::before{content:"";display:inline-block;width:28px;height:2px;background:#FC9700}
+.ab-h2{font-size:clamp(2rem,4.6vw,3.1rem);line-height:1.08;font-weight:800;color:#23282d;letter-spacing:-.01em;margin:0 0 1.6rem;max-width:20ch}
+.ab-h2 em{font-style:normal;color:#FC9700}
+.ab-lead{font-size:clamp(1.12rem,1.9vw,1.32rem);line-height:1.6;color:#3a444d;max-width:62ch;margin:0 0 2.2rem}
+.ab-lead::first-letter{float:left;font-size:3.6rem;line-height:.78;font-weight:800;color:#FC9700;padding:.3rem .6rem 0 0}
+.ab-feature{display:grid;grid-template-columns:1fr;gap:1.9rem;padding:2.4rem 0 0;border-top:1px solid rgba(35,40,45,.13)}
+.ab-figure{margin:0}
+.ab-figure img{display:block;width:100%;height:auto;border-radius:6px;box-shadow:0 18px 40px -22px rgba(35,40,45,.45)}
+.ab-cap{display:block;margin-top:.7rem;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:#7d8790;font-weight:600}
+.ab-kicker{display:block;font-size:.78rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#FC9700;margin-bottom:.7rem}
+.ab-h3{font-size:clamp(1.35rem,2.4vw,1.85rem);line-height:1.15;font-weight:800;color:#23282d;letter-spacing:-.01em;margin:0 0 .9rem}
+.ab-body{margin:0;max-width:60ch;color:#46505a}
+.ab-body strong{color:#FC9700;font-weight:700}
+.ab-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.5);text-underline-offset:3px;transition:color .15s}
+.ab-body a:hover{color:#FC9700}
+.ab-cta{display:inline-flex;align-items:center;gap:.55rem;margin-top:1.6rem;background:#FC9700;color:#fff;font-weight:700;font-size:1rem;letter-spacing:.01em;padding:.85rem 1.7rem;border-radius:7px;text-decoration:none;box-shadow:0 12px 24px -12px rgba(252,151,0,.7);transition:transform .15s,box-shadow .15s}
+.ab-cta svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
+.ab-cta:hover{transform:translateY(-2px);box-shadow:0 16px 30px -12px rgba(252,151,0,.8)}
+.ab-cta:hover svg{transform:translateX(3px)}
+.ab-trust{list-style:none;margin:1.5rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.55rem 1.15rem}
+.ab-trust li{display:inline-flex;align-items:center;gap:.45rem;font-size:.82rem;font-weight:700;color:#5a636c}
+.ab-trust li::before{content:"";width:6px;height:6px;border-radius:50%;background:#FC9700;flex:none}
+.ab-stats{display:flex;flex-wrap:wrap;border-top:1px solid rgba(35,40,45,.13);border-bottom:1px solid rgba(35,40,45,.13);margin:3.5rem 0;padding:0}
+.ab-stat{flex:1 1 0;min-width:160px;padding:1.7rem 1.5rem;border-left:1px solid rgba(35,40,45,.13)}
+.ab-stat:first-child{border-left:0}
+.ab-stat b{display:block;font-size:clamp(1.7rem,3.2vw,2.4rem);font-weight:800;color:#FC9700;line-height:1;letter-spacing:-.01em}
+.ab-stat span{display:block;margin-top:.5rem;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:#7d8790;font-weight:600}
+.ab-topics{margin-top:1rem}
+.ab-topic{display:grid;grid-template-columns:1fr;gap:1.6rem;padding:2.9rem 0;border-top:1px solid rgba(35,40,45,.13)}
+.ab-num{display:block;font-size:clamp(3.4rem,7vw,5.4rem);font-weight:800;line-height:.8;color:rgba(252,151,0,.2);letter-spacing:-.02em;margin-bottom:.6rem}
+.ab-end{text-align:center;padding:3rem 0 0;border-top:1px solid rgba(35,40,45,.13);margin-top:1rem}
+.ab-end .ab-cta{margin-top:0}
+@media(max-width:620px){
+.ab-stat{flex:1 1 45%}
+.ab-stat:nth-child(2n+1){border-left:0}
+.ab-stat:nth-child(n+3){border-top:1px solid rgba(35,40,45,.13)}
+}
+@media(min-width:880px){
+.ab-feature{grid-template-columns:.78fr 1fr;gap:3.2rem;align-items:center}
+.ab-topic{grid-template-columns:1fr 1fr;gap:3.2rem;align-items:center}
+.ab-topic .ab-text{order:1}
+.ab-topic .ab-figure{order:2}
+.ab-flip .ab-text{order:2}
+.ab-flip .ab-figure{order:1}
+}
+@media(prefers-reduced-motion:reduce){.ab-cta,.ab-cta svg{transition:none}.ab-cta:hover{transform:none}.ab-cta:hover svg{transform:none}}
+</style><section class="ab-section" aria-labelledby="ab-title">
+  <div class="ab-wrap">
+    <p class="ab-eyebrow">About Wolves Storage Sussex</p>
+    <h2 class="ab-h2" id="ab-title">Storage Built on <em>Family Values</em>, Not Self-Service</h2>
+    <p class="ab-lead">Wolves Storage Sussex is a family-run, fully managed storage company based at Doryln House on the London Road in Ashington, right in the middle of West Sussex. We&rsquo;ve looked after local people&rsquo;s belongings for over ten years, and in that time one thing hasn&rsquo;t changed: we treat every collection as if it were our own family&rsquo;s. That&rsquo;s the real difference between us and a drive-up self-storage unit &mdash; you get real people who pack, protect and store your things properly, not just a key to an empty metal room.</p>
+
+    <div class="ab-feature">
+      <figure class="ab-figure">
+        <img src="/images/wolves-operator-forklift-storage-containers.webp" width="1200" height="1600" loading="lazy" alt="A Wolves Storage Sussex operator moving sealed storage containers by forklift in our secure West Sussex warehouse">
+      </figure>
+      <div class="ab-text">
+        <span class="ab-num" aria-hidden="true">01</span>
+        <span class="ab-kicker">How we work</span>
+        <h3 class="ab-h3">Fully managed, container-based storage</h3>
+        <p class="ab-body">Everything we store goes into its own clean, dry wooden container of around 250 cubic feet &mdash; roughly the contents of a one-bedroom flat. We bring the packing materials to you, wrap and load your belongings, seal the container and bring it back to our warehouse. When you want it back, we redeliver to your door on 24 hours&rsquo; notice. You never hire a van, drive across town or carry boxes down a shared corridor &mdash; you only ever pay for the space you use, from just &pound;15 a week with no deposit.</p>
+        <a class="ab-cta" href="contact.html">Get a free quote <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg></a>
+        <ul class="ab-trust">
+          <li>Family-run since 2016</li>
+          <li>LAPADA accredited</li>
+          <li>Checkatrade verified</li>
+          <li>Fully insured</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ab-topics">
+      <article class="ab-topic">
+        <div class="ab-text">
+          <span class="ab-num" aria-hidden="true">02</span>
+          <h3 class="ab-h3">A secure, monitored West Sussex facility</h3>
+          <p class="ab-body">Our Ashington warehouse is dry, ventilated and alarmed, with 24/7 CCTV and staff-controlled access &mdash; not a public self-access site. Your container stays sealed for its entire stay, protected from the damp, dust and temperature swings that affect unheated metal units through a Sussex winter. Whether you&rsquo;re storing for a few weeks between moves or for several years while you work away, your belongings come back in the same condition they arrived in.</p>
+        </div>
+        <figure class="ab-figure">
+          <img src="/images/gallery-warehouse-b.webp" width="900" height="1200" loading="lazy" alt="Inside the dry, alarmed Wolves Storage Sussex container warehouse">
+          <figcaption class="ab-cap">Inside our alarmed store</figcaption>
+        </figure>
+      </article>
+
+      <article class="ab-topic ab-flip">
+        <div class="ab-text">
+          <span class="ab-num" aria-hidden="true">03</span>
+          <h3 class="ab-h3">Accredited, insured and genuinely trusted</h3>
+          <p class="ab-body">We&rsquo;re accredited by LAPADA &mdash; the Association of Art &amp; Antiques Dealers &mdash; so we&rsquo;re trusted to handle fragile, antique and high-value pieces, not just boxes. We&rsquo;re also Checkatrade-verified and fully insured throughout, and we&rsquo;re recommended by respected local estate agents across the region. Our customers have rated us 5.0 out of 5 across hundreds of reviews, and most of our work comes from word of mouth and repeat bookings &mdash; the clearest sign we get the small details right.</p>
+        </div>
+        <figure class="ab-figure">
+          <img src="/images/white-glove-antique-painting-handling.webp" width="600" height="564" loading="lazy" alt="Wolves Storage Sussex team handling an antique painting with white gloves">
+          <figcaption class="ab-cap">Specialist antique care</figcaption>
+        </figure>
+      </article>
+
+      <article class="ab-topic">
+        <div class="ab-text">
+          <span class="ab-num" aria-hidden="true">04</span>
+          <h3 class="ab-h3">Whatever you need to store</h3>
+          <p class="ab-body">We store for every kind of situation: families between house moves or renovations, downsizers keeping the pieces they&rsquo;re not ready to part with, people working away or abroad, landlords turning over rentals, and businesses freeing up expensive floor space for stock and archives. We also handle furniture, antiques and one-off valuables with specialist care. Whatever the reason, you get the same flexible terms &mdash; store for a single week or several years, with no long tie-in and no hidden charges.</p>
+        </div>
+        <figure class="ab-figure">
+          <img src="/images/hero-containers-van.webp" width="1440" height="1080" loading="lazy" alt="Sealed wooden storage containers and the Wolves Storage Sussex van at our West Sussex facility">
+          <figcaption class="ab-cap">Stored your way</figcaption>
+        </figure>
+      </article>
+    </div>
+
+    <div class="ab-stats">
+      <div class="ab-stat"><b>&pound;15</b><span>per week, no deposit</span></div>
+      <div class="ab-stat"><b>250 cu ft</b><span>per private container</span></div>
+      <div class="ab-stat"><b>5.0&#9733;</b><span>from 478 reviews</span></div>
+      <div class="ab-stat"><b>24/7</b><span>CCTV &amp; fully insured</span></div>
+    </div>
+
+    <div class="ab-topics">
+      <article class="ab-topic ab-flip">
+        <div class="ab-text">
+          <span class="ab-num" aria-hidden="true">05</span>
+          <h3 class="ab-h3">Local to every corner of West Sussex</h3>
+          <p class="ab-body">From our central Ashington base we collect from and redeliver across the whole county and just over the border &mdash; from <a href="storage-horsham.html">Horsham</a> and <a href="storage-crawley.html">Crawley</a> in the north to <a href="storage-worthing.html">Worthing</a>, <a href="storage-littlehampton.html">Littlehampton</a> and <a href="storage-chichester.html">Chichester</a> on the coast. See every <a href="areas-we-cover.html">area we cover</a>, explore our <a href="storage-solutions.html">storage solutions</a>, or <a href="contact.html">get a free quote</a> and our family team will be in touch within 24 hours.</p>
+        </div>
+        <figure class="ab-figure">
+          <img src="/images/wolves-van-loading-at-storage-facility.webp" width="1600" height="1200" loading="lazy" alt="Wolves Storage Sussex Luton van loading at our secure West Sussex facility">
+          <figcaption class="ab-cap">Door-to-door across Sussex</figcaption>
+        </figure>
+      </article>
+
+      <article class="ab-topic">
+        <div class="ab-text">
+          <span class="ab-num" aria-hidden="true">06</span>
+          <h3 class="ab-h3">Why managed storage beats a self-storage unit</h3>
+          <p class="ab-body">It&rsquo;s easy to assume a drive-up self-storage unit is the cheaper option, but the costs quietly add up &mdash; van hire, fuel, the hours spent driving back and forth, and paying for floor space you never fully use. With our managed model there&rsquo;s nothing to hire and nothing to carry: collection and redelivery are built into the price, and because we stack sealed containers efficiently in a secure warehouse rather than renting you an oversized room, you only pay for the space your belongings actually take up. It&rsquo;s usually cleaner, more secure and better value &mdash; your things sit in a dry, alarmed building instead of an unheated metal room you have to visit yourself.</p>
+        </div>
+        <figure class="ab-figure">
+          <img src="/images/gallery-warehouse-a.webp" width="900" height="1200" loading="lazy" alt="Sealed wooden storage containers stacked inside the alarmed Wolves Storage Sussex warehouse">
+          <figcaption class="ab-cap">Sealed &amp; stacked securely</figcaption>
+        </figure>
+      </article>
+
+      <article class="ab-topic ab-flip">
+        <div class="ab-text">
+          <span class="ab-num" aria-hidden="true">07</span>
+          <h3 class="ab-h3">Honest pricing and genuinely flexible terms</h3>
+          <p class="ab-body">We keep things simple and straightforward, because that&rsquo;s how we&rsquo;d want to be treated. Storage starts at just &pound;15 a week with no deposit and no hidden fees, and terms are flexible and rolling &mdash; store for a single week between moves or for several years while you&rsquo;re abroad, and extend or end whenever it suits you. Every quote is clear and fixed, you deal with the same family team throughout, and there&rsquo;s never any pressure or obligation. If you&rsquo;re weighing up your options, we&rsquo;ll give you honest, practical advice &mdash; even if that means pointing you somewhere else.</p>
+        </div>
+        <figure class="ab-figure">
+          <img src="/images/loading-box-up-ramp-into-van.webp" width="762" height="726" loading="lazy" alt="Wolves Storage Sussex movers loading packed boxes up the ramp into the van">
+          <figcaption class="ab-cap">Collected from your door</figcaption>
+        </figure>
+      </article>
+
+      <article class="ab-topic">
+        <div class="ab-text">
+          <span class="ab-num" aria-hidden="true">08</span>
+          <h3 class="ab-h3">Packed properly, protected throughout</h3>
+          <p class="ab-body">Good storage starts with good packing, and that&rsquo;s where a managed service really earns its keep. We bring professional-grade materials to every collection &mdash; double-walled boxes, bubble wrap, furniture blankets, mattress covers and tape &mdash; and our team wraps and loads everything methodically, so nothing shifts, scratches or settles damp over the weeks and months ahead. Sofas and mattresses are covered, mirrors and pictures are corner-protected, and drawers, appliances and flat-pack furniture are secured before they go anywhere near the container. Once a container is full it&rsquo;s sealed and logged, and it isn&rsquo;t opened again until it comes back to you. It&rsquo;s the same standard of care we&rsquo;d want for our own family&rsquo;s belongings &mdash; and a big part of why customers across West Sussex trust us with antiques, electronics, business equipment and the things that simply can&rsquo;t be replaced.</p>
+        </div>
+        <figure class="ab-figure">
+          <img src="/images/furniture-wrapped-furni-soft-dining-set.webp" width="762" height="726" loading="lazy" alt="A dining table and chairs wrapped in Furni-soft padding by Wolves Storage Sussex">
+          <figcaption class="ab-cap">Wrapped with care</figcaption>
+        </figure>
+      </article>
+    </div>
+
+    <div class="ab-end">
+      <a class="ab-cta" href="contact.html">Get a free quote <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg></a>
+    </div>
+  </div>
+</section>""",
         faq([("Are you insured and accredited?","Yes &mdash; fully insured, LAPADA accredited and Checkatrade members."),("How long have you been going?","Over 10 years serving West Sussex as a family-run business.")]),
         cta_band("Store With a Family You Can Trust",IMG("gallery-warehouse-b.webp")),
       ]))
@@ -1405,24 +2479,25 @@ def build():
       meta="Sorry, we couldn't find that page. Return to Wolves Storage Sussex for secure managed storage in West Sussex from £15/week.",
       hero=IMG(HERO_VAN_COLLECT[0]),
       sections=[centered("bg-white","Page Not Found","Sorry, we couldn&rsquo;t find that page. Let&rsquo;s get you back to storing safely in West Sussex.",
-        f'<div class="flex flex-wrap gap-3 justify-center">{btn("Back to Home","index.html","px-8 lg:px-10")}{btn("Contact Us","contact.html","px-8 lg:px-10")}</div>')]))
+        f'<div class="flex flex-wrap gap-3 justify-center">{btn("Back to Home","/","px-8 lg:px-10")}{btn("Contact Us","contact.html","px-8 lg:px-10")}</div>')]))
 
     for d in P:
         if d["slug"] not in ("404","legal") and d["file"]!="contact.html":
             d["sections"].insert(1, TRUSTINDEX_SECTION)
         if d["file"] in WHYUS:
             d["sections"].insert(2, WHYUS[d["file"]])
-        if d["file"]=="pricing.html":
+        if d["file"] in ("pricing.html","storage-size-guide.html"):
             d["sections"].insert(1, CALC_SECTION)
         if d["file"] in CONTAINER_HTML:
             d["sections"].insert(len(d["sections"])-1, CONTAINER_HTML[d["file"]])
+        if d["file"] in SILO_PAGES:
+            d["sections"].insert(len(d["sections"])-1, all_towns_strip())
     for d in P:
-        if d["file"]=="404.html":
-            # noindex
-            pass
         html=page(d)
         if d["file"]=="404.html":
             html=html.replace('<meta name="robots" content="index, follow">','<meta name="robots" content="noindex, follow">')
+            html=html.replace('<h2 class="relative leading-tight text-black">Page Not Found</h2>','<h1 class="relative leading-tight text-black">Page Not Found</h1>')
+        html=fix_amps(html)
         open(os.path.join(SITE,d["file"]),"w",encoding="utf-8").write(html)
         print(f"  built {d['file']:26} {len(html)//1024}KB")
     # sitemap.xml (all indexable pages)
@@ -1433,7 +2508,7 @@ def build():
         elif d["slug"]=="legal": pr="0.3"
         elif d["slug"] in ("town","guide","furniture"): pr="0.8"
         else: pr="0.7"
-        sm+=f'  <url><loc>{BASE}{d["file"]}</loc><changefreq>weekly</changefreq><priority>{pr}</priority></url>\n'
+        sm+=f'  <url><loc>{BASE}{d["file"]}</loc><lastmod>{LASTMOD}</lastmod><changefreq>weekly</changefreq><priority>{pr}</priority></url>\n'
     sm+='</urlset>\n'
     open(os.path.join(SITE,"sitemap.xml"),"w",encoding="utf-8").write(sm)
     print(f"  sitemap.xml  {sum(1 for d in P if d['file']!='404.html')} urls")
@@ -1454,7 +2529,7 @@ def build():
           "Family-run, fully managed containerised storage across West Sussex, based in Ashington (Doryln House, London Road, Pulborough RH20 3JT). "
           "We pack, collect, seal and store your belongings in an alarmed, fully insured indoor warehouse, then redeliver — no self-storage unit to drive to. "
           "Trading since 2016. LAPADA accredited, Checkatrade-verified, 5.0/5 from 478 reviews. From £15/week, no deposit. Phone 01903 893731.\n\n"
-          f"- [Home]({BASE}index.html): {home['meta']}\n\n")
+          f"- [Home]({BASE}): {home['meta']}\n\n")
     for c in CATS:
         if not buckets[c]: continue
         llms+=f"## {c}\n"

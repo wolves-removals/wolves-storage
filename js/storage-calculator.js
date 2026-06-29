@@ -229,7 +229,7 @@
       }
       if (itemCount > 0) sb.push('From your items: ~' + Math.round(cuftNow) + ' cu ft / ' + cumNow.toFixed(1) + ' cu m, ' + itemCount + ' items');
       sb.push('Contents cover: ' + ((coverInp && coverInp.checked) ? 'standard + extended' : 'standard'));
-      quoteBtn.href = '/get-a-quote/?service=Storage&details=' + encodeURIComponent(sb.join('; '));
+      quoteBtn.href = 'contact.html?service=Storage&details=' + encodeURIComponent(sb.join('; '));
     }
   }
 

@@ -1,0 +1,201 @@
+/* Barlow — self-hosted to match wolves-removals.co.uk */
+@font-face{font-family:'Barlow';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/Barlow-Regular.woff2') format('woff2');}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/Barlow-Medium.woff2') format('woff2');}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/Barlow-Semibold.woff2') format('woff2');}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:700;font-display:swap;src:url('fonts/Barlow-Bold.woff2') format('woff2');}
+
+/* ==========================================================================
+   Wolves Storage Sussex — custom styles.css
+   Complements Tailwind (loaded via CDN). Plain CSS only (no @apply / build step).
+   Two jobs:
+     1) Power components Tailwind can't do alone (carousel, lightbox, reveal,
+        accordion, modal, hamburger, cookie banner).
+     2) Provide a graceful OFFLINE FALLBACK so the page stays readable if the
+        Tailwind CDN can't load (e.g. opened with no internet).
+   Brand tokens are mirrored here as CSS variables so you can rebrand in one place.
+   ========================================================================== */
+
+:root {
+  --navy: #2c2825;          /* primary brand */
+  --navy-700: #3c3733;
+  --navy-900: #1b1815;
+  --amber: #FC9700;         /* accent / CTA */
+  --amber-600: #b56b00;
+  --ink: #1c2733;           /* body text */
+  --muted: #5b6b7b;
+  --line: #e4e9ef;
+  --bg-soft: #f5f8fb;
+  --success: #15a06a;
+  --radius: 14px;
+  --shadow-sm: 0 1px 3px rgba(16,42,71,.08), 0 1px 2px rgba(16,42,71,.06);
+  --shadow-md: 0 10px 30px rgba(14,42,71,.10);
+  --shadow-lg: 0 24px 60px rgba(14,42,71,.18);
+  --maxw: 1180px;
+}
+
+/* ---- Fonts: nice when online, system fallback when not ------------------ */
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto,
+               Helvetica, Arial, sans-serif;
+}
+h1, h2, h3, h4, .font-display {
+  font-family: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto,
+               Helvetica, Arial, sans-serif;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+
+/* ==========================================================================
+   1) OFFLINE FALLBACK
+   These rules only "win" when Tailwind utilities are absent (offline). When
+   Tailwind loads, its utilities override most of this. Kept intentionally light.
+   ========================================================================== */
+.no-tw body { color: var(--ink); background: #fff; line-height: 1.6; margin: 0; }
+.no-tw img { max-width: 100%; height: auto; }
+.no-tw a { color: var(--navy); }
+.no-tw .wrap, .no-tw .container { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+.no-tw h1 { font-size: 2rem; line-height: 1.15; margin: .4em 0; }
+.no-tw h2 { font-size: 1.5rem; line-height: 1.2; margin: .6em 0; }
+.no-tw section { padding: 40px 0; }
+.no-tw .btn,
+.no-tw button[type="submit"] {
+  display: inline-block; background: var(--amber); color: #1a1205;
+  padding: 12px 22px; border-radius: 999px; text-decoration: none;
+  font-weight: 700; border: 0; cursor: pointer;
+}
+.no-tw .site-header { border-bottom: 1px solid var(--line); }
+.no-tw .offline-note { display: block; }
+.offline-note { display: none; }
+
+/* ==========================================================================
+   2) REVEAL ON SCROLL
+   ========================================================================== */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; will-change: opacity, transform; }
+.reveal.in { opacity: 1; transform: none; }
+.reveal[data-delay="1"] { transition-delay: .08s; }
+.reveal[data-delay="2"] { transition-delay: .16s; }
+.reveal[data-delay="3"] { transition-delay: .24s; }
+.reveal[data-delay="4"] { transition-delay: .32s; }
+
+/* ==========================================================================
+   3) HEADER / STICKY / HAMBURGER
+   ========================================================================== */
+.site-header { transition: box-shadow .25s ease, background .25s ease; }
+.site-header.is-stuck { box-shadow: var(--shadow-md); }
+
+.hamburger { width: 26px; height: 20px; position: relative; display: inline-block; }
+.hamburger span {
+  position: absolute; left: 0; height: 2.5px; width: 100%; background: currentColor;
+  border-radius: 3px; transition: transform .3s ease, opacity .2s ease, top .3s ease;
+}
+.hamburger span:nth-child(1) { top: 0; }
+.hamburger span:nth-child(2) { top: 8.5px; }
+.hamburger span:nth-child(3) { top: 17px; }
+.hamburger.is-open span:nth-child(1) { top: 8.5px; transform: rotate(45deg); }
+.hamburger.is-open span:nth-child(2) { opacity: 0; }
+.hamburger.is-open span:nth-child(3) { top: 8.5px; transform: rotate(-45deg); }
+
+/* Mobile menu slide */
+.mobile-menu { transition: transform .32s ease, opacity .32s ease; }
+
+/* Dropdown (desktop hover + click for touch) */
+.has-dropdown > .dropdown {
+  opacity: 0; visibility: hidden; transform: translateY(8px);
+  transition: opacity .2s ease, transform .2s ease, visibility .2s;
+}
+.has-dropdown:hover > .dropdown,
+.has-dropdown:focus-within > .dropdown,
+.has-dropdown.is-open > .dropdown {
+  opacity: 1; visibility: visible; transform: none;
+}
+
+/* ==========================================================================
+   4) TESTIMONIAL / LOGO CAROUSEL
+   ========================================================================== */
+.carousel { position: relative; overflow: hidden; }
+.carousel__track {
+  display: flex; transition: transform .55s cubic-bezier(.4,.0,.2,1);
+  will-change: transform;
+}
+.carousel__slide { min-width: 100%; flex: 0 0 100%; box-sizing: border-box; }
+.carousel__dots { display: flex; gap: 8px; justify-content: center; }
+.carousel__dot {
+  width: 10px; height: 10px; border-radius: 999px; border: 0; cursor: pointer;
+  background: rgba(255,255,255,.4); padding: 0; transition: background .2s, width .2s;
+}
+.carousel__dot.is-active { background: var(--amber); width: 26px; }
+.carousel__dot.is-active.dot-dark { background: var(--navy); }
+
+/* ==========================================================================
+   5) ACCORDION (FAQ / details)
+   ========================================================================== */
+.accordion__panel {
+  max-height: 0; overflow: hidden;
+  transition: max-height .35s ease, padding .35s ease;
+}
+.accordion__item.is-open .accordion__panel { /* max-height set inline by JS */ }
+.accordion__icon { transition: transform .3s ease; }
+.accordion__item.is-open .accordion__icon { transform: rotate(45deg); }
+
+/* ==========================================================================
+   6) MODAL (Get a Quote) + COOKIE BANNER + BACK TO TOP
+   ========================================================================== */
+.modal { transition: opacity .25s ease; }
+.modal[hidden] { display: none; }
+.modal.is-open { opacity: 1; }
+.modal__card { transition: transform .3s ease, opacity .3s ease; }
+.modal:not(.is-open) .modal__card { transform: translateY(16px) scale(.98); opacity: 0; }
+
+body.modal-open { overflow: hidden; }
+
+.cookie-banner { transition: transform .4s ease, opacity .4s ease; }
+.cookie-banner.is-hidden { transform: translateY(120%); opacity: 0; pointer-events: none; }
+
+.back-to-top {
+  opacity: 0; visibility: hidden; transform: translateY(12px);
+  transition: opacity .3s ease, transform .3s ease, visibility .3s;
+}
+.back-to-top.is-visible { opacity: 1; visibility: visible; transform: none; }
+
+/* ==========================================================================
+   7) IMAGE GALLERY LIGHTBOX
+   ========================================================================== */
+.lightbox { transition: opacity .25s ease; }
+.lightbox[hidden] { display: none; }
+.lightbox img { max-width: 92vw; max-height: 84vh; border-radius: 10px; box-shadow: var(--shadow-lg); }
+.gallery-thumb { cursor: zoom-in; transition: transform .3s ease, box-shadow .3s ease; }
+.gallery-thumb:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+/* ==========================================================================
+   8) SMALL HELPERS
+   ========================================================================== */
+.hero-overlay { background:
+   linear-gradient(180deg, rgba(27,24,21,.78) 0%, rgba(27,24,21,.55) 45%, rgba(27,24,21,.82) 100%); }
+.text-shadow { text-shadow: 0 2px 18px rgba(0,0,0,.35); }
+.card-hover { transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
+.card-hover:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+.link-underline { background-image: linear-gradient(currentColor,currentColor);
+  background-size: 0% 2px; background-repeat: no-repeat; background-position: 0 100%;
+  transition: background-size .3s ease; }
+.link-underline:hover { background-size: 100% 2px; }
+
+/* Count-up numbers don't jump layout */
+.counter { font-variant-numeric: tabular-nums; }
+
+/* Image graceful fallback: if a remote photo fails, show a branded panel */
+img.with-fallback { background:
+  linear-gradient(135deg, var(--navy) 0%, var(--navy-700) 100%); color: #fff; }
+
+/* Focus visibility for keyboard users */
+a:focus-visible, button:focus-visible, input:focus-visible,
+textarea:focus-visible, select:focus-visible {
+  outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 6px;
+}
+
+/* active nav item -> brand orange (matches wolves-removals.co.uk) */
+[data-nav] a.is-active, [data-nav] .nav-top.is-active { color: #FC9700; }

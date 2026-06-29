@@ -57,6 +57,26 @@ design system + SEO/EEAT bible. **On any new page build, follow these rules.**
 - **Storage pages:** extend `build-storage-pages.py` — shared head/header/footer partials + 21 section templates + per-page data dict — so the chrome stays identical and these rules are enforced by construction. Run it to (re)generate.
 - **Other pages:** clone head/header/footer from an existing page; swap title/meta/canonical/OG/Twitter + page schema; build `<main>`; then run the audit (single H1, valid JSON-LD, 100% WebP + alt, no broken links, meta present).
 
+## 5a. Service-page template (RULE — all service/"money" pages)
+
+**Every service page must follow the `long-term-storage.html` design**, in this section order:
+1. Hero (eyebrow → H1 → subhead → checklist → CTA)
+2. Intro content split (`split`, bg-white)
+3. **On-page pricing + "what fits" panel** (`town_pricing` — subject-headed, e.g. "Furniture Storage Prices in West Sussex")
+4. Second content split (`split`, bg-lightgrey, reversed)
+5. **Subject use-cases** ("When … Helps", `svc_situations` — grey panel, 4 cards)
+6. **"Why West Sussex Chooses Wolves for …"** differentiators (`svc_whychoose` — dark glass band, 4 points)
+7. Step-by-step **process** carousel
+8. **Gallery** (`gallery` — branded tiles + lightbox)
+9. **8-question FAQ** (`faq`, schema-matched)
+10. Container-vs-self-storage **explainer** (`CONTAINER_DATA` entry — dark band, image + ticks)
+11. **Location silo** ("Local Storage Across Sussex", `all_towns_strip` — grouped directory)
+12. CTA band
+
+Enforced by construction: the four pages built by `service()` (storage-solutions, long-term, short-term, business) are in `EXPAND_SERVICES`; `furniture-storage` (standalone `furniture_page`) is aligned manually and must stay in step. Any new service page goes through `service()` (add it to `EXPAND_SERVICES` + `CONTAINER_DATA`).
+
+**SEO RULE — same design, UNIQUE content.** The structure is identical across service pages, but **every use-case, "why-choose" point, FAQ, heading, lead and CTA must be written specifically for that service** (e.g. business → stock/archives/tools/relocation; short-term → chain delays/staging/renovations/tenancies). Never reuse boilerplate across service pages — identical structure + identical copy = near-duplicate pages that dilute rankings. Each page also carries `Service` + `FAQPage` + `SelfStorage` schema and targets ~1,200–1,800 useful words.
+
 ## 6. Toolchain notes
 
 - WebP encoding via Python **Pillow** (`from PIL import Image; im.save(out, "WEBP", quality=80, method=6)`) — macOS `sips` can read but **not write** WebP.
