@@ -173,24 +173,23 @@ def gallery(imgs):
     return centered("bg-white","See Our Sussex Storage in Action","Real photos of our own facility, containers, team and fleet.",
                     f'<div class="grid grid-cols-12 gap-4 lg:gap-6">{cells}</div>')
 
-VIDEO_THUMB="wolves-van-loading-at-storage-facility.webp"
+VIDEO_POSTER="storage-container-promo-poster.webp"   # exact title-card frame baked from the clip
 def video_promo():
-    # No custom poster: with metadata preloaded the browser shows the video's own
-    # first frame (16:9). width/height + aspect-ratio reserve a landscape box so it
-    # never renders tall/portrait before play.
+    # Baked 16:9 poster (the clip's title-card frame) guarantees the same landscape
+    # still on every device before play; width/height reserve the box (no CLS).
     inner=('<div class="relative rounded-2xl overflow-hidden shadow-custom mx-auto" style="max-width:56rem;border:1px solid #E7E7E7;background:#000">'
-           '<video class="block w-full" controls preload="metadata" playsinline width="1280" height="720" '
+           f'<video class="block w-full" controls preload="metadata" playsinline width="1280" height="720" poster="{IMG(VIDEO_POSTER)}" '
            'style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;background:#000;display:block" '
            'aria-label="Wolves Storage Sussex managed container storage video">'
            '<source src="/videos/storage-container-promo-b.mp4" type="video/mp4">'
-           'Your browser does not support embedded video. </video></div>')
-    return centered("bg-lightgrey","See Managed Storage in Action",
-                    "Watch how we pack, wrap, collect and securely store your belongings &mdash; all part of our fully managed West Sussex storage service.",inner)
+           'Your browser does not support embedded video. </video></div>'
+           '<p class="text-darkgrey mt-4">Our team loading and storing mobile storage containers securely at our Sussex depot.</p>')
+    return centered("bg-lightgrey","Secure Storage with Wolves Removals","",inner)
 VIDEO_SCHEMA='<script type="application/ld+json">'+json.dumps({
   "@context":"https://schema.org","@type":"VideoObject",
   "name":"Managed Container Storage in West Sussex — Wolves Storage Sussex",
   "description":"See how Wolves Storage Sussex packs, wraps, collects and securely stores your belongings in sealed wooden containers at our alarmed Ashington facility.",
-  "thumbnailUrl":[BASE+"images/"+VIDEO_THUMB],"uploadDate":"2026-06-01",
+  "thumbnailUrl":[BASE+"images/"+VIDEO_POSTER],"uploadDate":"2026-06-01",
   "contentUrl":BASE+"videos/storage-container-promo-b.mp4",
   "publisher":{"@type":"Organization","name":"Wolves Storage Sussex","logo":{"@type":"ImageObject","url":BASE+"images/wolves-storage-logo@480.webp"}}
 },ensure_ascii=False)+'</script>'
