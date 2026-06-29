@@ -368,7 +368,7 @@ def gallery(imgs, heading="See Our Sussex Storage in Action", lead="Real photos 
             '<button type="button" class="gal-lb-close" @click="i=-1" aria-label="Close gallery">&times;</button>'
             '<div class="gal-lb-stage">'
             f'<button type="button" class="gal-lb-nav gal-lb-prev" @click="i=(i-1+g.length)%g.length" aria-label="Previous image">{GAL_ARR_L}</button>'
-            '<img :src="i>=0?g[i].s:\'\'" :alt="i>=0?g[i].a:\'\'" alt="Enlarged Wolves Storage Sussex gallery photo" width="1200" height="900">'
+            '<img :src="g[i]?.s||\'\'" :alt="g[i]?.a||\'\'" alt="Enlarged Wolves Storage Sussex gallery photo" width="1200" height="900">'
             f'<button type="button" class="gal-lb-nav gal-lb-next" @click="i=(i+1)%g.length" aria-label="Next image">{GAL_ARR_R}</button>'
             '</div>'
             '<p class="gal-lb-cap" x-text="i>=0?g[i].c:\'\'"></p>'
