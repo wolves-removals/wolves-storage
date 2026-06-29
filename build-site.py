@@ -89,13 +89,23 @@ def hero(img, alt, h1, sub, checks, big=True):
             f'<a class="button-orange btn-white btn-sweep shrink-0 whitespace-nowrap px-8 lg:px-10" href="tel:+441903893731"><span class="relative z-10">Call {PHONE1}</span><span class="btn-sweep-shine" aria-hidden="true"></span></a></div>'
             '</div></div></div></section>')
 
+SPLIT_CSS=('<style>'
+  '.sp-figure{position:relative;height:100%}'
+  '.sp-img{position:relative;height:100%;overflow:hidden;border-radius:1.15rem;border:1px solid #E7E7E7;box-shadow:0 20px 46px -24px rgba(38,38,38,.5);transition:transform .4s cubic-bezier(.2,.7,.3,1),box-shadow .4s ease}'
+  '.sp-img::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;z-index:2;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+  '.sp-img img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}'
+  '.sp-figure:hover .sp-img{transform:translateY(-5px);box-shadow:0 30px 60px -26px rgba(38,38,38,.55)}'
+  '.sp-figure:hover .sp-img img{transform:scale(1.045)}'
+  '.sp-rule{display:block;width:54px;height:3px;border-radius:3px;background:linear-gradient(90deg,#FC9700,#F6BB06);margin:.85rem 0 1.05rem}'
+  '@media (prefers-reduced-motion:reduce){.sp-img,.sp-img img{transition:none}.sp-figure:hover .sp-img{transform:none}.sp-figure:hover .sp-img img{transform:none}}'
+  '</style>')
 def split(bg, h2, paras, img, alt, reverse=False):
     body = "".join(f'<p>{p}</p>' for p in paras)
     txt = (f'<div class="col-span-12 lg:col-span-6 {"lg:col-start-7" if reverse else "lg:col-start-2"}">'
-           f'<h2 class="relative leading-tight text-black">{h2}</h2>{body}</div>')
+           f'<h2 class="relative leading-tight text-black">{h2}</h2><span class="sp-rule" aria-hidden="true"></span>{body}</div>')
     pic = (f'<div class="col-span-12 lg:col-span-4 {"lg:col-start-2" if reverse else "lg:col-start-8"}">'
-           f'<div class="relative h-56 sm:h-72 lg:h-full overflow-hidden rounded-xl shadow-custom">'
-           f'<img src="{img}" alt="{alt}" width="1600" height="1200" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover"></div></div>')
+           f'<div class="sp-figure"><div class="sp-img relative h-56 sm:h-72 lg:h-full">'
+           f'<img src="{img}" alt="{alt}" width="1600" height="1200" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover"></div></div></div>')
     inner = (pic+txt) if reverse else (txt+pic)
     return (f'<section class="relative {bg} w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden">'
             f'<div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-stretch">{inner}</div></div></section>')
@@ -237,7 +247,7 @@ def head(d):
         crumb='<script type="application/ld+json">'+json.dumps({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":items},ensure_ascii=False)+'</script>'
     return ('<!DOCTYPE html>\n<html lang="en-GB">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
         f'<title>{d["title"]}</title>\n<meta name="description" content="{d["meta"]}">\n<meta name="robots" content="index, follow">\n'
-        f'<link rel="canonical" href="{BASE}{d["file"]}">\n<meta name="theme-color" content="#697783">\n'
+        f'<link rel="canonical" href="{BASE}{d["file"]}">\n<meta name="theme-color" content="#697783">\n'+SPLIT_CSS+'\n'
         '<meta name="geo.region" content="GB-WSX"><meta name="geo.placename" content="Ashington, Pulborough, West Sussex"><meta name="geo.position" content="50.9270;-0.4470"><meta name="ICBM" content="50.9270, -0.4470">\n'
         f'<meta property="og:type" content="website"><meta property="og:site_name" content="Wolves Storage Sussex"><meta property="og:title" content="{d["title"]}"><meta property="og:description" content="{d["meta"]}"><meta property="og:url" content="{BASE}{d["file"]}"><meta property="og:image" content="{BASE}{d["hero"].lstrip("/")}"><meta property="og:locale" content="en_GB">\n'
         f'<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{d["title"]}"><meta name="twitter:description" content="{d["meta"]}"><meta name="twitter:image" content="{BASE}{d["hero"].lstrip("/")}">\n'
