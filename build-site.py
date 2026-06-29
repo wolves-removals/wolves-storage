@@ -287,6 +287,19 @@ def page(d):
     return head(d)+"\n"+body_open+"\n"+HEADER+"\n<main id=\"main\">\n"+"\n".join(d["sections"])+("" if d["slug"] in ("404","legal") else "\n"+TRUSTED_BY)+"\n</main>\n"+FOOTER+"\n"+SCRIPTS+"\n</div></body></html>"
 
 IMG=lambda n:"/images/"+n
+
+# ── Hero images ── the ONLY images used as page heroes (per brief). (img, alt)
+HERO_VAN_COLLECT=("wolves-storage-team-collection-luton-van-hero.webp","Wolves Storage Sussex team member walking to the Luton van on a managed collection in West Sussex")
+HERO_FURNITURE  =("furniture-packing-wrapping-storage-hero.webp","Wolves Storage Sussex packer wrapping furniture in Furni-guard padding before secure storage")
+HERO_PACKING    =("professional-packing-labelling-boxes-hero.webp","Wolves Storage Sussex packer labelling a carefully packed box during a professional home pack")
+HERO_ANTIQUE    =("antique-fine-art-storage-hero.webp","An elegant West Sussex room of antiques and fine art prepared for specialist Wolves storage")
+HERO_LOADING    =("loading-boxes-removal-van-storage-hero.webp","Wolves Storage Sussex movers loading packed boxes up the ramp into the van")
+HERO_AERIAL     =("aerial-storage-collection-west-sussex-hero.webp","Aerial view of Wolves Storage Sussex vans collecting from a West Sussex property")
+HERO_WAREHOUSE  =("storage-warehouse-van-west-sussex-hero.webp","The Wolves Storage Sussex van outside our secure container storage warehouse in West Sussex")
+TOWN_HEROES=[HERO_WAREHOUSE,HERO_VAN_COLLECT,HERO_AERIAL,HERO_LOADING,HERO_PACKING,HERO_FURNITURE,HERO_ANTIQUE]
+def town_hero(t):
+    h=TOWN_HEROES[sum(ord(c) for c in t["slug"])%len(TOWN_HEROES)]
+    return IMG(h[0]), f'{h[1]} &mdash; storage in {t["town"]}, {t.get("region","West Sussex")}'
 # ---------------- pages ----------------
 TRUSTINDEX_SECTION = ('<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden">'
   '<div class="container"><div class="flex justify-center mb-8 lg:mb-10"><div style="zoom:.8"><div class="ti-reviews-widget max-w-full"><script defer async src="https://cdn.trustindex.io/loader.js?cd741d573fcc673344062ffdcd3"></script></div></div></div></div>'
@@ -574,6 +587,20 @@ AREA_POOL=[
  ("taping-furni-soft-around-furniture.webp","Wrapping furniture in Furni-soft padding before sealing it into a storage container"),
  ("wolves-luton-storage-packing-van.webp","A branded Wolves Storage Sussex Luton van used for door-to-door collection and storage"),
  ("wolves-removals-team-fleet-vans.webp","The family-run Wolves Storage Sussex team in front of the van fleet"),
+ ("wolves-team-loading-luton-van-collection.webp","A Wolves Storage Sussex team member loading the Luton van during a door-to-door collection"),
+ ("team-carrying-wrapped-armchair-to-van.webp","Two Wolves Storage Sussex movers carrying a blanket-wrapped armchair to the van"),
+ ("team-positioning-wooden-storage-container.webp","Wolves Storage Sussex movers positioning a sealed wooden storage container"),
+ ("carrying-wooden-storage-container-outdoors.webp","Two Wolves Storage Sussex movers carrying a wooden storage container to the van"),
+ ("loading-packed-boxes-into-removal-van.webp","A Wolves Storage Sussex team member loading packed boxes into the van for storage"),
+ ("loading-box-up-ramp-into-van.webp","Wolves Storage Sussex movers loading a packed box up the ramp into the van"),
+ ("carrying-furniture-past-storage-van.webp","A Wolves Storage Sussex mover carrying furniture past the branded van at a customer&rsquo;s home"),
+ ("wrapping-fragile-item-protective-paper.webp","A Wolves Storage Sussex packer wrapping a fragile item in protective paper"),
+ ("furniture-wrapped-furni-soft-dining-set.webp","A dining table and chairs protected in Furni-soft wrapping ready for storage"),
+ ("wrapping-chair-protective-blanket-container.webp","A Wolves Storage Sussex mover wrapping a chair in a protective blanket inside a storage container"),
+ ("wrapping-marble-table-furni-guard.webp","A Wolves Storage Sussex packer protecting a marble-topped table with Furni-guard"),
+ ("wrapping-framed-picture-furni-soft.webp","A Wolves Storage Sussex packer wrapping a framed picture in Furni-soft padding"),
+ ("taping-furni-guard-around-furniture-lounge.webp","A Wolves Storage Sussex packer taping Furni-guard protection around furniture"),
+ ("white-glove-antique-painting-handling.webp","Wolves Storage Sussex team handling an antique painting with white gloves &mdash; LAPADA-accredited care"),
  ("hero-containers-van.webp","Sealed wooden storage containers loaded ready for our secure warehouse"),
  ("hero-forklift.webp","A forklift stacking sealed storage containers in the Wolves Storage Sussex warehouse"),
  ("gallery-warehouse-a.webp","Long-term storage containers stacked inside the secure Wolves Storage Sussex warehouse"),
@@ -588,9 +615,9 @@ def area_imgs(t):
 
 def town(t):
     h1="Storage in "+t["town"]+", "+t.get("region","West Sussex")
-    ai=area_imgs(t)
+    ai=area_imgs(t); th=town_hero(t)
     secs=[
-        hero(IMG(t["hero"]),t["hero_alt"],h1,t["sub"],t["checks"],big=False),
+        hero(th[0],th[1],h1,t["sub"],t["checks"],big=False),
         town_stats(t["town"]),
         split("bg-white",t["s1_h2"],t["s1"],ai[0][0],ai[0][1]),
         town_services(t["town"]),
@@ -601,7 +628,7 @@ def town(t):
     if t.get("extra"): secs.append(t["extra"])
     secs+=[process(),town_map(t),town_nearby(t),faq(t["faqs"]),cta_band(t["cta"],IMG("gallery-warehouse-b.webp"))]
     return dict(file=t["slug"]+".html",slug="town",nav="Storage in "+t["town"],
-        title=t["title"],meta=t["meta"],hero=IMG(t["hero"]),faqs=t["faqs"],
+        title=t["title"],meta=t["meta"],hero=th[0],faqs=t["faqs"],
         crumb_parent=("areas-we-cover.html","Areas We Cover"),extra_schema=town_service_schema(t),
         sections=secs)
 
@@ -873,10 +900,10 @@ def size_guide_page():
     return dict(file="storage-size-guide.html",slug="guide",nav="Storage Size Guide",
       title="How Much Storage Do I Need? Size Guide | Wolves",
       meta="How much storage do you need? Our West Sussex size guide shows what fits in a 250 cu ft container, by home size. From £15/week. Free quote.",
-      hero=IMG("hero-packed-container.webp"),faqs=faqs,
+      hero=IMG(HERO_WAREHOUSE[0]),faqs=faqs,
       crumb_parent=("how-it-works.html","How It Works"),
       sections=[
-        hero(IMG("hero-packed-container.webp"),"A packed Wolves Storage Sussex container showing how much fits inside","How Much Storage Do I Need?",
+        hero(IMG(HERO_WAREHOUSE[0]),HERO_WAREHOUSE[1],"How Much Storage Do I Need?",
           "Work out how much space your move needs in seconds. Our container size guide shows roughly what fits in each 250 cu ft container &mdash; and we&rsquo;ll confirm the exact figure free.",
           ["One container holds about a one-bed home","Pay only for the containers you use","From &pound;15/week, no deposit","Free space estimate within 24 hours"],big=False),
         centered("bg-lightgrey","Storage Size Guide by Home Size",None,inner1),
@@ -901,21 +928,21 @@ def furniture_page():
     return dict(file="furniture-storage.html",slug="furniture",nav="Furniture Storage",
       title="Furniture Storage West Sussex | Collected & Sealed",
       meta="Furniture storage in West Sussex from £15/week. We blanket-wrap, collect & seal your furniture in secure containers. Fully insured, LAPADA accredited.",
-      hero=IMG("hero-team-loading.webp"),faqs=faqs,
+      hero=IMG(HERO_FURNITURE[0]),faqs=faqs,
       crumb_parent=("storage-solutions.html","Storage Solutions"),
       extra_schema=town_service_schema({"town":"West Sussex","slug":"furniture-storage","lat":"50.9270","lng":"-0.4470"}),
       sections=[
-        hero(IMG("hero-team-loading.webp"),"Wolves Storage Sussex team wrapping and loading furniture for storage","Furniture Storage in West Sussex",
+        hero(IMG(HERO_FURNITURE[0]),HERO_FURNITURE[1],"Furniture Storage in West Sussex",
           "Storing a sofa, a houseful or a few treasured pieces? We blanket-wrap your furniture, seal it into its own container and keep it clean, dry and secure &mdash; from just &pound;15 a week.",
           ["Blanket-wrapped &amp; padded by our team","Sealed in dry, alarmed containers","Fully insured, LAPADA accredited","From &pound;15/week, no deposit"],big=False),
         split("bg-white","Furniture Storage Done Properly",
           ["Furniture hates damp, dust and being shoved around an open unit. We wrap each piece in blankets and padding, then seal it into your own wooden container kept in our dry, ventilated, alarmed warehouse &mdash; so it comes back exactly as it left.",
            "It&rsquo;s fully managed: we collect from your door, do all the lifting, and redeliver on 24 hours&rsquo; notice. See <a href=\"how-it-works.html\">how it works</a> or our <a href=\"pricing.html\">prices</a>."],
-          IMG("hero-packed-container.webp"),"Blanket-wrapped furniture sealed inside a Wolves Storage Sussex container"),
+          IMG("furniture-wrapped-furni-soft-dining-set.webp"),"A dining table and chairs blanket-wrapped in Furni-soft by Wolves Storage Sussex before storage"),
         split("bg-lightgrey","Ideal for Moves, Renovations &amp; Downsizing",
           ["Furniture storage is perfect between house moves, during a renovation, while staging a home for sale, or when downsizing and deciding what to keep. Store a single sofa or an entire home &mdash; you only pay for the containers you use.",
            "As a LAPADA-accredited team we also handle fine and antique furniture with specialist care. Not sure how much space you need? Try our <a href=\"storage-size-guide.html\">size guide</a>."],
-          IMG("gallery-warehouse-a.webp"),"Furniture stored in sealed containers at the Wolves Storage Sussex warehouse",reverse=True),
+          IMG("wrapping-framed-picture-furni-soft.webp"),"A Wolves Storage Sussex packer wrapping a framed picture in Furni-soft padding before storage",reverse=True),
         process(),
         faq(faqs),
         cta_band("Need Furniture Storage in West Sussex?",IMG("gallery-warehouse-b.webp")),
@@ -939,7 +966,7 @@ def legal_page(file,nav,title,meta,h1,sub,body):
             f'<p class="mt-3 text-lg xl:text-xl text-beige">{sub}</p></div></div></section>')
     content=('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container">'
              +LEGAL_CSS+'<div class="legal">'+body+'</div></div></section>')
-    return dict(file=file,slug="legal",nav=nav,title=title,meta=meta,hero=IMG("hero-facility-van.webp"),sections=[header,content])
+    return dict(file=file,slug="legal",nav=nav,title=title,meta=meta,hero=IMG(HERO_WAREHOUSE[0]),sections=[header,content])
 
 PRIVACY_BODY='''<p class="updated">Last updated: 28 June 2026</p>
 <p>This privacy policy explains how <strong>Wolves Storage Sussex</strong> (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;), part of the family-run Wolves Removals business, collects and uses your personal information when you use our website or enquire about our storage services. We are the data controller for the information you provide.</p>
@@ -1025,9 +1052,9 @@ def reviews_page():
     return dict(file="reviews.html",slug="reviews",nav="Reviews",
         title="Reviews | 5.0 Stars from 478 | Wolves Storage Sussex",
         meta="Read Wolves Storage Sussex reviews — rated 5.0 from 478 verified reviews on Google, Checkatrade & Facebook. Family-run, LAPADA accredited & fully insured.",
-        hero=IMG("hero-fleet.webp"),extra_schema=rs,
+        hero=IMG(HERO_ANTIQUE[0]),extra_schema=rs,
         sections=[
-          hero(IMG("hero-fleet.webp"),"Wolves Storage Sussex 5-star rated family team and van fleet in West Sussex","Our Customers Rate Us 5.0",
+          hero(IMG(HERO_ANTIQUE[0]),HERO_ANTIQUE[1],"Our Customers Rate Us 5.0",
             "Don&rsquo;t just take our word for it &mdash; here&rsquo;s what West Sussex families and businesses say about storing with our family team.",
             ["5.0 stars from 478 reviews","Verified on Google, Checkatrade &amp; Facebook","LAPADA accredited &amp; fully insured","Trusted by West Sussex estate agents"],big=False),
           centered("bg-white","What Our Customers Say","Genuine, verified reviews from the families and businesses we&rsquo;ve helped across West Sussex.",review_cards()),
@@ -1040,9 +1067,9 @@ def build():
     P.append(dict(file="index.html",slug="home",nav="Home",
       title="Secure Storage in West Sussex | Wolves Storage Sussex",
       meta="Safe, secure & affordable managed storage in West Sussex from £15/week. We pack, collect, store & redeliver. LAPADA accredited, fully insured, 24/7 CCTV. Free quote.",
-      hero=IMG("hero-facility-van.webp"),extra_schema=VIDEO_SCHEMA,
+      hero=IMG(HERO_WAREHOUSE[0]),extra_schema=VIDEO_SCHEMA,
       sections=[
-        hero(IMG("hero-facility-van.webp"),"Wolves Storage Sussex secure facility and van in West Sussex","Secure Storage in West Sussex",
+        hero(IMG(HERO_WAREHOUSE[0]),HERO_WAREHOUSE[1],"Secure Storage in West Sussex",
           "Need somewhere safe to keep your belongings? Our clean, dry, ultra-secure <strong>containerised storage</strong> suits home and business, short or long-term &mdash; fully managed, including packing, collection and delivery.",
           ["Cost-effective long- and short-term storage","Packing, collection &amp; delivery included","Fully secure, alarmed &amp; insured","Family-run, LAPADA accredited"]),
         split("bg-white","Storage That Flexes Around Your Move",
@@ -1080,7 +1107,7 @@ def build():
     P.append(service("storage-solutions.html","storage","Storage Solutions",
       "Managed Storage in West Sussex | Wolves Storage Sussex",
       "Secure, fully managed storage in West Sussex from £15/week. We pack, collect, store & redeliver. No deposit, fully insured, LAPADA accredited.",
-      IMG("hero-facility-van.webp"),"Wolves Storage Sussex secure facility and van","Secure, Fully Managed Storage in Sussex",
+      IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"Secure, Fully Managed Storage in Sussex",
       "From a few boxes to a whole house, household to business, short stays to long-term &mdash; we tailor secure managed storage to exactly what you need, all from our alarmed Ashington facility.",
       ["Cost-effective long- and short-term storage","Packing, collection &amp; delivery included","Fully secure, alarmed &amp; insured","No deposit, flexible weekly terms"],
       ("How Containerised Storage Works",["Your goods are professionally wrapped and loaded into a private 250 cu ft wooden container (about a one-bedroom flat). Each container is sealed, logged and stacked inside our secure indoor store.","Because everything stays in its own sealed container, your belongings aren&rsquo;t handled again until they come back to you &mdash; cleaner and safer than a drive-up unit."]),
@@ -1092,7 +1119,7 @@ def build():
     P.append(service("long-term-storage.html","longterm","Long-Term Storage",
       "Long-Term Storage West Sussex | Wolves Storage Sussex",
       "Affordable long-term storage in West Sussex from £15/week. Fully insured, 24/7 CCTV, no deposit. Ideal for emigrating, renovations & downsizing.",
-      IMG("hero-forklift.webp"),"Forklift stacking long-term storage containers","Long-Term Storage in West Sussex",
+      IMG(HERO_AERIAL[0]),HERO_AERIAL[1],"Long-Term Storage in West Sussex",
       "Storing for months or years? Our containerised long-term storage keeps your belongings clean, dry and secure &mdash; with better value the longer you stay.",
       ["Better value the longer you store","Clean, dry, sealed containers","Fully insured &amp; 24/7 CCTV","No deposit, simple rolling terms"],
       ("Who Long-Term Storage Suits",["Perfect for working abroad, major renovations, downsizing or settling an estate. Your belongings stay sealed, clean and insured for as long as you need.","Store with total peace of mind and access whenever you need it &mdash; we redeliver the moment you&rsquo;re ready."]),
@@ -1104,7 +1131,7 @@ def build():
     P.append(service("short-term-storage.html","shortterm","Short-Term Storage",
       "Short-Term Storage West Sussex | Wolves Storage Sussex",
       "Flexible short-term storage in West Sussex from £15/week. No deposit, weekly terms, fast collection — perfect for moves & chain delays. Free quote.",
-      IMG("hero-packed-container.webp"),"A storage container packed with wrapped furniture","Short-Term Storage in West Sussex",
+      IMG(HERO_LOADING[0]),HERO_LOADING[1],"Short-Term Storage in West Sussex",
       "Bridging a move, a broken chain or a quick renovation? Flexible weekly short-term storage with no deposit &mdash; we collect, store and bring it all back when you&rsquo;re ready.",
       ["Flexible weekly terms, no deposit","Fast collection &mdash; often within days","We pack, store and redeliver","Fully insured &amp; 24/7 CCTV"],
       ("When Short-Term Storage Helps",["House move delayed? Staging your home for sale? Quick renovation? Short-term storage gives you flexible, secure space for exactly as long as you need.","You pay by the week and stop whenever you like, with collection and redelivery included."]),
@@ -1116,7 +1143,7 @@ def build():
     P.append(service("business-storage.html","business","Business Storage",
       "Business Storage West Sussex | Wolves Storage Sussex",
       "Secure business storage in West Sussex from £15/week — stock, archives & equipment. Fully insured, 24/7 CCTV, collection & redelivery. Free quote.",
-      IMG("hero-containers-van.webp"),"Stacked storage containers for business stock","Business Storage in West Sussex",
+      IMG(HERO_PACKING[0]),HERO_PACKING[1],"Business Storage in West Sussex",
       "Free up your office or premises. We collect, store and redeliver stock, archives and equipment &mdash; fully insured and flexible, so you only pay for the space you need.",
       ["Scale up or down &mdash; no long lease","Stock, archives, equipment &amp; documents","Fully insured &amp; 24/7 CCTV","We collect and redeliver to you"],
       ("Storage That Works for Business",["Running out of space for stock, archives or equipment? Business storage frees up expensive premises while keeping everything secure, insured and easy to retrieve.","Ideal for retailers, ecommerce, tradespeople, offices and businesses relocating."]),
@@ -1129,9 +1156,9 @@ def build():
     P.append(dict(file="how-it-works.html",slug="how",nav="How It Works",
       title="How Our Managed Storage Works | Wolves Storage Sussex",
       meta="How fully managed storage in West Sussex works: we quote, pack, collect, store in secure containers and redeliver. From £15/week, no deposit. Free quote in 24 hours.",
-      hero=IMG("hero-team-loading.webp"),faqs=[("How quickly can you collect?","Often within a few days &mdash; tell us your timescale on your free quote."),("How do I access my belongings?","Give us 24 hours&rsquo; notice and we redeliver to your door across West Sussex."),("What&rsquo;s included?","Packing materials, professional packing, collection, secure container storage and redelivery.")],
+      hero=IMG(HERO_LOADING[0]),faqs=[("How quickly can you collect?","Often within a few days &mdash; tell us your timescale on your free quote."),("How do I access my belongings?","Give us 24 hours&rsquo; notice and we redeliver to your door across West Sussex."),("What&rsquo;s included?","Packing materials, professional packing, collection, secure container storage and redelivery.")],
       sections=[
-        hero(IMG("hero-team-loading.webp"),"Wolves team loading a storage container","How Our Managed Storage Works",
+        hero(IMG(HERO_LOADING[0]),HERO_LOADING[1],"How Our Managed Storage Works",
           "Fully managed means you never hire a van or lift a box. We quote, pack, collect, store and redeliver &mdash; here&rsquo;s exactly how.",
           ["We bring the materials &amp; pack for you","Collection &amp; redelivery included","Sealed, individually logged containers","From &pound;15/week, no deposit"],big=False),
         process(),
@@ -1144,9 +1171,9 @@ def build():
     P.append(dict(file="pricing.html",slug="pricing",nav="Pricing",
       title="Storage Prices West Sussex | Wolves Storage Sussex",
       meta="Transparent storage pricing in West Sussex from £15/week. No deposit, no hidden fees, flexible weekly & 4-week terms. Collection & redelivery included. Free quote.",
-      hero=IMG("hero-packed-container.webp"),faqs=[("How much is storage?","From &pound;15 per week per container with no deposit and no hidden fees."),("Are there any extra fees?","No hidden fees. Optional extras are extended insurance cover and help unpacking."),("Is collection included?","Yes &mdash; collection and redelivery across West Sussex are included.")],
+      hero=IMG(HERO_WAREHOUSE[0]),faqs=[("How much is storage?","From &pound;15 per week per container with no deposit and no hidden fees."),("Are there any extra fees?","No hidden fees. Optional extras are extended insurance cover and help unpacking."),("Is collection included?","Yes &mdash; collection and redelivery across West Sussex are included.")],
       sections=[
-        hero(IMG("hero-packed-container.webp"),"A packed storage container","Simple, Transparent Storage Prices",
+        hero(IMG(HERO_WAREHOUSE[0]),HERO_WAREHOUSE[1],"Simple, Transparent Storage Prices",
           "Storage from just &pound;15 per week with no deposit and no hidden fees. You only pay for the container space you use &mdash; collection and redelivery included.",
           ["From &pound;15 per week, no deposit","Flexible weekly &amp; 4-week terms","Collection &amp; redelivery included","Free quote within 24 hours"],big=False),
         centered("bg-white","What&rsquo;s Always Included","Every storage plan includes the essentials &mdash; no surprises.",
@@ -1253,9 +1280,9 @@ def build():
     P.append(dict(file="areas-we-cover.html",slug="areas",nav="Areas We Cover",
       title="Storage Across West Sussex | Areas We Cover | Wolves",
       meta="Managed storage across West Sussex — Ashington, Storrington, Pulborough, Horsham, Worthing, Steyning, Henfield & more. We collect & redeliver from £15/week.",
-      hero=IMG("hero-fleet.webp"),extra_schema=area_itemlist,
+      hero=IMG(HERO_AERIAL[0]),extra_schema=area_itemlist,
       sections=[
-        hero(IMG("hero-fleet.webp"),"Wolves Storage Sussex van fleet serving West Sussex","Storage Across West Sussex",
+        hero(IMG(HERO_AERIAL[0]),HERO_AERIAL[1],"Storage Across West Sussex",
           "Based in Ashington, we collect from and redeliver across West Sussex &mdash; the managed model means we come to you, wherever you are. Find your town below.",
           ["We collect and redeliver to your door","Dedicated pages for towns across West Sussex","Local, family-run service","From &pound;15/week, no deposit"],big=False),
         centered("bg-lightgrey","Find Storage in Your West Sussex Town","From our Ashington base we serve homes and businesses right across West Sussex. Choose your town for local storage details, or get a free quote.",area_cards()),
@@ -1266,9 +1293,9 @@ def build():
     P.append(dict(file="gallery.html",slug="gallery",nav="Gallery",
       title="Storage Gallery | Wolves Storage Sussex",
       meta="Photos of the Wolves Storage Sussex facility, containers, team and fleet. Secure, alarmed, fully insured managed storage in West Sussex from £15/week.",
-      hero=IMG("hero-containers-van.webp"),
+      hero=IMG(HERO_ANTIQUE[0]),
       sections=[
-        hero(IMG("hero-containers-van.webp"),"Storage containers and van at the Wolves Storage Sussex facility","Our West Sussex Storage Facility",
+        hero(IMG(HERO_ANTIQUE[0]),HERO_ANTIQUE[1],"Our West Sussex Storage Facility",
           "A look inside our secure, alarmed facility &mdash; from our containers and forklift to the friendly family team and fleet.",
           ["Secure, alarmed &amp; 24/7 CCTV","Clean, dry wooden containers","Family-run, LAPADA accredited","From &pound;15/week, no deposit"],big=False),
         gallery([(IMG("hero-facility-van.webp"),"Facility and van"),(IMG("hero-containers-van.webp"),"Containers and van"),
@@ -1285,6 +1312,20 @@ def build():
                  (IMG("gallery-loading.webp"),"Loading a container"),(IMG("hero-packed-container.webp"),"A packed container"),
                  (IMG("wolves-luton-storage-packing-van.webp"),"Branded Wolves Storage Sussex Luton storage van"),
                  (IMG("wolves-removals-team-fleet-vans.webp"),"The family-run Wolves Storage Sussex team and fleet"),
+                 (IMG("team-positioning-wooden-storage-container.webp"),"Positioning a sealed wooden storage container"),
+                 (IMG("carrying-wooden-storage-container-outdoors.webp"),"Carrying a wooden storage container to the van"),
+                 (IMG("wolves-team-loading-luton-van-collection.webp"),"Loading the Luton van on a collection"),
+                 (IMG("loading-box-up-ramp-into-van.webp"),"Loading a packed box up the ramp into the van"),
+                 (IMG("loading-packed-boxes-into-removal-van.webp"),"Loading packed boxes into the van for storage"),
+                 (IMG("team-carrying-wrapped-armchair-to-van.webp"),"Carrying a blanket-wrapped armchair to the van"),
+                 (IMG("carrying-furniture-past-storage-van.webp"),"Carrying furniture past the storage van"),
+                 (IMG("furniture-wrapped-furni-soft-dining-set.webp"),"A dining set protected in Furni-soft wrapping"),
+                 (IMG("wrapping-chair-protective-blanket-container.webp"),"Wrapping a chair in a protective blanket in a container"),
+                 (IMG("wrapping-marble-table-furni-guard.webp"),"Protecting a marble-topped table with Furni-guard"),
+                 (IMG("wrapping-framed-picture-furni-soft.webp"),"Wrapping a framed picture in Furni-soft"),
+                 (IMG("taping-furni-guard-around-furniture-lounge.webp"),"Taping Furni-guard around furniture"),
+                 (IMG("wrapping-fragile-item-protective-paper.webp"),"Wrapping a fragile item in protective paper"),
+                 (IMG("white-glove-antique-painting-handling.webp"),"Handling an antique painting with white gloves"),
                  (IMG("hero-fleet.webp"),"Van fleet"),(IMG("gallery-van.webp"),"Storage van"),
                  (IMG("gallery-clipboard.webp"),"Wolves branded clipboard"),(IMG("hero-team-loading.webp"),"Team loading a container")]),
         cta_band("Like What You See? Get a Free Quote",IMG("gallery-warehouse-b.webp")),
@@ -1293,9 +1334,9 @@ def build():
     P.append(dict(file="about.html",slug="about",nav="About",
       title="About Wolves Storage Sussex | West Sussex Storage",
       meta="Wolves Storage Sussex is a family-run, LAPADA-accredited storage business in Ashington, West Sussex with 10+ years' experience. Fully insured, 24/7 CCTV.",
-      hero=IMG("hero-fleet.webp"),faqs=[("Are you insured and accredited?","Yes &mdash; fully insured, LAPADA accredited and Checkatrade members."),("How long have you been going?","Over 10 years serving West Sussex as a family-run business.")],
+      hero=IMG(HERO_VAN_COLLECT[0]),faqs=[("Are you insured and accredited?","Yes &mdash; fully insured, LAPADA accredited and Checkatrade members."),("How long have you been going?","Over 10 years serving West Sussex as a family-run business.")],
       sections=[
-        hero(IMG("hero-fleet.webp"),"The Wolves family van fleet in West Sussex","A Trusted Family Name in West Sussex",
+        hero(IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"A Trusted Family Name in West Sussex",
           "Wolves Storage Sussex is part of the family-run Wolves Removals business, serving West Sussex for over a decade from our base in Ashington.",
           ["Family-run, 10+ years&rsquo; experience","LAPADA accredited &amp; Checkatrade","Fully insured, 24/7 CCTV","Trusted by Sussex families &amp; businesses"],big=False),
         split("bg-white","Our Story",["What began as a local removals business grew into trusted, fully managed storage &mdash; built on the same family values of care, honesty and genuine local service.","Today we look after the belongings of hundreds of West Sussex families and businesses, from a few boxes to entire homes."],IMG("gallery-loading.webp"),"Wolves team loading a storage container"),
@@ -1307,9 +1348,9 @@ def build():
     P.append(dict(file="contact.html",slug="contact",nav="Contact",
       title="Contact Wolves Storage Sussex | Free Storage Quote",
       meta="Contact Wolves Storage Sussex for a free storage quote within 24 hours. Call 01903 893731 / 07789 390421 or email. Ashington, Pulborough, West Sussex RH20 3JT.",
-      hero=IMG("hero-facility-van.webp"),
+      hero=IMG(HERO_VAN_COLLECT[0]),
       sections=[
-        hero(IMG("hero-facility-van.webp"),"Wolves Storage Sussex facility and van","Get a Free Storage Quote",
+        hero(IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"Get a Free Storage Quote",
           "Tell us what you need to store and we&rsquo;ll send a clear, no-obligation quote within 24 hours &mdash; from just &pound;15 a week.",
           ["Free quote within 24 hours","No deposit, no obligation","From &pound;15/week","Family-run, fully insured"],big=False),
         ('<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container">'+CONTACT_MAIN+'</div></section>'),
@@ -1343,7 +1384,7 @@ def build():
     P.append(dict(file="404.html",slug="404",nav="Page not found",
       title="Page Not Found (404) | Wolves Storage Sussex",
       meta="Sorry, we couldn't find that page. Return to Wolves Storage Sussex for secure managed storage in West Sussex from £15/week.",
-      hero=IMG("hero-facility-van.webp"),
+      hero=IMG(HERO_VAN_COLLECT[0]),
       sections=[centered("bg-white","Page Not Found","Sorry, we couldn&rsquo;t find that page. Let&rsquo;s get you back to storing safely in West Sussex.",
         f'<div class="flex flex-wrap gap-3 justify-center">{btn("Back to Home","index.html","px-8 lg:px-10")}{btn("Contact Us","contact.html","px-8 lg:px-10")}</div>')]))
 
