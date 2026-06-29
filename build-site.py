@@ -1925,108 +1925,170 @@ def build():
         split("bg-white","What&rsquo;s Included",["Every managed storage job includes professional packing materials, careful wrapping, collection from your door, a sealed private container in our alarmed store, and redelivery when you&rsquo;re ready.","Optional extras include extended insurance cover and help unpacking."],IMG("hero-containers-van.webp"),"Storage containers at our facility"),
         split("bg-lightgrey","The Container Explained",["Each wooden container measures 5ft &times; 7ft &times; 8.6ft &mdash; 250 cu ft, roughly the contents of a one-bedroom flat. Containers are sealed, logged and stacked in our secure indoor facility.","Need more space? We simply use additional containers, so you only pay for what you use."],IMG("hero-packed-container.webp"),"A packed storage container",reverse=True),
                 '''<style>
-.hw-expect{background:#F7F5EF;color:#46505a;padding:5.5rem 1.5rem;-webkit-font-smoothing:antialiased;}
-.hw-expect *{box-sizing:border-box;}
-.hw-inner{max-width:62rem;margin:0 auto;}
+.hx-sec{background:#F7F5EF;color:#46505a;padding:5.5rem 1.25rem;}
+.hx-wrap{max-width:1180px;margin:0 auto;}
+.hx-head{max-width:760px;margin:0 auto 3.25rem;}
+.hx-eyebrow{display:inline-flex;align-items:center;gap:.7rem;text-transform:uppercase;letter-spacing:.18em;font-size:.74rem;font-weight:700;color:#FC9700;margin:0 0 1.1rem;}
+.hx-eyebrow::before{content:"";width:28px;height:2px;background:#FC9700;display:inline-block;}
+.hx-h2{font-size:clamp(2rem,4.4vw,2.95rem);line-height:1.08;font-weight:800;color:#23282d;letter-spacing:-.02em;margin:0 0 1.4rem;}
+.hx-h2 em{font-style:normal;color:#FC9700;}
+.hx-lead{font-size:1.13rem;line-height:1.75;color:#46505a;margin:0;}
+.hx-lead::first-letter{float:left;font-size:3.6rem;line-height:.82;font-weight:800;color:#FC9700;padding:.35rem .6rem 0 0;}
 
-/* eyebrow */
-.hw-eyebrow{display:inline-flex;align-items:center;gap:.85rem;text-transform:uppercase;letter-spacing:.18em;font-size:.72rem;font-weight:700;color:#FC9700;margin:0 0 1.4rem;}
-.hw-eyebrow::before{content:"";display:inline-block;width:28px;height:2px;background:#FC9700;}
+.hx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.hx-step{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,#ffffff 0%,#fbfaf6 100%);border:1px solid rgba(35,40,45,.10);border-radius:18px;padding:1.9rem 1.7rem 1.7rem;box-shadow:0 1px 2px rgba(35,40,45,.04);transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease;overflow:hidden;}
+.hx-step::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FC9700,rgba(252,151,0,.25));}
+.hx-step:hover{transform:translateY(-6px);box-shadow:0 18px 38px rgba(35,40,45,.10);border-color:rgba(252,151,0,.45);}
 
-/* headline */
-.hw-h2{margin:0 0 1.9rem;color:#23282d;font-weight:800;font-size:clamp(2rem,4.6vw,3.1rem);line-height:1.08;letter-spacing:-.015em;max-width:20ch;}
-.hw-h2 em{font-style:normal;color:#FC9700;}
+.hx-top{display:flex;align-items:center;gap:.85rem;margin-bottom:1.2rem;}
+.hx-num{flex:none;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;color:#23282d;background:#F7F5EF;border:1px solid rgba(35,40,45,.12);transition:color .28s ease,border-color .28s ease;}
+.hx-step:hover .hx-num{color:#FC9700;border-color:rgba(252,151,0,.4);}
+.hx-icon{flex:none;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(252,151,0,.12);color:#FC9700;}
+.hx-icon svg{width:24px;height:24px;}
+.hx-flow{margin-left:auto;flex:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#FC9700;color:#fff;font-size:1.15rem;line-height:1;box-shadow:0 4px 12px rgba(252,151,0,.35);transition:transform .28s ease;}
+.hx-flow svg{width:18px;height:18px;display:block;transition:transform .28s ease;}
+.hx-step:hover .hx-flow--right svg{transform:translateX(4px);}
+.hx-step:hover .hx-flow--down svg{transform:translateY(4px);}
 
-/* lead with drop cap */
-.hw-lead{margin:0;font-size:clamp(1.05rem,1.7vw,1.25rem);line-height:1.7;color:#46505a;max-width:60ch;}
-.hw-lead::first-letter{float:left;font-size:3.6rem;line-height:.82;font-weight:800;color:#FC9700;padding:.35rem .55rem 0 0;}
+.hx-kicker{text-transform:uppercase;letter-spacing:.16em;font-size:.7rem;font-weight:700;color:#FC9700;margin:0 0 .45rem;}
+.hx-title{font-size:1.28rem;line-height:1.2;font-weight:800;color:#23282d;letter-spacing:-.01em;margin:0 0 .7rem;}
+.hx-summary{font-size:1rem;font-weight:700;color:#23282d;line-height:1.4;margin:0 0 .9rem;}
+.hx-body{font-size:.96rem;line-height:1.68;color:#46505a;margin:0 0 1.4rem;}
+.hx-body strong{color:#FC9700;font-weight:700;}
+.hx-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.5);text-underline-offset:2px;transition:color .2s ease;}
+.hx-body a:hover{color:#FC9700;}
 
-/* hairline above timeline */
-.hw-rule{border:0;border-top:1px solid rgba(35,40,45,.13);margin:3rem 0 0;}
+.hx-chip{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:.5rem;background:#F7F5EF;border:1px solid rgba(252,151,0,.35);color:#23282d;font-size:.78rem;font-weight:700;letter-spacing:.02em;padding:.5rem .85rem;border-radius:999px;}
+.hx-chip svg{width:14px;height:14px;color:#FC9700;flex:none;}
 
-/* TIMELINE */
-.hw-timeline{position:relative;margin:0;padding:0;list-style:none;--spine-x:24px;--node-center:4.3rem;}
+.hx-cta{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;background:linear-gradient(155deg,#23282d 0%,#2f363d 100%);border-radius:18px;padding:2.2rem 1.9rem;color:#fff;overflow:hidden;}
+.hx-cta::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FC9700,rgba(252,151,0,.25));}
+.hx-cta__mark{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:#FC9700;color:#fff;margin-bottom:1.1rem;}
+.hx-cta__mark svg{width:24px;height:24px;}
+.hx-cta__tag{text-transform:uppercase;letter-spacing:.16em;font-size:.68rem;font-weight:700;color:#FC9700;margin:0 0 .5rem;}
+.hx-cta__txt{font-size:1.32rem;font-weight:800;line-height:1.25;letter-spacing:-.01em;margin:0 0 1.4rem;color:#fff;}
+.hx-cta__txt em{font-style:normal;color:#FC9700;}
+.hx-cta__link{display:inline-flex;align-items:center;gap:.55rem;background:#FC9700;color:#23282d;font-weight:800;font-size:.95rem;padding:.75rem 1.3rem;border-radius:999px;text-decoration:none;transition:transform .25s ease,box-shadow .25s ease;}
+.hx-cta__link svg{width:16px;height:16px;transition:transform .25s ease;}
+.hx-cta__link:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(252,151,0,.4);}
+.hx-cta__link:hover svg{transform:translateX(4px);}
 
-.hw-step{position:relative;padding:2.8rem 0 2.8rem 4.6rem;border-bottom:1px solid rgba(35,40,45,.13);}
-.hw-step:last-of-type{border-bottom:0;}
+.hx-note{max-width:820px;margin:3rem auto 0;padding-top:2rem;border-top:1px solid rgba(35,40,45,.13);font-size:1.02rem;line-height:1.75;color:#46505a;}
+.hx-note a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.5);text-underline-offset:2px;transition:color .2s ease;}
+.hx-note a:hover{color:#FC9700;}
 
-/* per-step connector segment = one continuous spine that provably runs node 01 -> node 05 */
-.hw-step::before{content:"";position:absolute;left:var(--spine-x);top:0;bottom:0;width:2px;background:#FC9700;transform:translateX(-50%);}
-.hw-step:first-of-type::before{top:var(--node-center);}
-.hw-step:last-of-type::before{bottom:calc(100% - var(--node-center));}
-
-/* node */
-.hw-node{position:absolute;left:0;top:2.8rem;width:48px;height:48px;border-radius:50%;background:#FC9700;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;letter-spacing:.02em;box-shadow:0 0 0 6px #F7F5EF;z-index:1;}
-
-/* finish node subtle difference */
-.hw-step--finish .hw-node{background:#23282d;box-shadow:0 0 0 6px #F7F5EF,inset 0 0 0 3px #FC9700;}
-
-.hw-kicker{display:block;text-transform:uppercase;letter-spacing:.16em;font-size:.66rem;font-weight:700;color:#FC9700;margin:.15rem 0 .55rem;}
-.hw-h3{margin:0 0 .85rem;color:#23282d;font-weight:800;font-size:clamp(1.25rem,2.2vw,1.55rem);line-height:1.2;letter-spacing:-.01em;}
-.hw-body{margin:0;font-size:1.02rem;line-height:1.72;color:#46505a;max-width:58ch;}
-
-.hw-body strong,.hw-lead strong{color:#FC9700;font-weight:700;}
-.hw-body a,.hw-lead a,.hw-note a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.45);text-underline-offset:3px;transition:color .15s ease,text-decoration-color .15s ease;}
-.hw-body a:hover,.hw-lead a:hover,.hw-note a:hover{color:#FC9700;text-decoration-color:#FC9700;}
-
-/* closing note */
-.hw-note{margin:2.8rem 0 0;padding:0 0 0 4.6rem;font-size:1rem;line-height:1.72;color:#46505a;max-width:62ch;}
-
-@media(max-width:600px){
-  .hw-expect{padding:4rem 1.15rem;}
-  .hw-timeline{--spine-x:18px;--node-center:3.225rem;}
-  .hw-step{padding:2.1rem 0 2.1rem 3.4rem;}
-  .hw-node{width:36px;height:36px;font-size:.78rem;top:2.1rem;box-shadow:0 0 0 5px #F7F5EF;}
-  .hw-step--finish .hw-node{box-shadow:0 0 0 5px #F7F5EF,inset 0 0 0 3px #FC9700;}
-  .hw-note{padding-left:3.4rem;}
-  .hw-lead::first-letter{font-size:3rem;}
+@media(max-width:980px){
+  .hx-grid{grid-template-columns:repeat(2,1fr);}
 }
-</style><section class="hw-expect">
-  <div class="hw-inner">
-    <p class="hw-eyebrow">The managed difference</p>
-    <h2 class="hw-h2">What to Expect From <em>Start to Finish</em></h2>
-    <p class="hw-lead">Fully managed storage is designed to take the heavy lifting &mdash; literally and figuratively &mdash; off your plate. From the first phone call to the day your belongings come home, one dedicated team handles every step, so you always know who you&rsquo;re dealing with and exactly what happens next. Here&rsquo;s what working with us actually looks like.</p>
+@media(max-width:620px){
+  .hx-sec{padding:4rem 1.1rem;}
+  .hx-grid{grid-template-columns:1fr;}
+  .hx-flow--right svg{transform:rotate(90deg);}
+  .hx-step:hover .hx-flow--right svg{transform:rotate(90deg) translateX(4px);}
+}
+@media(prefers-reduced-motion:reduce){
+  .hx-step,.hx-flow svg,.hx-num,.hx-cta__link,.hx-cta__link svg{transition:none;}
+  .hx-step:hover{transform:none;}
+}
+</style><section class="hx-sec">
+  <div class="hx-wrap">
+    <div class="hx-head">
+      <p class="hx-eyebrow">The managed difference</p>
+      <h2 class="hx-h2">What to Expect From <em>Start to Finish</em></h2>
+      <p class="hx-lead">Fully managed storage is designed to take the heavy lifting &mdash; literally and figuratively &mdash; off your plate. From the first phone call to the day your belongings come home, one dedicated team handles every step, so you always know who you&rsquo;re dealing with and exactly what happens next. Here&rsquo;s what working with us actually looks like.</p>
+    </div>
 
-    <hr class="hw-rule">
+    <div class="hx-grid">
 
-    <ol class="hw-timeline">
-      <li class="hw-step">
-        <span class="hw-node">01</span>
-        <span class="hw-kicker">Step one</span>
-        <h3 class="hw-h3">It starts with an honest quote</h3>
-        <p class="hw-body">Tell us roughly what you need to store and your timescale, and we&rsquo;ll send a clear, fixed quote within 24 hours &mdash; from just &pound;15 a week, with no deposit and no hidden fees. Not sure how much space you&rsquo;ll need? Use our <a href="storage-size-guide.html">storage size guide</a> or the calculator on our <a href="pricing.html">pricing page</a> to estimate it in a couple of minutes, or simply tell us the rooms involved and we&rsquo;ll work it out for you.</p>
-      </li>
+      <article class="hx-step">
+        <div class="hx-top">
+          <span class="hx-num">1</span>
+          <span class="hx-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 18c1.5 0 2.4-.9 2.4-2 0-1-.8-1.6-2.2-2-1.2-.3-1.8-.7-1.8-1.4 0-.7.7-1.2 1.6-1.2.9 0 1.5.4 1.7 1"/><path d="M10 15.3h3"/></svg>
+          </span>
+          <span class="hx-flow hx-flow--right" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+        </div>
+        <p class="hx-kicker">Step one</p>
+        <h3 class="hx-title">It starts with an honest quote</h3>
+        <p class="hx-summary">A clear, fixed price within 24 hours.</p>
+        <p class="hx-body">Tell us roughly what you need to store and your timescale, and we&rsquo;ll send a clear, fixed quote within 24 hours &mdash; from just &pound;15 a week, with no deposit and no hidden fees. Not sure how much space you&rsquo;ll need? Use our <a href="storage-size-guide.html">storage size guide</a> or the calculator on our <a href="pricing.html">pricing page</a> to estimate it in a couple of minutes, or simply tell us the rooms involved and we&rsquo;ll work it out for you.</p>
+        <p class="hx-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Within 24 hours</p>
+      </article>
 
-      <li class="hw-step">
-        <span class="hw-node">02</span>
-        <span class="hw-kicker">Step two</span>
-        <h3 class="hw-h3">We pack, wrap and collect</h3>
-        <p class="hw-body">On collection day we arrive with all the materials &mdash; boxes, tape, blankets and wrapping &mdash; and pack your belongings properly, paying particular attention to furniture, electronics and anything fragile. Everything is loaded and sealed into your own wooden container at your door, so there&rsquo;s no van for you to hire and nothing to carry down a shared corridor. As a LAPADA-accredited team, we&rsquo;re trusted with antiques and high-value items as readily as everyday boxes.</p>
-      </li>
+      <article class="hx-step">
+        <div class="hx-top">
+          <span class="hx-num">2</span>
+          <span class="hx-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/><path d="M7.5 5.5l9 5"/></svg>
+          </span>
+          <span class="hx-flow hx-flow--right" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+        </div>
+        <p class="hx-kicker">Step two</p>
+        <h3 class="hx-title">We pack, wrap and collect</h3>
+        <p class="hx-summary">We bring the materials and pack it all for you.</p>
+        <p class="hx-body">On collection day we arrive with all the materials &mdash; boxes, tape, blankets and wrapping &mdash; and pack your belongings properly, paying particular attention to furniture, electronics and anything fragile. Everything is loaded and sealed into your own wooden container at your door, so there&rsquo;s no van for you to hire and nothing to carry down a shared corridor. As a LAPADA-accredited team, we&rsquo;re trusted with antiques and high-value items as readily as everyday boxes.</p>
+        <p class="hx-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7l-8-4-8 4 8 4 8-4z"/><path d="M4 7v8l8 4 8-4V7"/></svg>Materials included</p>
+      </article>
 
-      <li class="hw-step">
-        <span class="hw-node">03</span>
-        <span class="hw-kicker">Step three</span>
-        <h3 class="hw-h3">Your belongings stay sealed and secure</h3>
-        <p class="hw-body">Your sealed container is transported to our alarmed Ashington warehouse, logged, and stacked in a dry, ventilated, 24/7 CCTV-monitored facility. It stays sealed and undisturbed for the whole of its stay &mdash; we don&rsquo;t open it, and the public can&rsquo;t access it. That&rsquo;s what keeps your things protected from damp, dust and tampering, whether they&rsquo;re with us for a fortnight or several years.</p>
-      </li>
+      <article class="hx-step">
+        <div class="hx-top">
+          <span class="hx-num">3</span>
+          <span class="hx-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6l7-3z"/><rect x="9" y="11" width="6" height="5" rx="1"/><path d="M10 11V9.5a2 2 0 0 1 4 0V11"/></svg>
+          </span>
+          <span class="hx-flow hx-flow--down" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M6 13l6 6 6-6"/></svg></span>
+        </div>
+        <p class="hx-kicker">Step three</p>
+        <h3 class="hx-title">Your belongings stay sealed and secure</h3>
+        <p class="hx-summary">Sealed, logged and untouched the whole stay.</p>
+        <p class="hx-body">Your sealed container is transported to our alarmed Ashington warehouse, logged, and stacked in a dry, ventilated, 24/7 CCTV-monitored facility. It stays sealed and undisturbed for the whole of its stay &mdash; we don&rsquo;t open it, and the public can&rsquo;t access it. That&rsquo;s what keeps your things protected from damp, dust and tampering, whether they&rsquo;re with us for a fortnight or several years.</p>
+        <p class="hx-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6l7-3z"/></svg>24/7 CCTV, alarmed</p>
+      </article>
 
-      <li class="hw-step">
-        <span class="hw-node">04</span>
-        <span class="hw-kicker">Step four</span>
-        <h3 class="hw-h3">Access and redelivery on your terms</h3>
-        <p class="hw-body">Need something back, or finished with storage altogether? Give us 24 hours&rsquo; notice and we&rsquo;ll redeliver to your door anywhere across <a href="areas-we-cover.html">West Sussex</a>. Terms are flexible and rolling, so you can extend or end whenever suits &mdash; ideal for <a href="short-term-storage.html">short-term</a> needs like a move or renovation, or <a href="long-term-storage.html">long-term</a> storage while you&rsquo;re away. When you&rsquo;re ready, <a href="contact.html">get a free quote</a> and we&rsquo;ll take care of the rest.</p>
-      </li>
+      <article class="hx-step">
+        <div class="hx-top">
+          <span class="hx-num">4</span>
+          <span class="hx-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h10v9H3z"/><path d="M13 9h4l3 3v3h-7z"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/></svg>
+          </span>
+          <span class="hx-flow hx-flow--right" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+        </div>
+        <p class="hx-kicker">Step four</p>
+        <h3 class="hx-title">Access and redelivery on your terms</h3>
+        <p class="hx-summary">Back to your door on 24 hours&rsquo; notice.</p>
+        <p class="hx-body">Need something back, or finished with storage altogether? Give us 24 hours&rsquo; notice and we&rsquo;ll redeliver to your door anywhere across <a href="areas-we-cover.html">West Sussex</a>. Terms are flexible and rolling, so you can extend or end whenever suits &mdash; ideal for <a href="short-term-storage.html">short-term</a> needs like a move or renovation, or <a href="long-term-storage.html">long-term</a> storage while you&rsquo;re away. When you&rsquo;re ready, <a href="contact.html">get a free quote</a> and we&rsquo;ll take care of the rest.</p>
+        <p class="hx-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>24h notice</p>
+      </article>
 
-      <li class="hw-step hw-step--finish">
-        <span class="hw-node">05</span>
-        <span class="hw-kicker">Step five</span>
-        <h3 class="hw-h3">Built around your move or project</h3>
-        <p class="hw-body">Because we fit around you rather than the other way round, managed storage works for almost any situation &mdash; bridging a delayed completion, clearing a home for sale or renovation, making room for a new arrival, or holding a loved one&rsquo;s belongings after a bereavement. Whatever&rsquo;s behind it, the process stays the same: simple, fully insured, and handled with genuine care from start to finish.</p>
-      </li>
-    </ol>
+      <article class="hx-step">
+        <div class="hx-top">
+          <span class="hx-num">5</span>
+          <span class="hx-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+          </span>
+          <span class="hx-flow hx-flow--right" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+        </div>
+        <p class="hx-kicker">Step five</p>
+        <h3 class="hx-title">Built around your move or project</h3>
+        <p class="hx-summary">Flexible storage that fits any situation.</p>
+        <p class="hx-body">Because we fit around you rather than the other way round, managed storage works for almost any situation &mdash; bridging a delayed completion, clearing a home for sale or renovation, making room for a new arrival, or holding a loved one&rsquo;s belongings after a bereavement. Whatever&rsquo;s behind it, the process stays the same: simple, fully insured, and handled with genuine care from start to finish.</p>
+        <p class="hx-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></svg>Rolling terms, no tie-in</p>
+      </article>
 
-    <p class="hw-note">Have a question we haven&rsquo;t answered yet? Just call us on <a href="tel:+441903893731">01903 893731</a> &mdash; you&rsquo;ll speak to the same family team that will handle your storage, and we&rsquo;re always happy to talk through the options before you commit to anything. You can also see what fits in a container with our <a href="storage-size-guide.html">size guide</a> or browse the full range of <a href="storage-solutions.html">storage solutions</a> we offer across West Sussex.</p>
+      <article class="hx-cta">
+        <span class="hx-cta__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18"/><path d="M5 4h11l-2 3 2 3H5"/><circle cx="5" cy="21" r="0"/></svg>
+        </span>
+        <p class="hx-cta__tag">Destination</p>
+        <p class="hx-cta__txt">And that&rsquo;s it &mdash; <em>your things are home</em></p>
+        <a class="hx-cta__link" href="contact.html">Get a free quote
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+      </article>
+
+    </div>
+
+    <p class="hx-note">Have a question we haven&rsquo;t answered yet? Just call us on <a href="tel:+441903893731">01903 893731</a> &mdash; you&rsquo;ll speak to the same family team that will handle your storage, and we&rsquo;re always happy to talk through the options before you commit to anything. You can also see what fits in a container with our <a href="storage-size-guide.html">size guide</a> or browse the full range of <a href="storage-solutions.html">storage solutions</a> we offer across West Sussex.</p>
   </div>
 </section>''',
         faq([("How quickly can you collect?","Often within a few days &mdash; tell us your timescale on your free quote."),("How do I access my belongings?","Give us 24 hours&rsquo; notice and we redeliver to your door across West Sussex."),("What&rsquo;s included?","Packing materials, professional packing, collection, secure container storage and redelivery.")]),
