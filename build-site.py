@@ -101,7 +101,7 @@ SPLIT_CSS=('<style>'
   '</style>')
 def split(bg, h2, paras, img, alt, reverse=False):
     body = "".join(f'<p>{p}</p>' for p in paras)
-    txt = (f'<div class="col-span-12 lg:col-span-6 {"lg:col-start-7" if reverse else "lg:col-start-2"}">'
+    txt = (f'<div class="col-span-12 lg:col-span-6 {"lg:col-start-6" if reverse else "lg:col-start-2"}">'
            f'<h2 class="relative leading-tight text-black">{h2}</h2><span class="sp-rule" aria-hidden="true"></span>{body}</div>')
     pic = (f'<div class="col-span-12 lg:col-span-4 {"lg:col-start-2" if reverse else "lg:col-start-8"}">'
            f'<div class="sp-figure"><div class="sp-img relative h-56 sm:h-72 lg:h-full">'
