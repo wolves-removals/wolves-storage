@@ -177,13 +177,15 @@ VIDEO_POSTER="storage-container-promo-poster.webp"   # exact title-card frame ba
 def video_promo():
     # Baked 16:9 poster (the clip's title-card frame) guarantees the same landscape
     # still on every device before play; width/height reserve the box (no CLS).
-    inner=('<div class="relative rounded-2xl overflow-hidden shadow-custom mx-auto" style="max-width:56rem;border:1px solid #E7E7E7;background:#000">'
+    inner=('<div class="mx-auto" style="max-width:56rem">'
+           '<div class="relative rounded-2xl overflow-hidden shadow-custom" style="border:1px solid #E7E7E7;background:#000">'
            f'<video class="block w-full" controls preload="metadata" playsinline width="1280" height="720" poster="{IMG(VIDEO_POSTER)}" '
            'style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;background:#000;display:block" '
            'aria-label="Wolves Storage Sussex managed container storage video">'
            '<source src="/videos/storage-container-promo-b.mp4" type="video/mp4">'
            'Your browser does not support embedded video. </video></div>'
-           '<p class="text-darkgrey mt-4">Our team loading and storing mobile storage containers securely at our Sussex depot.</p>')
+           '<p class="text-darkgrey mt-4 text-center">Our team loading and storing mobile storage containers securely at our Sussex depot.</p>'
+           '</div>')
     return centered("bg-lightgrey","Secure Storage with Wolves Removals","",inner)
 VIDEO_SCHEMA='<script type="application/ld+json">'+json.dumps({
   "@context":"https://schema.org","@type":"VideoObject",
