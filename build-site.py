@@ -1052,7 +1052,7 @@ def build():
         split("bg-lightgrey","Why Store With Wolves Storage Sussex?",
           ["We don&rsquo;t just store boxes &mdash; we look after your home. Our trained, fully insured family team treats every item as if it were our own, from professional packing to careful stacking in our secure West Sussex facility.",
            "LAPADA accredited and Checkatrade members, with 24/7 CCTV, an alarmed store and full insurance &mdash; trusted by Sussex families and businesses for over 10 years."],
-          IMG("hero-forklift.webp"),"Forklift stacking storage containers in our secure West Sussex warehouse",reverse=True),
+          IMG("forklift-loading-storage-container-sussex.webp"),"Wolves Storage Sussex operator loading a sealed wooden storage container with a CAT forklift at our secure West Sussex facility",reverse=True),
         process(),
         video_promo(),
         gallery([(IMG("wolves-operator-forklift-storage-containers.webp"),"Operator moving sealed storage containers by forklift"),(IMG("gallery-warehouse-a.webp"),"Stacked storage containers"),
