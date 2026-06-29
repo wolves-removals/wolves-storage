@@ -324,7 +324,7 @@ WHYUS_CONTENT = {
    "Why Store With Wolves Storage Sussex?",
    "We&rsquo;re a friendly, family-run Sussex removals and storage company that has kept its promises since 2016. From a single item to the contents of a whole house, every job is fully insured and run by a dedicated coordinator, so you always have one point of contact.",
    "As a "+_wl("about.html","LAPADA member")+" and a Checkatrade-verified team, we handle it all with real care &mdash; expert packing, sealed "+_wl("storage-solutions.html","containerised storage")+" and flexible "+_wl("short-term-storage.html","short-term")+" and "+_wl("long-term-storage.html","long-term")+" options across West Sussex, Surrey, Hampshire and Kent.",
-   "/images/hero-forklift.webp","Wolves Storage Sussex team member operating a forklift at our secure West Sussex facility"),
+   "/images/wolves-forklift-operator-loading-container.webp","Wolves Storage Sussex operator loading a sealed wooden storage container with a forklift at our secure West Sussex facility"),
  'storage-solutions.html':(
    "Why Choose Wolves for Managed Storage?",
    "Storing with us isn&rsquo;t self-service. As a family-run Sussex business trusted since 2016, we pack, collect, seal and stack your belongings into their own logged container &mdash; then bring them back when you&rsquo;re ready, all overseen by one dedicated coordinator.",
