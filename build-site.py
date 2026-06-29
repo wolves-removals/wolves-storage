@@ -2305,7 +2305,7 @@ def build():
             '</style>'
             '<div id="lmmap" class="lm-map" role="application" aria-label="Interactive map of West Sussex showing the towns we cover from our Ashington base"></div>'
             '<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" '
-            'integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>'
+            'integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>'
             '<script>(function(){var T='+towns_js+';'
             'function go(){if(!window.L){return setTimeout(go,60);}'
             'var map=L.map("lmmap",{scrollWheelZoom:false,zoomControl:true,attributionControl:true});'
@@ -2638,7 +2638,7 @@ def build():
          f'<li class="flex items-center gap-3">{SVG_PHONE}<a class="hover:text-orange" href="tel:+447789390421">{PHONE2}</a></li>'
          f'<li class="flex items-center gap-3">{SVG_MAIL}<a class="hover:text-orange" href="mailto:{EMAIL}">{EMAIL}</a></li></ul>'
          '<p class="mt-4 text-sm text-darkgrey">Office hours: Mon&ndash;Fri 8:30am&ndash;6pm &middot; Sat 9am&ndash;4pm</p></div>'
-         '<div class="col-span-12 lg:col-span-7"><iframe title="Wolves Storage Sussex location" src="https://www.google.com/maps?q=RH20%203JT&t=&z=13&ie=UTF8&iwloc=&output=embed" class="block w-full rounded-xl shadow-custom" style="border:0;height:380px"></iframe></div></div></div></section>'),
+         '<div class="col-span-12 lg:col-span-7"><iframe title="Wolves Storage Sussex location" src="https://www.google.com/maps?q=RH20%203JT&t=&z=13&ie=UTF8&iwloc=&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="block w-full rounded-xl shadow-custom" style="border:0;height:380px"></iframe></div></div></div></section>'),
       ]))
     # P0 content assets
     P.append(size_guide_page())
