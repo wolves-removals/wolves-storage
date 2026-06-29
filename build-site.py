@@ -1193,11 +1193,13 @@ def town(t):
     elif expand: secs.append(town_situations(t))
     areas = town_areas(t) if expand else town_nearby(t)
     secs+=[process(),town_map(t),areas,faq(fq),cta_band(t["cta"],IMG("gallery-warehouse-b.webp"))]
+    pc1=re.split(r'&ndash;|&amp;|,|–',TOWN_INFO.get(t["slug"],{}).get("pc",""))[0].strip()
+    ttitle=f'Storage in {t["town"]}'+(f' ({pc1})' if pc1 else '')+' | From &pound;15/wk, We Collect'
     gd={}
     if t.get("lat") and t.get("lng"):
         gd=dict(geo_pos=f'{t["lat"]};{t["lng"]}', geo_place=f'{t["town"]}, {t.get("region","West Sussex")}')
     return dict(file=t["slug"]+".html",slug="town",nav="Storage in "+t["town"],
-        title=t["title"],meta=t["meta"],hero=th[0],faqs=fq,
+        title=ttitle,meta=t["meta"],hero=th[0],faqs=fq,
         crumb_parent=("areas-we-cover.html","Areas We Cover"),extra_schema=town_service_schema(t),
         sections=secs,**gd)
 
