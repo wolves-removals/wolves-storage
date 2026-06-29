@@ -1924,23 +1924,111 @@ def build():
         process(),
         split("bg-white","What&rsquo;s Included",["Every managed storage job includes professional packing materials, careful wrapping, collection from your door, a sealed private container in our alarmed store, and redelivery when you&rsquo;re ready.","Optional extras include extended insurance cover and help unpacking."],IMG("hero-containers-van.webp"),"Storage containers at our facility"),
         split("bg-lightgrey","The Container Explained",["Each wooden container measures 5ft &times; 7ft &times; 8.6ft &mdash; 250 cu ft, roughly the contents of a one-bedroom flat. Containers are sealed, logged and stacked in our secure indoor facility.","Need more space? We simply use additional containers, so you only pay for what you use."],IMG("hero-packed-container.webp"),"A packed storage container",reverse=True),
-        ('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="max-w-4xl mx-auto">'
-         '<span class="block text-orange font-bold uppercase tracking-wider text-sm mb-2">The managed difference</span>'
-         '<h2 class="leading-tight text-black">What to Expect From Start to Finish</h2>'
-         '<div class="mt-5 text-darkgrey text-lg">'
-         '<p>Fully managed storage is designed to take the heavy lifting &mdash; literally and figuratively &mdash; off your plate. From the first phone call to the day your belongings come home, one dedicated team handles every step, so you always know who you&rsquo;re dealing with and exactly what happens next. Here&rsquo;s what working with us actually looks like.</p>'
-         '<h3 class="text-black font-bold text-xl mt-7 mb-2">It starts with an honest quote</h3>'
-         '<p>Tell us roughly what you need to store and your timescale, and we&rsquo;ll send a clear, fixed quote within 24 hours &mdash; from just &pound;15 a week, with no deposit and no hidden fees. Not sure how much space you&rsquo;ll need? Use our <a href="storage-size-guide.html">storage size guide</a> or the calculator on our <a href="pricing.html">pricing page</a> to estimate it in a couple of minutes, or simply tell us the rooms involved and we&rsquo;ll work it out for you.</p>'
-         '<h3 class="text-black font-bold text-xl mt-7 mb-2">We pack, wrap and collect</h3>'
-         '<p>On collection day we arrive with all the materials &mdash; boxes, tape, blankets and wrapping &mdash; and pack your belongings properly, paying particular attention to furniture, electronics and anything fragile. Everything is loaded and sealed into your own wooden container at your door, so there&rsquo;s no van for you to hire and nothing to carry down a shared corridor. As a LAPADA-accredited team, we&rsquo;re trusted with antiques and high-value items as readily as everyday boxes.</p>'
-         '<h3 class="text-black font-bold text-xl mt-7 mb-2">Your belongings stay sealed and secure</h3>'
-         '<p>Your sealed container is transported to our alarmed Ashington warehouse, logged, and stacked in a dry, ventilated, 24/7 CCTV-monitored facility. It stays sealed and undisturbed for the whole of its stay &mdash; we don&rsquo;t open it, and the public can&rsquo;t access it. That&rsquo;s what keeps your things protected from damp, dust and tampering, whether they&rsquo;re with us for a fortnight or several years.</p>'
-         '<h3 class="text-black font-bold text-xl mt-7 mb-2">Access and redelivery on your terms</h3>'
-         '<p>Need something back, or finished with storage altogether? Give us 24 hours&rsquo; notice and we&rsquo;ll redeliver to your door anywhere across <a href="areas-we-cover.html">West Sussex</a>. Terms are flexible and rolling, so you can extend or end whenever suits &mdash; ideal for <a href="short-term-storage.html">short-term</a> needs like a move or renovation, or <a href="long-term-storage.html">long-term</a> storage while you&rsquo;re away. When you&rsquo;re ready, <a href="contact.html">get a free quote</a> and we&rsquo;ll take care of the rest.</p>'
-         '<h3 class="text-black font-bold text-xl mt-7 mb-2">Built around your move or project</h3>'
-         '<p>Because we fit around you rather than the other way round, managed storage works for almost any situation &mdash; bridging a delayed completion, clearing a home for sale or renovation, making room for a new arrival, or holding a loved one&rsquo;s belongings after a bereavement. Whatever&rsquo;s behind it, the process stays the same: simple, fully insured, and handled with genuine care from start to finish.</p>'
-         '<p class="mt-4">Have a question we haven&rsquo;t answered yet? Just call us on <a href="tel:+441903893731">01903 893731</a> &mdash; you&rsquo;ll speak to the same family team that will handle your storage, and we&rsquo;re always happy to talk through the options before you commit to anything. You can also see what fits in a container with our <a href="storage-size-guide.html">size guide</a> or browse the full range of <a href="storage-solutions.html">storage solutions</a> we offer across West Sussex.</p>'
-         '</div></div></div></section>'),
+                '''<style>
+.hw-expect{background:#F7F5EF;color:#46505a;padding:5.5rem 1.5rem;-webkit-font-smoothing:antialiased;}
+.hw-expect *{box-sizing:border-box;}
+.hw-inner{max-width:62rem;margin:0 auto;}
+
+/* eyebrow */
+.hw-eyebrow{display:inline-flex;align-items:center;gap:.85rem;text-transform:uppercase;letter-spacing:.18em;font-size:.72rem;font-weight:700;color:#FC9700;margin:0 0 1.4rem;}
+.hw-eyebrow::before{content:"";display:inline-block;width:28px;height:2px;background:#FC9700;}
+
+/* headline */
+.hw-h2{margin:0 0 1.9rem;color:#23282d;font-weight:800;font-size:clamp(2rem,4.6vw,3.1rem);line-height:1.08;letter-spacing:-.015em;max-width:20ch;}
+.hw-h2 em{font-style:normal;color:#FC9700;}
+
+/* lead with drop cap */
+.hw-lead{margin:0;font-size:clamp(1.05rem,1.7vw,1.25rem);line-height:1.7;color:#46505a;max-width:60ch;}
+.hw-lead::first-letter{float:left;font-size:3.6rem;line-height:.82;font-weight:800;color:#FC9700;padding:.35rem .55rem 0 0;}
+
+/* hairline above timeline */
+.hw-rule{border:0;border-top:1px solid rgba(35,40,45,.13);margin:3rem 0 0;}
+
+/* TIMELINE */
+.hw-timeline{position:relative;margin:0;padding:0;list-style:none;--spine-x:24px;--node-center:4.3rem;}
+
+.hw-step{position:relative;padding:2.8rem 0 2.8rem 4.6rem;border-bottom:1px solid rgba(35,40,45,.13);}
+.hw-step:last-of-type{border-bottom:0;}
+
+/* per-step connector segment = one continuous spine that provably runs node 01 -> node 05 */
+.hw-step::before{content:"";position:absolute;left:var(--spine-x);top:0;bottom:0;width:2px;background:#FC9700;transform:translateX(-50%);}
+.hw-step:first-of-type::before{top:var(--node-center);}
+.hw-step:last-of-type::before{bottom:calc(100% - var(--node-center));}
+
+/* node */
+.hw-node{position:absolute;left:0;top:2.8rem;width:48px;height:48px;border-radius:50%;background:#FC9700;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;letter-spacing:.02em;box-shadow:0 0 0 6px #F7F5EF;z-index:1;}
+
+/* finish node subtle difference */
+.hw-step--finish .hw-node{background:#23282d;box-shadow:0 0 0 6px #F7F5EF,inset 0 0 0 3px #FC9700;}
+
+.hw-kicker{display:block;text-transform:uppercase;letter-spacing:.16em;font-size:.66rem;font-weight:700;color:#FC9700;margin:.15rem 0 .55rem;}
+.hw-h3{margin:0 0 .85rem;color:#23282d;font-weight:800;font-size:clamp(1.25rem,2.2vw,1.55rem);line-height:1.2;letter-spacing:-.01em;}
+.hw-body{margin:0;font-size:1.02rem;line-height:1.72;color:#46505a;max-width:58ch;}
+
+.hw-body strong,.hw-lead strong{color:#FC9700;font-weight:700;}
+.hw-body a,.hw-lead a,.hw-note a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.45);text-underline-offset:3px;transition:color .15s ease,text-decoration-color .15s ease;}
+.hw-body a:hover,.hw-lead a:hover,.hw-note a:hover{color:#FC9700;text-decoration-color:#FC9700;}
+
+/* closing note */
+.hw-note{margin:2.8rem 0 0;padding:0 0 0 4.6rem;font-size:1rem;line-height:1.72;color:#46505a;max-width:62ch;}
+
+@media(max-width:600px){
+  .hw-expect{padding:4rem 1.15rem;}
+  .hw-timeline{--spine-x:18px;--node-center:3.225rem;}
+  .hw-step{padding:2.1rem 0 2.1rem 3.4rem;}
+  .hw-node{width:36px;height:36px;font-size:.78rem;top:2.1rem;box-shadow:0 0 0 5px #F7F5EF;}
+  .hw-step--finish .hw-node{box-shadow:0 0 0 5px #F7F5EF,inset 0 0 0 3px #FC9700;}
+  .hw-note{padding-left:3.4rem;}
+  .hw-lead::first-letter{font-size:3rem;}
+}
+</style><section class="hw-expect">
+  <div class="hw-inner">
+    <p class="hw-eyebrow">The managed difference</p>
+    <h2 class="hw-h2">What to Expect From <em>Start to Finish</em></h2>
+    <p class="hw-lead">Fully managed storage is designed to take the heavy lifting &mdash; literally and figuratively &mdash; off your plate. From the first phone call to the day your belongings come home, one dedicated team handles every step, so you always know who you&rsquo;re dealing with and exactly what happens next. Here&rsquo;s what working with us actually looks like.</p>
+
+    <hr class="hw-rule">
+
+    <ol class="hw-timeline">
+      <li class="hw-step">
+        <span class="hw-node">01</span>
+        <span class="hw-kicker">Step one</span>
+        <h3 class="hw-h3">It starts with an honest quote</h3>
+        <p class="hw-body">Tell us roughly what you need to store and your timescale, and we&rsquo;ll send a clear, fixed quote within 24 hours &mdash; from just &pound;15 a week, with no deposit and no hidden fees. Not sure how much space you&rsquo;ll need? Use our <a href="storage-size-guide.html">storage size guide</a> or the calculator on our <a href="pricing.html">pricing page</a> to estimate it in a couple of minutes, or simply tell us the rooms involved and we&rsquo;ll work it out for you.</p>
+      </li>
+
+      <li class="hw-step">
+        <span class="hw-node">02</span>
+        <span class="hw-kicker">Step two</span>
+        <h3 class="hw-h3">We pack, wrap and collect</h3>
+        <p class="hw-body">On collection day we arrive with all the materials &mdash; boxes, tape, blankets and wrapping &mdash; and pack your belongings properly, paying particular attention to furniture, electronics and anything fragile. Everything is loaded and sealed into your own wooden container at your door, so there&rsquo;s no van for you to hire and nothing to carry down a shared corridor. As a LAPADA-accredited team, we&rsquo;re trusted with antiques and high-value items as readily as everyday boxes.</p>
+      </li>
+
+      <li class="hw-step">
+        <span class="hw-node">03</span>
+        <span class="hw-kicker">Step three</span>
+        <h3 class="hw-h3">Your belongings stay sealed and secure</h3>
+        <p class="hw-body">Your sealed container is transported to our alarmed Ashington warehouse, logged, and stacked in a dry, ventilated, 24/7 CCTV-monitored facility. It stays sealed and undisturbed for the whole of its stay &mdash; we don&rsquo;t open it, and the public can&rsquo;t access it. That&rsquo;s what keeps your things protected from damp, dust and tampering, whether they&rsquo;re with us for a fortnight or several years.</p>
+      </li>
+
+      <li class="hw-step">
+        <span class="hw-node">04</span>
+        <span class="hw-kicker">Step four</span>
+        <h3 class="hw-h3">Access and redelivery on your terms</h3>
+        <p class="hw-body">Need something back, or finished with storage altogether? Give us 24 hours&rsquo; notice and we&rsquo;ll redeliver to your door anywhere across <a href="areas-we-cover.html">West Sussex</a>. Terms are flexible and rolling, so you can extend or end whenever suits &mdash; ideal for <a href="short-term-storage.html">short-term</a> needs like a move or renovation, or <a href="long-term-storage.html">long-term</a> storage while you&rsquo;re away. When you&rsquo;re ready, <a href="contact.html">get a free quote</a> and we&rsquo;ll take care of the rest.</p>
+      </li>
+
+      <li class="hw-step hw-step--finish">
+        <span class="hw-node">05</span>
+        <span class="hw-kicker">Step five</span>
+        <h3 class="hw-h3">Built around your move or project</h3>
+        <p class="hw-body">Because we fit around you rather than the other way round, managed storage works for almost any situation &mdash; bridging a delayed completion, clearing a home for sale or renovation, making room for a new arrival, or holding a loved one&rsquo;s belongings after a bereavement. Whatever&rsquo;s behind it, the process stays the same: simple, fully insured, and handled with genuine care from start to finish.</p>
+      </li>
+    </ol>
+
+    <p class="hw-note">Have a question we haven&rsquo;t answered yet? Just call us on <a href="tel:+441903893731">01903 893731</a> &mdash; you&rsquo;ll speak to the same family team that will handle your storage, and we&rsquo;re always happy to talk through the options before you commit to anything. You can also see what fits in a container with our <a href="storage-size-guide.html">size guide</a> or browse the full range of <a href="storage-solutions.html">storage solutions</a> we offer across West Sussex.</p>
+  </div>
+</section>''',
         faq([("How quickly can you collect?","Often within a few days &mdash; tell us your timescale on your free quote."),("How do I access my belongings?","Give us 24 hours&rsquo; notice and we redeliver to your door across West Sussex."),("What&rsquo;s included?","Packing materials, professional packing, collection, secure container storage and redelivery.")]),
         cta_band("Ready to Get Started?",IMG("gallery-warehouse-b.webp")),
       ]))
