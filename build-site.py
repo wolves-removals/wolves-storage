@@ -1258,7 +1258,7 @@ TOWN_LOCAL = {
 TOWNS = [
  dict(slug="storage-ashington",town="Ashington",lat="50.9270",lng="-0.4470",
   title="Storage in Ashington | Wolves Storage Sussex",
-  meta="Managed container storage in Ashington, West Sussex from £15/week. We're based in the village — we pack, collect, store and redeliver. Free quote in 24 hours.",
+  meta="Managed container storage in Ashington, West Sussex from £15/week. We're based in the village — we pack, collect, store and redeliver.",
   hero="hero-facility-van.webp",hero_alt="Wolves Storage Sussex facility and van in Ashington, West Sussex",
   sub="We&rsquo;re based right here in Ashington &mdash; clean, dry, fully managed container storage on your doorstep, from just &pound;15 a week with collection and redelivery included.",
   checks=["Our storage facility is in Ashington (RH20 3JT)","We pack, collect, seal &amp; store for you","Alarmed, 24/7 CCTV &amp; fully insured","From &pound;15/week, no deposit"],
@@ -1282,7 +1282,7 @@ TOWNS = [
         ("Is my storage insured and secure?","Yes &mdash; sealed wooden containers in an alarmed, 24/7 CCTV indoor warehouse, fully insured, LAPADA accredited and Checkatrade-verified.")]),
  dict(slug="storage-washington",town="Washington",lat="50.9090",lng="-0.4170",
   title="Storage in Washington | Wolves Storage Sussex",
-  meta="Secure managed storage in Washington, West Sussex from £15/week. Minutes from our Ashington base — we collect, store and redeliver. Fully insured. Free quote.",
+  meta="Secure managed storage in Washington, West Sussex from £15/week. Minutes from our Ashington base — we collect, store and redeliver.",
   hero="hero-containers-van.webp",hero_alt="Wolves Storage Sussex containers and van serving Washington, West Sussex",
   sub="Just down the A24 from our base, Washington gets the same fast, fully managed container storage &mdash; we collect from your door, store securely and redeliver, from &pound;15 a week.",
   checks=["Minutes from our Ashington (RH20) base","Door-to-door collection &amp; redelivery","Sealed containers, alarmed &amp; insured","From &pound;15/week, no deposit"],
@@ -1330,7 +1330,7 @@ TOWNS = [
         ("Is my container secure?","Yes &mdash; sealed and stored in an alarmed, 24/7 CCTV indoor warehouse, fully insured.")]),
  dict(slug="storage-pulborough",town="Pulborough",lat="50.9580",lng="-0.5130",
   title="Storage in Pulborough | Wolves Storage Sussex",
-  meta="Secure managed storage in Pulborough, West Sussex from £15/week. On your doorstep (RH20) — we pack, collect, store and redeliver. Fully insured. Free quote.",
+  meta="Secure managed storage in Pulborough, West Sussex from £15/week. On your doorstep (RH20) — we pack, collect, store and redeliver. Fully insured.",
   hero="hero-fleet.webp",hero_alt="Wolves Storage Sussex van fleet serving Pulborough, West Sussex",
   sub="Pulborough shares our RH20 postcode &mdash; managed container storage right on your doorstep, from &pound;15 a week, with packing, collection and redelivery all included.",
   checks=["Same RH20 area as our base","Packing, collection &amp; redelivery included","Sealed, dry, alarmed &amp; insured","From &pound;15/week, no deposit"],
@@ -1378,7 +1378,7 @@ TOWNS = [
         ("Is everything insured and secure?","Yes &mdash; sealed containers in an alarmed, 24/7 CCTV indoor warehouse, fully insured and LAPADA accredited.")]),
  dict(slug="storage-steyning",town="Steyning",lat="50.8900",lng="-0.3290",
   title="Storage in Steyning | Wolves Storage Sussex",
-  meta="Secure managed storage in Steyning, West Sussex from £15/week. We collect from your door, seal and store securely — fully insured, no deposit. Free quote.",
+  meta="Secure managed storage in Steyning, West Sussex from £15/week. We collect from your door, seal and store securely — fully insured, no deposit.",
   hero="hero-containers-van.webp",hero_alt="Wolves Storage Sussex containers and van serving Steyning, West Sussex",
   sub="Storage for Steyning, Bramber and Upper Beeding &mdash; we collect from your door, seal your belongings into secure containers and redeliver when you need them, from &pound;15 a week.",
   checks=["Covering Steyning, Bramber &amp; Beeding","Door collection &amp; redelivery included","Sealed, dry, alarmed &amp; insured","From &pound;15/week, no deposit"],
@@ -1402,7 +1402,7 @@ TOWNS = [
         ("Is my storage insured?","Yes &mdash; sealed containers kept in an alarmed, 24/7 CCTV indoor facility, fully insured.")]),
  dict(slug="storage-billingshurst",town="Billingshurst",lat="51.0220",lng="-0.4530",
   title="Storage in Billingshurst | Wolves Storage Sussex",
-  meta="Managed container storage in Billingshurst (RH14) from £15/week. We pack, collect, store and redeliver — no deposit, fully insured. Free quote in 24 hours.",
+  meta="Managed container storage in Billingshurst (RH14) from £15/week. We pack, collect, store and redeliver — no deposit, fully insured.",
   hero="hero-team-loading.webp",hero_alt="Wolves Storage Sussex team loading a container for Billingshurst",
   sub="Managed storage for Billingshurst and the RH14 villages &mdash; we pack, collect and seal your belongings into secure containers, then redeliver when you&rsquo;re ready, from &pound;15 a week.",
   checks=["Covering Billingshurst &amp; RH14 villages","We pack, collect &amp; seal for you","Dry, alarmed &amp; fully insured","From &pound;15/week, no deposit"],
@@ -1426,7 +1426,7 @@ TOWNS = [
         ("Is my container secure and insured?","Yes &mdash; sealed and stored in an alarmed, 24/7 CCTV indoor warehouse, fully insured.")]),
  dict(slug="storage-horsham",town="Horsham",lat="51.0630",lng="-0.3270",
   title="Storage in Horsham | Wolves Storage Sussex",
-  meta="Managed storage in Horsham, West Sussex from £15/week. We collect across RH12 and RH13, store securely and redeliver — no deposit, fully insured. Free quote.",
+  meta="Managed storage in Horsham, West Sussex from £15/week. We collect across RH12 and RH13, store securely and redeliver — no deposit, fully insured.",
   hero="hero-facility-van.webp",hero_alt="Wolves Storage Sussex facility and van serving Horsham, West Sussex",
   sub="Fully managed container storage across Horsham &mdash; we collect from anywhere in RH12 and RH13, store your sealed belongings securely and redeliver on request, from &pound;15 a week.",
   checks=["Collecting across RH12 &amp; RH13","Packing, collection &amp; redelivery included","Sealed, alarmed, 24/7 CCTV &amp; insured","From &pound;15/week, no deposit"],
@@ -1452,7 +1452,7 @@ TOWNS = [
         ("Are my belongings insured in Horsham?","Yes &mdash; sealed containers in an alarmed, 24/7 CCTV indoor warehouse, fully insured and LAPADA accredited.")]),
  dict(slug="storage-worthing",town="Worthing",lat="50.8180",lng="-0.3720",
   title="Storage in Worthing | Wolves Storage Sussex",
-  meta="Managed storage in Worthing, West Sussex from £15/week. We collect across BN11–BN14 — ideal for moves, downsizing & students. No deposit. Free quote.",
+  meta="Managed storage in Worthing, West Sussex from £15/week. We collect across BN11–BN14 — ideal for moves, downsizing & students. No deposit.",
   hero="hero-fleet.webp",hero_alt="Wolves Storage Sussex van fleet serving Worthing, West Sussex",
   sub="Fully managed container storage across Worthing &mdash; we collect from anywhere in BN11 to BN14, store your sealed belongings securely and redeliver on request, from &pound;15 a week.",
   checks=["Collecting across BN11&ndash;BN14","Packing, collection &amp; redelivery included","Sealed, alarmed, 24/7 CCTV &amp; insured","From &pound;15/week, no deposit"],
@@ -1522,7 +1522,7 @@ def size_guide_page():
     inner1=('<p class="text-lg xl:text-xl font-medium mt-2 max-w-3xl mx-auto">Not sure how much storage you need? Use this quick guide to estimate how many containers your home or business will fill &mdash; then get an exact figure on your free quote.</p>'+size_cards())
     return dict(file="storage-size-guide.html",slug="guide",nav="Storage Size Guide",
       title="How Much Storage Do I Need? | Wolves Storage Sussex",
-      meta="How much storage do you need? Our West Sussex size guide shows what fits in a 250 cu ft container, room by room. From £15/week, no deposit. Free quote.",
+      meta="How much storage do you need? Our West Sussex size guide shows what fits in a 250 cu ft container, room by room. From £15/week, no deposit.",
       hero=IMG(HERO_WAREHOUSE[0]),faqs=faqs,
       crumb_parent=("how-it-works.html","How It Works"),
       sections=[
@@ -1704,7 +1704,7 @@ def reviews_page():
         "review":[{"@type":"Review","author":{"@type":"Person","name":n},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5","worstRating":"1"},"reviewBody":html.unescape(r)} for n,r in REVIEWS]},ensure_ascii=False)+'</script>')
     return dict(file="reviews.html",slug="reviews",nav="Reviews",
         title="Reviews | 5.0 Stars from 478 | Wolves Storage Sussex",
-        meta="Read Wolves Storage Sussex reviews — rated 5.0 from 478 verified reviews on Google, Checkatrade & Facebook. Family-run & fully insured. Get a free quote.",
+        meta="Read Wolves Storage Sussex reviews — rated 5.0 from 478 verified reviews on Google, Checkatrade & Facebook. Family-run & fully insured.",
         hero=IMG(HERO_ANTIQUE[0]),extra_schema=rs,
         sections=[
           hero(IMG(HERO_ANTIQUE[0]),HERO_ANTIQUE[1],"Our Storage Customers Rate Us 5.0",
@@ -1780,7 +1780,7 @@ def build():
     # HOME
     P.append(dict(file="index.html",slug="home",nav="Home",
       title="Secure Storage in West Sussex | Wolves Storage Sussex",
-      meta="Secure managed storage in West Sussex from £15/week. We pack, collect, store & redeliver. LAPADA accredited, fully insured, 24/7 CCTV. Free quote.",
+      meta="Secure managed storage in West Sussex from £15/week. We pack, collect, store & redeliver. LAPADA accredited, fully insured, 24/7 CCTV.",
       hero=IMG(HERO_WAREHOUSE[0]),extra_schema=VIDEO_SCHEMA,faqs=HOME_FAQS,
       sections=[
         hero(IMG(HERO_WAREHOUSE[0]),HERO_WAREHOUSE[1],"Secure Storage in West Sussex",
@@ -1855,7 +1855,7 @@ def build():
            ("family","Family-Run &amp; LAPADA Accredited","A local West Sussex family team, Checkatrade-verified and rated 5.0 from 478 reviews.")]))
     P.append(service("long-term-storage.html","longterm","Long-Term Storage",
       "Long-Term Storage West Sussex | Wolves Storage Sussex",
-      "Affordable long-term storage in West Sussex from £15/week. Fully insured, 24/7 CCTV, no deposit — ideal for emigrating, renovations & downsizing. Free quote.",
+      "Affordable long-term storage in West Sussex from £15/week. Fully insured, 24/7 CCTV, no deposit — ideal for emigrating, renovations & downsizing.",
       IMG(HERO_AERIAL[0]),HERO_AERIAL[1],"Long-Term Storage in West Sussex",
       "Storing for months or years? Our containerised long-term storage keeps your belongings clean, dry and secure &mdash; with better value the longer you stay.",
       ["Better value the longer you store","Clean, dry, sealed containers","Fully insured &amp; 24/7 CCTV","No deposit, simple rolling terms"],
@@ -1880,7 +1880,7 @@ def build():
            ("family","LAPADA-Accredited Family Team","Trusted to store whole homes, furniture and antiques long-term &mdash; family-run since 2016 and rated 5.0 from 478 reviews.")]))
     P.append(service("short-term-storage.html","shortterm","Short-Term Storage",
       "Short-Term Storage West Sussex | Wolves Storage Sussex",
-      "Flexible short-term storage in West Sussex from £15/week. No deposit, weekly terms, fast collection — perfect for moves & chain delays. Free quote.",
+      "Flexible short-term storage in West Sussex from £15/week. No deposit, weekly terms, fast collection — perfect for moves & chain delays.",
       IMG(HERO_LOADING[0]),HERO_LOADING[1],"Short-Term Storage in West Sussex",
       "Bridging a move, a broken chain or a quick renovation? Flexible weekly short-term storage with no deposit &mdash; we collect, store and bring it all back when you&rsquo;re ready.",
       ["Flexible weekly terms, no deposit","Fast collection &mdash; often within days","We pack, store and redeliver","Fully insured &amp; 24/7 CCTV"],
@@ -1905,7 +1905,7 @@ def build():
            ("family","Local, Family-Run","A West Sussex family team that fits around your timescale, rated 5.0 from 478 reviews.")]))
     P.append(service("business-storage.html","business","Business Storage",
       "Business Storage West Sussex | Wolves Storage Sussex",
-      "Secure business storage in West Sussex from £15/week — stock, archives & equipment. Fully insured, 24/7 CCTV, collection & redelivery. Free quote.",
+      "Secure business storage in West Sussex from £15/week — stock, archives & equipment. Fully insured, 24/7 CCTV, collection & redelivery.",
       IMG(HERO_PACKING[0]),HERO_PACKING[1],"Business Storage in West Sussex",
       "Free up your office or premises. We collect, store and redeliver stock, archives and equipment &mdash; fully insured and flexible, so you only pay for the space you need.",
       ["Scale up or down &mdash; no long lease","Stock, archives, equipment &amp; documents","Fully insured &amp; 24/7 CCTV","We collect and redeliver to you"],
@@ -1931,7 +1931,7 @@ def build():
     # HOW IT WORKS
     P.append(dict(file="how-it-works.html",slug="how",nav="How It Works",
       title="How Our Managed Storage Works | Wolves Storage Sussex",
-      meta="How fully managed storage in West Sussex works: we quote, pack, collect, store in secure containers and redeliver. From £15/week, no deposit. Free quote.",
+      meta="How fully managed storage in West Sussex works: we quote, pack, collect, store in secure containers and redeliver. From £15/week, no deposit.",
       hero=IMG(HERO_LOADING[0]),faqs=[("How quickly can you collect?","Often within a few days &mdash; tell us your timescale on your free quote."),("How do I access my belongings?","Give us 24 hours&rsquo; notice and we redeliver to your door across West Sussex."),("What&rsquo;s included?","Packing materials, professional packing, collection, secure container storage and redelivery.")],
       sections=[
         hero(IMG(HERO_LOADING[0]),HERO_LOADING[1],"How Our Managed Storage Works",
@@ -2113,7 +2113,7 @@ def build():
     # PRICING
     P.append(dict(file="pricing.html",slug="pricing",nav="Pricing",
       title="Storage Prices West Sussex | Wolves Storage Sussex",
-      meta="Transparent storage prices in West Sussex from £15/week. No deposit or hidden fees, flexible weekly & 4-week terms, collection included. Free quote.",
+      meta="Transparent storage prices in West Sussex from £15/week. No deposit or hidden fees, flexible weekly & 4-week terms, collection included.",
       hero=IMG(HERO_WAREHOUSE[0]),faqs=[("How much is storage?","From &pound;15 per week per container with no deposit and no hidden fees."),("Are there any extra fees?","No hidden fees. Optional extras are extended insurance cover and help unpacking."),("Is collection included?","Yes &mdash; collection and redelivery across West Sussex are included.")],
       sections=[
         hero(IMG(HERO_WAREHOUSE[0]),HERO_WAREHOUSE[1],"Simple, Transparent Storage Prices",
@@ -2352,7 +2352,7 @@ def build():
           for i,(slug,tn,pc,tag) in enumerate([x for _,items in area_groups for x in items])]},ensure_ascii=False)+'</script>')
     P.append(dict(file="areas-we-cover.html",slug="areas",nav="Areas We Cover",
       title="Storage Across West Sussex | Wolves Storage Sussex",
-      meta="Managed storage across West Sussex — Ashington, Storrington, Pulborough, Horsham, Worthing & more. We collect & redeliver from £15/week. Free quote.",
+      meta="Managed storage across West Sussex — Ashington, Storrington, Pulborough, Horsham, Worthing & more. We collect & redeliver from £15/week.",
       hero=IMG(HERO_AERIAL[0]),extra_schema=area_itemlist,
       sections=[
         hero(IMG(HERO_AERIAL[0]),HERO_AERIAL[1],"Storage Across West Sussex",
@@ -2408,7 +2408,7 @@ def build():
     # GALLERY
     P.append(dict(file="gallery.html",slug="gallery",nav="Gallery",
       title="Storage Gallery West Sussex | Wolves Storage Sussex",
-      meta="Photos of the Wolves Storage Sussex facility, containers, team and fleet — secure, alarmed, fully insured storage in West Sussex from £15/week. Free quote.",
+      meta="Photos of the Wolves Storage Sussex facility, containers, team and fleet — secure, alarmed, fully insured storage in West Sussex from £15/week.",
       hero=IMG(HERO_ANTIQUE[0]),
       sections=[
         hero(IMG(HERO_ANTIQUE[0]),HERO_ANTIQUE[1],"Our West Sussex Storage Facility",
@@ -2433,7 +2433,7 @@ def build():
     # ABOUT
     P.append(dict(file="about.html",slug="about",nav="About",
       title="About Wolves Storage Sussex | West Sussex Storage",
-      meta="Family-run, LAPADA-accredited storage business in Ashington, West Sussex with 10+ years' experience. Fully insured, 24/7 CCTV. Get a free storage quote.",
+      meta="Family-run, LAPADA-accredited storage business in Ashington, West Sussex with 10+ years' experience. Fully insured, 24/7 CCTV.",
       hero=IMG(HERO_VAN_COLLECT[0]),faqs=[("Are you insured and accredited?","Yes &mdash; fully insured, LAPADA accredited and Checkatrade members."),("How long have you been going?","Over 10 years serving West Sussex as a family-run business.")],
       sections=[
         hero(IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"A Trusted Name in West Sussex Storage",
@@ -2622,7 +2622,7 @@ def build():
     # CONTACT
     P.append(dict(file="contact.html",slug="contact",nav="Contact",
       title="Contact Wolves Storage Sussex | Free Storage Quote",
-      meta="Contact Wolves Storage Sussex for a free storage quote within 24 hours. Call 01903 893731 / 07789 390421 or email. Ashington, Pulborough, West Sussex RH20 3JT.",
+      meta="Contact Wolves Storage Sussex for a free storage quote within 24 hours. Call 01903 893731 / 07789 390421 or email.",
       hero=IMG(HERO_VAN_COLLECT[0]),
       sections=[
         hero(IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"Get a Free Storage Quote",
@@ -2649,7 +2649,7 @@ def build():
     # LEGAL
     P.append(legal_page("privacy-policy.html","Privacy Policy",
       "Privacy Policy | Wolves Storage Sussex",
-      "How Wolves Storage Sussex collects, uses and protects your personal data when you enquire about storage. Your rights, cookies and how to contact us.",
+      "How Wolves Storage Sussex collects, uses and protects your personal data when you enquire about storage.",
       "Privacy Policy","How we handle and protect your personal information.",PRIVACY_BODY))
     P.append(legal_page("terms.html","Terms &amp; Conditions",
       "Terms & Conditions | Wolves Storage Sussex",
