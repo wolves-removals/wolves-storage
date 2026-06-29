@@ -168,10 +168,45 @@ def faq(items):
     return (f'<section class="relative bg-beige w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container">'
             f'<div class="text-center mb-6 lg:mb-8"><h2 class="relative leading-tight text-black">Storage &mdash; Your Questions Answered</h2></div>{inner}</div></section>')
 
-def gallery(imgs):
-    cells="".join(f'<div class="col-span-12 sm:col-span-6 md:col-span-4"><div class="relative h-56 sm:h-72 overflow-hidden rounded-xl shadow-custom"><img src="{s}" alt="{a}" width="1200" height="900" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover"></div></div>' for s,a in imgs)
-    return centered("bg-white","See Our Sussex Storage in Action","Real photos of our own facility, containers, team and fleet.",
-                    f'<div class="grid grid-cols-12 gap-4 lg:gap-6">{cells}</div>')
+GAL_ZOOM='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>'
+GAL_CSS=('<style>'
+  '.gal-grid{display:grid;grid-template-columns:1fr;gap:1rem}'
+  '@media (min-width:640px){.gal-grid{grid-template-columns:repeat(2,1fr)}}'
+  '@media (min-width:1024px){.gal-grid{grid-template-columns:repeat(3,1fr);gap:1.25rem}}'
+  '.gal-tile{position:relative;display:block;width:100%;padding:0;border:0;cursor:pointer;overflow:hidden;border-radius:1.15rem;background:#000;aspect-ratio:4/3;box-shadow:0 14px 34px -18px rgba(38,38,38,.5);transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s ease}'
+  '.gal-tile:hover{transform:translateY(-5px);box-shadow:0 28px 56px -22px rgba(38,38,38,.55)}'
+  '.gal-tile:focus-visible{outline:2px solid #FC9700;outline-offset:3px}'
+  '.gal-tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.3,1)}'
+  '.gal-tile:hover img{transform:scale(1.07)}'
+  '.gal-tile::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(38,38,38,.82),rgba(38,38,38,.1) 46%,rgba(38,38,38,0) 72%);opacity:0;transition:opacity .35s ease}'
+  '.gal-tile:hover::after,.gal-tile:focus-visible::after{opacity:1}'
+  '.gal-cap{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:1rem 1.1rem;color:#fff;font-weight:600;font-size:.96rem;line-height:1.3;text-align:left;transform:translateY(10px);opacity:0;transition:transform .35s ease,opacity .35s ease}'
+  '.gal-cap::before{content:"";display:block;width:34px;height:3px;border-radius:3px;background:linear-gradient(90deg,#FC9700,#F6BB06);margin-bottom:.5rem}'
+  '.gal-tile:hover .gal-cap,.gal-tile:focus-visible .gal-cap{transform:none;opacity:1}'
+  '.gal-zoom{position:absolute;top:.7rem;right:.7rem;z-index:1;width:38px;height:38px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.92);color:#262626;opacity:0;transform:scale(.8);transition:opacity .3s ease,transform .3s ease}'
+  '.gal-tile:hover .gal-zoom{opacity:1;transform:none}'
+  '.gal-lb[x-cloak]{display:none}'
+  '.gal-lb{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:rgba(20,20,20,.92);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}'
+  '.gal-lb img{max-width:min(1100px,92vw);max-height:88vh;border-radius:.9rem;box-shadow:0 30px 80px -20px rgba(0,0,0,.8)}'
+  '.gal-lb-close{position:absolute;top:1rem;right:1.3rem;color:#fff;font-size:2.4rem;line-height:1;background:none;border:0;cursor:pointer}'
+  '@media (prefers-reduced-motion:reduce){.gal-tile,.gal-tile img,.gal-cap,.gal-zoom{transition:none}.gal-tile:hover,.gal-tile:hover img{transform:none}}'
+  '</style>')
+def gallery(imgs, heading="See Our Sussex Storage in Action", lead="Real photos of our own facility, containers, team and fleet."):
+    tiles=""
+    for it in imgs:
+        s,a=it[0],it[1]; cap=it[2] if len(it)>2 else a
+        tiles+=(f'<button type="button" class="gal-tile" @click="lb=\'{s}\'" aria-label="View larger: {a}">'
+                f'<img src="{s}" alt="{a}" width="1200" height="900" loading="lazy" decoding="async">'
+                f'<span class="gal-zoom">{GAL_ZOOM}</span><span class="gal-cap">{cap}</span></button>')
+    leadp=f'<p class="text-lg xl:text-xl font-medium mt-2 max-w-3xl mx-auto">{lead}</p>' if lead else ""
+    return ('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border" x-data="{lb:null}">'
+            +GAL_CSS+
+            f'<div class="container"><div class="text-center mb-8 lg:mb-10"><h2 class="relative leading-tight text-black">{heading}</h2>{leadp}</div>'
+            f'<div class="gal-grid">{tiles}</div></div>'
+            '<div x-show="lb" x-cloak class="gal-lb" @keydown.escape.window="lb=null" @click="lb=null">'
+            '<button type="button" class="gal-lb-close" @click="lb=null" aria-label="Close">&times;</button>'
+            '<img :src="lb" alt="Wolves Storage Sussex gallery image" @click.stop></div>'
+            '</section>')
 
 VIDEO_POSTER="storage-container-promo-poster.webp"   # exact title-card frame baked from the clip
 def video_promo():
@@ -1298,36 +1333,20 @@ def build():
         hero(IMG(HERO_ANTIQUE[0]),HERO_ANTIQUE[1],"Our West Sussex Storage Facility",
           "A look inside our secure, alarmed facility &mdash; from our containers and forklift to the friendly family team and fleet.",
           ["Secure, alarmed &amp; 24/7 CCTV","Clean, dry wooden containers","Family-run, LAPADA accredited","From &pound;15/week, no deposit"],big=False),
-        gallery([(IMG("hero-facility-van.webp"),"Facility and van"),(IMG("hero-containers-van.webp"),"Containers and van"),
-                 (IMG("wolves-operator-forklift-storage-containers.webp"),"Operator moving sealed storage containers by forklift"),
-                 (IMG("wolves-van-loading-at-storage-facility.webp"),"Wolves Storage Sussex van loading at our storage facility"),
-                 (IMG("gallery-warehouse-a.webp"),"Stacked containers"),(IMG("gallery-warehouse-b.webp"),"Warehouse interior"),
-                 (IMG("furniture-loaded-sussex-removal-service.webp"),"Vans collecting furniture from a Sussex home for storage"),
-                 (IMG("careful-packing-sussex-home-removal.webp"),"The Wolves Storage Sussex van fleet"),
-                 (IMG("hero-forklift.webp"),"Forklift stacking"),(IMG("gallery-forklift-b.webp"),"Forklift and containers"),
-                 (IMG("taping-furni-soft-around-furniture.webp"),"Wrapping furniture in Furni-soft padding before storage"),
-                 (IMG("packing-small-item-into-box.webp"),"Wrapping a small item in protective paper"),
-                 (IMG("packing-books-into-moving-boxes.webp"),"Labelling a carefully packed box of books"),
-                 (IMG("protecting-customer-belongings-house-move.webp"),"Carrying a wrapped box out to the van"),
-                 (IMG("gallery-loading.webp"),"Loading a container"),(IMG("hero-packed-container.webp"),"A packed container"),
-                 (IMG("wolves-luton-storage-packing-van.webp"),"Branded Wolves Storage Sussex Luton storage van"),
-                 (IMG("wolves-removals-team-fleet-vans.webp"),"The family-run Wolves Storage Sussex team and fleet"),
-                 (IMG("team-positioning-wooden-storage-container.webp"),"Positioning a sealed wooden storage container"),
-                 (IMG("carrying-wooden-storage-container-outdoors.webp"),"Carrying a wooden storage container to the van"),
-                 (IMG("wolves-team-loading-luton-van-collection.webp"),"Loading the Luton van on a collection"),
-                 (IMG("loading-box-up-ramp-into-van.webp"),"Loading a packed box up the ramp into the van"),
-                 (IMG("loading-packed-boxes-into-removal-van.webp"),"Loading packed boxes into the van for storage"),
-                 (IMG("team-carrying-wrapped-armchair-to-van.webp"),"Carrying a blanket-wrapped armchair to the van"),
-                 (IMG("carrying-furniture-past-storage-van.webp"),"Carrying furniture past the storage van"),
-                 (IMG("furniture-wrapped-furni-soft-dining-set.webp"),"A dining set protected in Furni-soft wrapping"),
-                 (IMG("wrapping-chair-protective-blanket-container.webp"),"Wrapping a chair in a protective blanket in a container"),
-                 (IMG("wrapping-marble-table-furni-guard.webp"),"Protecting a marble-topped table with Furni-guard"),
-                 (IMG("wrapping-framed-picture-furni-soft.webp"),"Wrapping a framed picture in Furni-soft"),
-                 (IMG("taping-furni-guard-around-furniture-lounge.webp"),"Taping Furni-guard around furniture"),
-                 (IMG("wrapping-fragile-item-protective-paper.webp"),"Wrapping a fragile item in protective paper"),
-                 (IMG("white-glove-antique-painting-handling.webp"),"Handling an antique painting with white gloves"),
-                 (IMG("hero-fleet.webp"),"Van fleet"),(IMG("gallery-van.webp"),"Storage van"),
-                 (IMG("gallery-clipboard.webp"),"Wolves branded clipboard"),(IMG("hero-team-loading.webp"),"Team loading a container")]),
+        gallery([
+          (IMG("wolves-van-loading-at-storage-facility.webp"),"Wolves Storage Sussex Luton van loading at our secure West Sussex storage facility","Our secure storage facility"),
+          (IMG("gallery-warehouse-a.webp"),"Sealed wooden storage containers stacked inside the alarmed Wolves Storage Sussex warehouse","Sealed containers, securely stacked"),
+          (IMG("wolves-operator-forklift-storage-containers.webp"),"A Wolves Storage Sussex operator moving sealed storage containers by forklift","Containers handled by forklift"),
+          (IMG("loading-box-up-ramp-into-van.webp"),"Wolves Storage Sussex movers loading packed boxes up the ramp into the van","Door-to-door collection"),
+          (IMG("team-positioning-wooden-storage-container.webp"),"Wolves Storage Sussex movers positioning a sealed wooden storage container","Positioning a storage container"),
+          (IMG("gallery-warehouse-b.webp"),"Inside the dry, alarmed Wolves Storage Sussex container warehouse","Inside our alarmed warehouse"),
+          (IMG("furniture-wrapped-furni-soft-dining-set.webp"),"A dining table and chairs wrapped in Furni-soft padding by Wolves Storage Sussex","Furniture wrapped with care"),
+          (IMG("wrapping-framed-picture-furni-soft.webp"),"A Wolves Storage Sussex packer wrapping a framed picture in Furni-soft padding","Artwork wrapped for storage"),
+          (IMG("white-glove-antique-painting-handling.webp"),"Wolves Storage Sussex team handling an antique painting with white gloves","Specialist antique handling"),
+          (IMG("carrying-furniture-past-storage-van.webp"),"A Wolves Storage Sussex mover carrying furniture past the branded van at a customer&rsquo;s home","Collected from your door"),
+          (IMG("careful-packing-sussex-home-removal.webp"),"The Wolves Storage Sussex van fleet ready to collect across West Sussex","Our West Sussex fleet"),
+          (IMG("wolves-removals-team-fleet-vans.webp"),"The family-run Wolves Storage Sussex team in front of the van fleet","Our family-run team"),
+        ]),
         cta_band("Like What You See? Get a Free Quote",IMG("gallery-warehouse-b.webp")),
       ]))
     # ABOUT
