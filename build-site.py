@@ -2124,7 +2124,7 @@ def build():
         '''<style>
 .pw-pricing{background:#F7F5EF;color:#46505a;padding:clamp(56px,8vw,108px) 20px;}
 .pw-pricing *{box-sizing:border-box;}
-.pw-wrap{max-width:920px;margin:0 auto;}
+.pw-wrap{max-width:1060px;margin:0 auto;}@media(min-width:768px){.pw-wrap{columns:2;column-gap:56px}.pw-eyebrow,.pw-h2,.pw-intro,.pw-stats,.pw-estimator,.pw-compare{-webkit-column-span:all;column-span:all}.pw-h3{-webkit-column-break-after:avoid;break-after:avoid}.pw-body{margin-bottom:0}}
 .pw-eyebrow{display:flex;align-items:center;gap:14px;text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:700;color:#FC9700;margin:0 0 18px;}
 .pw-rule{width:28px;height:2px;background:#FC9700;display:inline-block;flex:0 0 auto;}
 .pw-h2{color:#23282d;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.1;font-weight:800;letter-spacing:-.01em;margin:0 0 22px;}
