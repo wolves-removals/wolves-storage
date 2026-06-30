@@ -373,6 +373,7 @@ def gallery(imgs, heading="See Our Sussex Storage in Action", lead="Real photos 
             '</div>'
             '<p class="gal-lb-cap" x-text="i>=0?g[i].c:\'\'"></p>'
             f'<p class="gal-lb-count"><span x-text="i+1"></span> / {n}</p>'
+            '</div>'
             '</section>')
 
 VIDEO_POSTER="storage-container-promo-poster.webp"   # exact title-card frame baked from the clip
