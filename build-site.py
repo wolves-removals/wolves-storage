@@ -528,8 +528,9 @@ def town_hero(t):
     return IMG(h[0]), f'{h[1]} &mdash; storage in {t["town"]}, {t.get("region","West Sussex")}'
 # ---------------- pages ----------------
 TRUSTINDEX_SECTION = ('<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden">'
-  '<div class="container"><div class="flex justify-center mb-8 lg:mb-10"><div style="zoom:.8"><div class="ti-reviews-widget max-w-full"><script defer async src="https://cdn.trustindex.io/loader.js?cd741d573fcc673344062ffdcd3"></script></div></div></div></div>'
-  '<div style="max-width:1720px;margin-left:auto;margin-right:auto;padding-left:1rem;padding-right:1rem;"><div style="zoom:.8"><div class="ti-reviews-widget w-full"><script defer async src="https://cdn.trustindex.io/loader.js?c457a627393e67277d368b8df3b"></script></div></div></div>'
+  '<style>.ti-z{zoom:.8}@media (max-width:640px){.ti-z{zoom:1}}</style>'
+  '<div class="container"><div class="flex justify-center mb-8 lg:mb-10"><div class="ti-z"><div class="ti-reviews-widget max-w-full"><script defer async src="https://cdn.trustindex.io/loader.js?cd741d573fcc673344062ffdcd3"></script></div></div></div></div>'
+  '<div style="max-width:1720px;margin-left:auto;margin-right:auto;padding-left:1rem;padding-right:1rem;"><div class="ti-z"><div class="ti-reviews-widget w-full"><script defer async src="https://cdn.trustindex.io/loader.js?c457a627393e67277d368b8df3b"></script></div></div></div>'
   '</section>')
 
 CALC_SECTION = ('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border overflow-hidden"><div class="container">'
