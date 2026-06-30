@@ -2136,74 +2136,74 @@ def build():
 .pw-wrap{max-width:1040px;margin:0 auto;}
 
 /* ---- Header ---- */
-.pw-eyebrow{display:flex;align-items:center;gap:14px;text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:700;color:#FC9700;margin:0 0 18px;}
-.pw-rule{width:28px;height:2px;background:#FC9700;display:inline-block;flex:0 0 auto;}
+.pw-eyebrow{display:flex;align-items:center;gap:14px;text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:700;color:#5d6a75;margin:0 0 18px;}
+.pw-rule{width:28px;height:2px;background:#5d6a75;display:inline-block;flex:0 0 auto;}
 .pw-h2{color:#23282d;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.1;font-weight:800;letter-spacing:-.01em;margin:0 0 22px;}
-.pw-h2 em{font-style:normal;color:#FC9700;}
+.pw-h2 em{font-style:normal;color:#5d6a75;}
 .pw-intro{font-size:clamp(1.05rem,1.7vw,1.25rem);line-height:1.7;color:#46505a;margin:0;max-width:840px;}
 .pw-stats{display:flex;flex-wrap:wrap;align-items:center;gap:0;margin:30px 0 0;}
 .pw-stat{padding-right:22px;margin-right:22px;border-right:1px solid rgba(35,40,45,.13);font-size:.95rem;color:#46505a;line-height:1.4;margin-top:8px;}
 .pw-stat:last-child{border-right:0;margin-right:0;padding-right:0;}
-.pw-stat strong{display:block;color:#FC9700;font-weight:800;font-size:1.3rem;letter-spacing:-.01em;}
+.pw-stat strong{display:block;color:#5d6a75;font-weight:800;font-size:1.3rem;letter-spacing:-.01em;}
 
 /* ---- Numbered segment ---- */
 .pw-seg{display:grid;grid-template-columns:96px minmax(0,1fr);gap:clamp(22px,4vw,54px);align-items:start;padding:clamp(34px,5vw,58px) 0;border-top:1px solid rgba(35,40,45,.13);}
 .pw-seg:first-of-type{margin-top:clamp(30px,4vw,46px);}
 .pw-idx{position:relative;}
-.pw-num{display:block;font-size:clamp(2.8rem,6vw,4.6rem);font-weight:800;line-height:.82;color:#FC9700;opacity:.17;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+.pw-num{display:block;font-size:clamp(2.8rem,6vw,4.6rem);font-weight:800;line-height:.82;color:#5d6a75;opacity:.17;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
 .pw-content{min-width:0;}
-.pw-kicker{display:flex;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:.13em;font-size:.7rem;font-weight:700;color:#FC9700;margin:0 0 13px;}
-.pw-kicker::before{content:"";width:18px;height:2px;background:#FC9700;display:inline-block;flex:0 0 auto;opacity:.65;}
+.pw-kicker{display:flex;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:.13em;font-size:.7rem;font-weight:700;color:#5d6a75;margin:0 0 13px;}
+.pw-kicker::before{content:"";width:18px;height:2px;background:#5d6a75;display:inline-block;flex:0 0 auto;opacity:.65;}
 .pw-h3{color:#23282d;font-size:clamp(1.25rem,2.2vw,1.6rem);line-height:1.25;font-weight:800;letter-spacing:-.01em;margin:0 0 12px;}
 .pw-body{font-size:1.05rem;line-height:1.78;color:#46505a;margin:0;max-width:760px;}
-.pw-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.55);text-decoration-thickness:1.5px;text-underline-offset:3px;transition:color .2s ease,text-decoration-color .2s ease;}
-.pw-body a:hover,.pw-body a:focus-visible{color:#FC9700;text-decoration-color:#FC9700;}
-.pw-body strong{color:#FC9700;font-weight:700;}
+.pw-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(105,119,131,.55);text-decoration-thickness:1.5px;text-underline-offset:3px;transition:color .2s ease,text-decoration-color .2s ease;}
+.pw-body a:hover,.pw-body a:focus-visible{color:#5d6a75;text-decoration-color:#5d6a75;}
+.pw-body strong{color:#5d6a75;font-weight:700;}
 
 /* ---- Estimator (segment 02) — framed by hairlines, not a card ---- */
 .pw-estimator{margin:clamp(24px,3vw,34px) 0 0;padding:clamp(26px,3.5vw,38px) 0 clamp(8px,2vw,14px);border-top:1px solid rgba(35,40,45,.13);max-width:760px;}
 .pw-est-lead{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:#23282d;margin:0 0 18px;}
-.pw-est-lead span{color:#FC9700;}
+.pw-est-lead span{color:#5d6a75;}
 .pw-choices{display:flex;flex-wrap:wrap;gap:2px;margin:0 0 30px;border-bottom:1px solid rgba(35,40,45,.13);}
 .pw-choice{flex:1 1 140px;min-width:130px;background:transparent;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:12px 10px 14px;text-align:left;cursor:pointer;transition:border-color .2s ease;}
 .pw-choice-label{display:block;font-weight:700;font-size:1.02rem;color:#46505a;transition:color .2s ease;}
 .pw-choice-sub{display:block;font-size:.82rem;color:#828c96;margin-top:3px;line-height:1.35;}
 .pw-choice:hover .pw-choice-label{color:#23282d;}
-.pw-choice--active{border-bottom-color:#FC9700;}
+.pw-choice--active{border-bottom-color:#5d6a75;}
 .pw-choice--active .pw-choice-label{color:#23282d;}
-.pw-choice:focus-visible{outline:2px solid #FC9700;outline-offset:2px;border-radius:2px;}
+.pw-choice:focus-visible{outline:2px solid #5d6a75;outline-offset:2px;border-radius:2px;}
 .pw-result{display:flex;flex-wrap:wrap;align-items:center;gap:clamp(22px,5vw,56px);}
 .pw-boxes{display:flex;align-items:center;gap:12px;min-height:60px;}
-.pw-box{width:52px;height:52px;color:#FC9700;opacity:.16;transform:translateY(6px) scale(.88);transition:opacity .45s ease,transform .45s ease;}
+.pw-box{width:52px;height:52px;color:#5d6a75;opacity:.16;transform:translateY(6px) scale(.88);transition:opacity .45s ease,transform .45s ease;}
 .pw-box svg{width:100%;height:100%;display:block;}
 .pw-box--on{opacity:1;transform:translateY(0) scale(1);}
-.pw-box-plus{font-size:2rem;font-weight:800;color:#FC9700;line-height:1;align-self:center;}
+.pw-box-plus{font-size:2rem;font-weight:800;color:#5d6a75;line-height:1;align-self:center;}
 .pw-price-wrap{min-width:200px;}
 .pw-price{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;}
 .pw-price-band{width:100%;font-size:.74rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:#828c96;margin-bottom:2px;}
 .pw-price-amount{font-size:clamp(2.5rem,6.5vw,3.7rem);font-weight:800;color:#23282d;line-height:.95;letter-spacing:-.02em;}
 .pw-price-per{font-size:1.05rem;font-weight:700;color:#46505a;}
 .pw-result-meta{width:100%;font-size:.98rem;line-height:1.6;color:#46505a;margin:10px 0 0;max-width:520px;}
-.pw-result-meta strong{color:#FC9700;font-weight:800;}
+.pw-result-meta strong{color:#5d6a75;font-weight:800;}
 
 /* ---- Managed vs self (segment 03) — hairline ledger with a cross-out reveal, not a card ---- */
 .pw-compare{margin:clamp(24px,3vw,34px) 0 0;padding:clamp(24px,3vw,32px) 0 0;border-top:1px solid rgba(35,40,45,.13);max-width:760px;}
 .pw-cinstruct{margin:0 0 16px;font-size:.9rem;color:#6b7480;}
-.pw-toggle{position:relative;display:flex;background:#ECE8DE;border:1px solid rgba(35,40,45,.12);border-radius:999px;padding:5px;max-width:440px;}
+.pw-toggle{position:relative;display:flex;background:#EAE6DB;border:1px solid rgba(105,119,131,.22);box-shadow:inset 0 1px 3px rgba(74,85,96,.12);border-radius:999px;padding:5px;max-width:440px;}
 .pw-tbtn{position:relative;z-index:1;flex:1;background:none;border:0;padding:13px 14px;font-size:.97rem;font-weight:700;color:#5a636c;cursor:pointer;border-radius:999px;transition:color .25s ease;}
 .pw-tbtn.pw-on{color:#fff;}
 .pw-tbtn:focus-visible{outline:2px solid #23282d;outline-offset:2px;}
-.pw-tslider{position:absolute;top:5px;left:5px;width:calc(50% - 5px);height:calc(100% - 10px);background:#FC9700;border-radius:999px;transition:transform .32s cubic-bezier(.4,0,.2,1);}
+.pw-tslider{position:absolute;top:5px;left:5px;width:calc(50% - 5px);height:calc(100% - 10px);background:linear-gradient(180deg,#6f7d89,#566069);box-shadow:0 7px 18px -7px rgba(74,85,96,.6);border-radius:999px;transition:transform .32s cubic-bezier(.4,0,.2,1);}
 .pw-tslider-right{transform:translateX(100%);}
 .pw-ledger{margin:26px 0 0;border-top:1px solid rgba(35,40,45,.13);}
-.pw-row{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:15px 2px;border-bottom:1px solid rgba(35,40,45,.13);}
+.pw-row{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:13px 16px;border-bottom:1px solid rgba(105,119,131,.16);border-radius:10px;transition:background .2s ease;}.pw-row:nth-of-type(odd){background:rgba(105,119,131,.045);}.pw-row:hover{background:rgba(105,119,131,.09);}
 .pw-rowlabel{font-weight:600;color:#3b434b;font-size:1rem;}
 .pw-rowvals{display:flex;align-items:baseline;gap:12px;text-align:right;flex:none;justify-content:flex-end;}
 .pw-cost{font-weight:700;color:#23282d;transition:color .35s ease,opacity .35s ease,text-decoration-color .35s ease;font-variant-numeric:tabular-nums;}
 .pw-cost.pw-struck{text-decoration:line-through;text-decoration-color:rgba(35,40,45,.45);text-decoration-thickness:2px;color:#9aa1a8;font-weight:600;}
-.pw-incl{font-weight:800;color:#FC9700;font-variant-numeric:tabular-nums;}
+.pw-incl{display:inline-flex;align-items:center;font-weight:800;color:#46505a;background:rgba(105,119,131,.12);border:1px solid rgba(105,119,131,.3);padding:3px 12px;border-radius:999px;font-size:.92rem;font-variant-numeric:tabular-nums;}
 .pw-bottom{margin:24px 0 0;font-size:1.06rem;line-height:1.7;color:#3b434b;min-height:1.7em;}
-.pw-bottom strong{color:#FC9700;font-weight:800;}
+.pw-bottom strong{color:#23282d;font-weight:800;}
 
 /* ---- Responsive ---- */
 @media (max-width:720px){
@@ -2306,21 +2306,21 @@ def build():
               <span class="pw-rowlabel">Headline rate</span>
               <span class="pw-rowvals">
                 <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">Cheap on paper</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>From &pound;15/week</span>
+                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>&pound;15/wk storage</span>
               </span>
             </div>
             <div class="pw-row">
               <span class="pw-rowlabel">Van hire</span>
               <span class="pw-rowvals">
                 <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">&pound;60&ndash;&pound;100</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Included</span>
+                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>We bring the van</span>
               </span>
             </div>
             <div class="pw-row">
               <span class="pw-rowlabel">Fuel &amp; mileage</span>
               <span class="pw-rowvals">
                 <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">On top</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Included</span>
+                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Covered in your quote</span>
               </span>
             </div>
             <div class="pw-row">
@@ -2341,20 +2341,20 @@ def build():
               <span class="pw-rowlabel">Packing &amp; loading</span>
               <span class="pw-rowvals">
                 <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">You do the lifting</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Our team, included</span>
+                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Our team does it</span>
               </span>
             </div>
             <div class="pw-row">
               <span class="pw-rowlabel">Collection &amp; redelivery</span>
               <span class="pw-rowvals">
                 <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">Not offered</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Built into the price</span>
+                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>One clear charge</span>
               </span>
             </div>
           </div>
           <p class="pw-bottom" aria-live="polite">
             <span x-show="mode==='self'">A low headline rate &mdash; then van hire, fuel, your time and floor space you never fully use stack up on top.</span>
-            <span x-show="mode==='managed'" x-cloak>One all-in weekly price from <strong>&pound;15</strong> &mdash; collection, packing and redelivery built in, and you pay only for the volume your belongings take up.</span>
+            <span x-show="mode==='managed'" x-cloak>Storage from <strong>&pound;15</strong> a week, with collection, packing and redelivery quoted upfront as one clear charge &mdash; and you pay only for the volume your belongings take up.</span>
           </p>
         </div>
       </div>
