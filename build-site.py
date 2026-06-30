@@ -1943,7 +1943,7 @@ def build():
         split("bg-white","What&rsquo;s Included",["Every managed storage job includes professional packing materials, careful wrapping, collection from your door, a sealed private container in our alarmed store, and redelivery when you&rsquo;re ready.","Optional extras include extended insurance cover and help unpacking."],IMG("hero-containers-van.webp"),"Storage containers at our facility"),
         split("bg-lightgrey","The Container Explained",["Each wooden container measures 5ft &times; 7ft &times; 8.6ft &mdash; 250 cu ft, roughly the contents of a one-bedroom flat. Containers are sealed, logged and stacked in our secure indoor facility.","Need more space? We simply use additional containers, so you only pay for what you use."],IMG("hero-packed-container.webp"),"A packed storage container",reverse=True),
                 '''<style>
-.hx-sec{background:#F7F5EF;color:#46505a;padding:5.5rem 1.25rem;}
+.hx-sec{background:#EAE6DB;color:#46505a;padding:5.5rem 1.25rem;}
 .hx-wrap{max-width:1180px;margin:0 auto;}
 .hx-head{max-width:760px;margin:0 auto 3.25rem;}
 .hx-eyebrow{display:inline-flex;align-items:center;gap:.7rem;text-transform:uppercase;letter-spacing:.18em;font-size:.74rem;font-weight:700;color:#FC9700;margin:0 0 1.1rem;}
@@ -1954,14 +1954,14 @@ def build():
 .hx-lead::first-letter{float:left;font-size:3.6rem;line-height:.82;font-weight:800;color:#FC9700;padding:.35rem .6rem 0 0;}
 
 .hx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
-.hx-step{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,#ffffff 0%,#fbfaf6 100%);border:1px solid rgba(35,40,45,.10);border-radius:18px;padding:1.9rem 1.7rem 1.7rem;box-shadow:0 1px 2px rgba(35,40,45,.04);transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease;overflow:hidden;}
+.hx-step{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,#FBF9F3 0%,#F3EFE6 100%);border:1px solid rgba(105,119,131,.18);border-radius:18px;padding:1.9rem 1.7rem 1.7rem;box-shadow:0 1px 2px rgba(35,40,45,.04);transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease;overflow:hidden;}
 .hx-step::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FC9700,rgba(252,151,0,.25));}
 .hx-step:hover{transform:translateY(-6px);box-shadow:0 18px 38px rgba(35,40,45,.10);border-color:rgba(252,151,0,.45);}
 
 .hx-top{display:flex;align-items:center;gap:.85rem;margin-bottom:1.2rem;}
-.hx-num{flex:none;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;color:#23282d;background:#F7F5EF;border:1px solid rgba(35,40,45,.12);transition:color .28s ease,border-color .28s ease;}
+.hx-num{flex:none;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;color:#5d6a75;background:#E8E6DA;border:1px solid rgba(105,119,131,.22);transition:color .28s ease,border-color .28s ease;}
 .hx-step:hover .hx-num{color:#FC9700;border-color:rgba(252,151,0,.4);}
-.hx-icon{flex:none;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(252,151,0,.12);color:#FC9700;}
+.hx-icon{flex:none;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#E8E6DA;color:#FC9700;}
 .hx-icon svg{width:24px;height:24px;}
 .hx-flow{margin-left:auto;flex:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#FC9700;color:#fff;font-size:1.15rem;line-height:1;box-shadow:0 4px 12px rgba(252,151,0,.35);transition:transform .28s ease;}
 .hx-flow svg{width:18px;height:18px;display:block;transition:transform .28s ease;}
@@ -1976,10 +1976,10 @@ def build():
 .hx-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.5);text-underline-offset:2px;transition:color .2s ease;}
 .hx-body a:hover{color:#FC9700;}
 
-.hx-chip{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:.5rem;background:#F7F5EF;border:1px solid rgba(252,151,0,.35);color:#23282d;font-size:.78rem;font-weight:700;letter-spacing:.02em;padding:.5rem .85rem;border-radius:999px;}
+.hx-chip{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:.5rem;background:#EAE6DB;border:1px solid rgba(105,119,131,.3);color:#46505a;font-size:.78rem;font-weight:700;letter-spacing:.02em;padding:.5rem .85rem;border-radius:999px;}
 .hx-chip svg{width:14px;height:14px;color:#FC9700;flex:none;}
 
-.hx-cta{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;background:linear-gradient(155deg,#23282d 0%,#2f363d 100%);border-radius:18px;padding:2.2rem 1.9rem;color:#fff;overflow:hidden;}
+.hx-cta{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;background:linear-gradient(155deg,#6f7d89 0%,#5d6a75 100%);border-radius:18px;padding:2.2rem 1.9rem;color:#fff;overflow:hidden;}
 .hx-cta::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FC9700,rgba(252,151,0,.25));}
 .hx-cta__mark{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:#FC9700;color:#fff;margin-bottom:1.1rem;}
 .hx-cta__mark svg{width:24px;height:24px;}
