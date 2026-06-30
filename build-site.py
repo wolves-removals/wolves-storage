@@ -445,6 +445,9 @@ AREA_SERVED = ["West Sussex","Ashington","Washington","Storrington","Pulborough"
 SOCIALS_URLS = ["https://www.instagram.com/wolvesremovals/","https://www.facebook.com/wolvesremovals/",
   "https://www.linkedin.com/company/wolves-removals","https://www.pinterest.co.uk/wolvesremovals/",
   "https://x.com/WolvesRemovals","https://www.tumblr.com/wolvesremovalsltd","https://www.youtube.com/@wolvesremovals"]
+# Independent third-party trust corroborators for sameAs (entity disambiguation + near-YMYL trust).
+# Add Checkatrade profile, Companies House, Wikidata Q-ID, Google Business Profile here once confirmed.
+TRUST_URLS = ["https://lapada.org/dealers/wolves-removals/"]
 ORG = json.dumps({"@context":"https://schema.org","@type":["SelfStorage","MovingCompany","LocalBusiness"],
   "@id":BASE+"#business",
   "name":"Wolves Storage Sussex","url":BASE,"telephone":"+441903893731","email":EMAIL,"priceRange":"From £15 per week",
@@ -456,7 +459,7 @@ ORG = json.dumps({"@context":"https://schema.org","@type":["SelfStorage","Moving
   "areaServed":[{"@type":"City","name":a} for a in AREA_SERVED],
   "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:30","closes":"18:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Saturday"],"opens":"09:00","closes":"16:00"}],
   "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"478","bestRating":"5"},
-  "sameAs":SOCIALS_URLS},ensure_ascii=False)
+  "sameAs":SOCIALS_URLS+TRUST_URLS},ensure_ascii=False)
 
 def head(d):
     faqjson=""
