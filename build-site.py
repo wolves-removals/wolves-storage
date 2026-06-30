@@ -2121,22 +2121,238 @@ def build():
         hero(IMG(HERO_WAREHOUSE[0]),HERO_WAREHOUSE[1],"Simple, Transparent Storage Prices",
           "Storage from just &pound;15 per week with no deposit and no hidden fees. You only pay for the container space you use &mdash; collection and redelivery included.",
           ["From &pound;15 per week, no deposit","Flexible weekly &amp; 4-week terms","Collection &amp; redelivery included","Free quote within 24 hours"],big=False),
-        ('<section class="relative bg-white w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="max-w-4xl mx-auto">'
-         '<span class="block text-orange font-bold uppercase tracking-wider text-sm mb-2">How pricing works</span>'
-         '<h2 class="leading-tight text-black">How Our Storage Pricing Works</h2>'
-         '<div class="mt-5 text-darkgrey text-lg">'
-         '<p>Storage with us starts at just &pound;15 a week, and the way we price it is refreshingly straightforward &mdash; you pay a low weekly rate for each wooden container your belongings fill, and nothing else. Each container holds around 250 cubic feet, roughly the contents of a one-bedroom flat or a single, well-packed room. If you have more to store we simply add another container, so you only ever pay for the space you actually use rather than renting an oversized room and paying for empty air. There is no deposit, no joining fee and no hidden charges &mdash; the price we quote is the price you pay.</p>'
-         '<h3 class="text-black font-bold text-xl mt-7 mb-2">What affects your price</h3>'
-         '<p>Three things shape your final figure: how much you store, how long you store it, and whether you add any optional extras. The number of containers reflects your volume, so a few boxes between moves costs far less than the contents of a whole house going into long-term storage. Terms are flexible and rolling &mdash; pay weekly or in four-week blocks, whichever suits &mdash; and you can extend or end whenever you like, so a fortnight between completion dates and several years working abroad are both easy to budget for. Optional extras such as professional packing materials, extended insurance cover for higher-value items, or a hand unpacking when your belongings come home are added only if you want them, and always quoted upfront.</p>'
-         '<h3 class="text-black font-bold text-xl mt-7 mb-2">What storage typically costs</h3>'
-         '<p>As a rough guide, a single container suits a one-bedroom flat, a home-office clear-out or a few rooms of furniture during a renovation; a two- or three-bedroom house usually fills two to three containers; and a business archiving stock or paperwork might use anything from one container upward. Because every order is collected, packed and redelivered for you, the figure we quote is genuinely all-in &mdash; there are no surprise add-ons for mileage, access or handling, and no charge for the time our team spends loading and wrapping your belongings.</p>'
-         '<h3 class="text-black font-bold text-xl mt-7 mb-2">Managed storage vs a self-storage unit</h3>'
-         '<p>A drive-up self-storage unit can look cheaper on the headline rate, but the real cost adds up quickly once you factor in van hire, fuel, the hours spent driving back and forth, and paying for floor space you never fully use. With our managed model there is nothing to hire and nothing to carry: collection from your door and redelivery are built into the price, our team packs and loads everything for you, and because we stack sealed containers efficiently in a secure warehouse you pay only for the volume your belongings take up. For most households and businesses across West Sussex it works out cleaner, more secure and better value &mdash; with none of the heavy lifting.</p>'
-         '<h3 class="text-black font-bold text-xl mt-7 mb-2">No deposit, no tie-in, no surprises</h3>'
-         '<p>We keep everything transparent because that is how we would want to be treated. Every quote is clear and fixed, there is no deposit and no minimum contract, and you deal with the same family team from your first call to the day your things come back. Your belongings are fully insured throughout, stored in a dry, alarmed, 24/7 CCTV-monitored facility, and handled by a LAPADA-accredited team trusted with antiques and high-value items as readily as everyday boxes. If your circumstances change, you can scale up, scale down or finish entirely with just 24 hours&rsquo; notice.</p>'
-         '<h3 class="text-black font-bold text-xl mt-7 mb-2">Get an exact price for your storage</h3>'
-         '<p>Not sure how many containers you&rsquo;ll need? Use the calculator on this page for an instant estimate, take a couple of minutes with our <a href="storage-size-guide.html">storage size guide</a>, or simply tell us the rooms involved and we&rsquo;ll work it out for you. Either way we&rsquo;ll send a clear, no-obligation quote within 24 hours, covering collection and redelivery anywhere across <a href="areas-we-cover.html">West Sussex</a>. Browse our full range of <a href="storage-solutions.html">storage solutions</a> or <a href="contact.html">get a free quote</a> to see exactly what your storage will cost.</p>'
-         '</div></div></div></section>'),
+        '''<style>
+.pw-pricing{background:#F7F5EF;color:#46505a;padding:clamp(56px,8vw,108px) 20px;}
+.pw-pricing *{box-sizing:border-box;}
+.pw-wrap{max-width:920px;margin:0 auto;}
+.pw-eyebrow{display:flex;align-items:center;gap:14px;text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:700;color:#FC9700;margin:0 0 18px;}
+.pw-rule{width:28px;height:2px;background:#FC9700;display:inline-block;flex:0 0 auto;}
+.pw-h2{color:#23282d;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.1;font-weight:800;letter-spacing:-.01em;margin:0 0 22px;}
+.pw-h2 em{font-style:normal;color:#FC9700;}
+.pw-intro{font-size:clamp(1.05rem,1.7vw,1.25rem);line-height:1.7;color:#46505a;margin:0;max-width:780px;}
+.pw-stats{display:flex;flex-wrap:wrap;align-items:center;gap:0;margin:30px 0 0;}
+.pw-stat{padding-right:22px;margin-right:22px;border-right:1px solid rgba(35,40,45,.13);font-size:.95rem;color:#46505a;line-height:1.4;margin-top:8px;}
+.pw-stat:last-child{border-right:0;margin-right:0;padding-right:0;}
+.pw-stat strong{display:block;color:#FC9700;font-weight:800;font-size:1.3rem;letter-spacing:-.01em;}
+
+.pw-h3{color:#23282d;font-size:clamp(1.25rem,2.2vw,1.6rem);line-height:1.25;font-weight:800;letter-spacing:-.01em;margin:clamp(36px,4.5vw,56px) 0 12px;}
+.pw-body{font-size:1.05rem;line-height:1.78;color:#46505a;margin:0;max-width:780px;}
+.pw-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.55);text-decoration-thickness:1.5px;text-underline-offset:3px;transition:color .2s ease,text-decoration-color .2s ease;}
+.pw-body a:hover,.pw-body a:focus-visible{color:#FC9700;text-decoration-color:#FC9700;}
+.pw-body strong{color:#FC9700;font-weight:700;}
+
+/* Estimator — framed by hairlines, not a card */
+.pw-estimator{margin:clamp(22px,3vw,34px) 0 clamp(8px,2vw,16px);padding:clamp(26px,3.5vw,40px) 0;border-top:1px solid rgba(35,40,45,.13);border-bottom:1px solid rgba(35,40,45,.13);}
+.pw-est-lead{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:#23282d;margin:0 0 18px;}
+.pw-est-lead span{color:#FC9700;}
+.pw-choices{display:flex;flex-wrap:wrap;gap:2px;margin:0 0 30px;border-bottom:1px solid rgba(35,40,45,.13);}
+.pw-choice{flex:1 1 140px;min-width:130px;background:transparent;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:12px 10px 14px;text-align:left;cursor:pointer;transition:border-color .2s ease;}
+.pw-choice-label{display:block;font-weight:700;font-size:1.02rem;color:#46505a;transition:color .2s ease;}
+.pw-choice-sub{display:block;font-size:.82rem;color:#828c96;margin-top:3px;line-height:1.35;}
+.pw-choice:hover .pw-choice-label{color:#23282d;}
+.pw-choice--active{border-bottom-color:#FC9700;}
+.pw-choice--active .pw-choice-label{color:#23282d;}
+.pw-choice:focus-visible{outline:2px solid #FC9700;outline-offset:2px;border-radius:2px;}
+
+.pw-result{display:flex;flex-wrap:wrap;align-items:center;gap:clamp(22px,5vw,56px);}
+.pw-boxes{display:flex;align-items:center;gap:12px;min-height:60px;}
+.pw-box{width:52px;height:52px;color:#FC9700;opacity:.16;transform:translateY(6px) scale(.88);transition:opacity .45s ease,transform .45s ease;}
+.pw-box svg{width:100%;height:100%;display:block;}
+.pw-box--on{opacity:1;transform:translateY(0) scale(1);}
+.pw-box-plus{font-size:2rem;font-weight:800;color:#FC9700;line-height:1;align-self:center;}
+.pw-price-wrap{min-width:200px;}
+.pw-price{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;}
+.pw-price-band{width:100%;font-size:.74rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:#828c96;margin-bottom:2px;}
+.pw-price-amount{font-size:clamp(2.5rem,6.5vw,3.7rem);font-weight:800;color:#23282d;line-height:.95;letter-spacing:-.02em;}
+.pw-price-per{font-size:1.05rem;font-weight:700;color:#46505a;}
+.pw-result-meta{width:100%;font-size:.98rem;line-height:1.6;color:#46505a;margin:10px 0 0;max-width:520px;}
+.pw-result-meta strong{color:#FC9700;font-weight:800;}
+
+/* Managed vs self — hairline ledger with a cross-out reveal, not a card */
+.pw-compare{margin:clamp(18px,2.5vw,26px) 0 0;max-width:780px;}
+.pw-cinstruct{margin:0 0 16px;font-size:.9rem;color:#6b7480;}
+.pw-toggle{position:relative;display:flex;background:#ECE8DE;border:1px solid rgba(35,40,45,.12);border-radius:999px;padding:5px;max-width:440px;}
+.pw-tbtn{position:relative;z-index:1;flex:1;background:none;border:0;padding:13px 14px;font-size:.97rem;font-weight:700;color:#5a636c;cursor:pointer;border-radius:999px;transition:color .25s ease;}
+.pw-tbtn.pw-on{color:#fff;}
+.pw-tbtn:focus-visible{outline:2px solid #23282d;outline-offset:2px;}
+.pw-tslider{position:absolute;top:5px;left:5px;width:calc(50% - 5px);height:calc(100% - 10px);background:#FC9700;border-radius:999px;transition:transform .32s cubic-bezier(.4,0,.2,1);}
+.pw-tslider-right{transform:translateX(100%);}
+.pw-ledger{margin:26px 0 0;border-top:1px solid rgba(35,40,45,.13);}
+.pw-row{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:15px 2px;border-bottom:1px solid rgba(35,40,45,.13);}
+.pw-rowlabel{font-weight:600;color:#3b434b;font-size:1rem;}
+.pw-rowvals{display:flex;align-items:baseline;gap:12px;text-align:right;flex:none;justify-content:flex-end;}
+.pw-cost{font-weight:700;color:#23282d;transition:color .35s ease,opacity .35s ease,text-decoration-color .35s ease;font-variant-numeric:tabular-nums;}
+.pw-cost.pw-struck{text-decoration:line-through;text-decoration-color:rgba(35,40,45,.45);text-decoration-thickness:2px;color:#9aa1a8;font-weight:600;}
+.pw-incl{font-weight:800;color:#FC9700;font-variant-numeric:tabular-nums;}
+.pw-bottom{margin:24px 0 0;font-size:1.06rem;line-height:1.7;color:#3b434b;min-height:1.7em;}
+.pw-bottom strong{color:#FC9700;font-weight:800;}
+
+@media (max-width:560px){
+  .pw-stat{font-size:.9rem;}
+  .pw-choice{flex:1 1 46%;}
+}
+@media (max-width:640px){
+  .pw-row{flex-direction:column;align-items:flex-start;gap:6px;}
+  .pw-rowvals{text-align:left;justify-content:flex-start;}
+  .pw-toggle{max-width:none;}
+}
+@media (prefers-reduced-motion:reduce){
+  .pw-box,.pw-choice,.pw-choice-label,.pw-body a,.pw-tslider,.pw-cost,.pw-tbtn{transition:none !important;}
+}
+</style><section class="pw-pricing" x-data="pwPricing()">
+  <div class="pw-wrap">
+    <div class="pw-eyebrow"><span class="pw-rule" aria-hidden="true"></span>How pricing works</div>
+    <h2 class="pw-h2">How Our Storage <em>Pricing</em> Works</h2>
+    <p class="pw-intro">Storage with us starts at just &pound;15 a week, and the way we price it is refreshingly straightforward &mdash; you pay a low weekly rate for each wooden container your belongings fill, and nothing else. Each container holds around 250 cubic feet, roughly the contents of a one-bedroom flat or a single, well-packed room. If you have more to store we simply add another container, so you only ever pay for the space you actually use rather than renting an oversized room and paying for empty air. There is no deposit, no joining fee and no hidden charges &mdash; the price we quote is the price you pay.</p>
+
+    <div class="pw-stats" aria-hidden="true">
+      <span class="pw-stat"><strong>&pound;15</strong> starting weekly rate</span>
+      <span class="pw-stat"><strong>250</strong> cu ft per container</span>
+      <span class="pw-stat"><strong>24h</strong> notice to change</span>
+    </div>
+
+    <h3 class="pw-h3">What affects your price</h3>
+    <p class="pw-body">Three things shape your final figure: how much you store, how long you store it, and whether you add any optional extras. The number of containers reflects your volume, so a few boxes between moves costs far less than the contents of a whole house going into long-term storage. Terms are flexible and rolling &mdash; pay weekly or in four-week blocks, whichever suits &mdash; and you can extend or end whenever you like, so a fortnight between completion dates and several years working abroad are both easy to budget for. Optional extras such as professional packing materials, extended insurance cover for higher-value items, or a hand unpacking when your belongings come home are added only if you want them, and always quoted upfront.</p>
+
+    <h3 class="pw-h3">What storage typically costs</h3>
+    <p class="pw-body">As a rough guide, a single container suits a one-bedroom flat, a home-office clear-out or a few rooms of furniture during a renovation; a two- or three-bedroom house usually fills two to three containers; and a business archiving stock or paperwork might use anything from one container upward. Because every order is collected, packed and redelivered for you, the figure we quote is genuinely all-in &mdash; there are no surprise add-ons for mileage, access or handling, and no charge for the time our team spends loading and wrapping your belongings.</p>
+
+    <div class="pw-estimator">
+      <p class="pw-est-lead"><span>What will it cost me?</span> Pick the closest match and watch your estimate update.</p>
+      <div class="pw-choices" role="group" aria-label="Choose the situation closest to yours">
+        <template x-for="(s,i) in scenarios" :key="s.id">
+          <button type="button" class="pw-choice" :class="{'pw-choice--active': selected===i}" :aria-pressed="(selected===i).toString()" @click="select(i)">
+            <span class="pw-choice-label" x-text="s.label"></span>
+            <span class="pw-choice-sub" x-text="s.sub"></span>
+          </button>
+        </template>
+      </div>
+
+      <div class="pw-result">
+        <div class="pw-boxes" aria-hidden="true">
+          <template x-for="n in 3" :key="n">
+            <span class="pw-box" :class="{'pw-box--on': n <= current.boxes}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"></path><path d="M3 7.5 12 12l9-4.5M12 12v9"></path></svg>
+            </span>
+          </template>
+          <span class="pw-box-plus" x-show="current.plus" x-cloak>+</span>
+        </div>
+        <div class="pw-price-wrap" aria-live="polite">
+          <div class="pw-price">
+            <span class="pw-price-band" x-text="current.band"></span>
+            <span class="pw-price-amount">&pound;<span x-text="displayPrice"></span></span>
+            <span class="pw-price-per">/week</span>
+          </div>
+          <p class="pw-result-meta">That is roughly <strong><span x-text="current.boxes"></span> container<span x-show="current.boxes > 1" x-cloak>s</span><span x-show="current.plus" x-cloak>+</span></strong> of secure space &mdash; you only ever pay for the volume your belongings actually fill, with collection and redelivery included.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="pw-h3">Managed storage vs a self-storage unit</h3>
+    <p class="pw-body">A drive-up self-storage unit can look cheaper on the headline rate, but the real cost adds up quickly once you factor in van hire, fuel, the hours spent driving back and forth, and paying for floor space you never fully use. With our managed model there is nothing to hire and nothing to carry: collection from your door and redelivery are built into the price, our team packs and loads everything for you, and because we stack sealed containers efficiently in a secure warehouse you pay only for the volume your belongings take up. For most households and businesses across West Sussex it works out cleaner, more secure and better value &mdash; with none of the heavy lifting.</p>
+    <div class="pw-compare" x-data="{mode:'self'}">
+      <p class="pw-cinstruct">Toggle to see what a self-storage unit really costs &mdash; then watch the hidden charges fall away.</p>
+      <div class="pw-toggle" role="group" aria-label="Compare a self-storage unit with our managed storage">
+        <span class="pw-tslider" :class="{'pw-tslider-right':mode==='managed'}" aria-hidden="true"></span>
+        <button type="button" class="pw-tbtn" :class="{'pw-on':mode==='self'}" :aria-pressed="(mode==='self').toString()" @click="mode='self'">Self-storage unit</button>
+        <button type="button" class="pw-tbtn" :class="{'pw-on':mode==='managed'}" :aria-pressed="(mode==='managed').toString()" @click="mode='managed'">Managed (us)</button>
+      </div>
+      <div class="pw-ledger">
+        <div class="pw-row">
+          <span class="pw-rowlabel">Headline rate</span>
+          <span class="pw-rowvals">
+            <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">Cheap on paper</span>
+            <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>From &pound;15/week</span>
+          </span>
+        </div>
+        <div class="pw-row">
+          <span class="pw-rowlabel">Van hire</span>
+          <span class="pw-rowvals">
+            <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">&pound;60&ndash;&pound;100</span>
+            <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Included</span>
+          </span>
+        </div>
+        <div class="pw-row">
+          <span class="pw-rowlabel">Fuel &amp; mileage</span>
+          <span class="pw-rowvals">
+            <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">On top</span>
+            <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Included</span>
+          </span>
+        </div>
+        <div class="pw-row">
+          <span class="pw-rowlabel">Hours driving back and forth</span>
+          <span class="pw-rowvals">
+            <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">Your weekends</span>
+            <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>None</span>
+          </span>
+        </div>
+        <div class="pw-row">
+          <span class="pw-rowlabel">Floor space you never fully use</span>
+          <span class="pw-rowvals">
+            <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">Paid for in full</span>
+            <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Only the volume you use</span>
+          </span>
+        </div>
+        <div class="pw-row">
+          <span class="pw-rowlabel">Packing &amp; loading</span>
+          <span class="pw-rowvals">
+            <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">You do the lifting</span>
+            <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Our team, included</span>
+          </span>
+        </div>
+        <div class="pw-row">
+          <span class="pw-rowlabel">Collection &amp; redelivery</span>
+          <span class="pw-rowvals">
+            <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">Not offered</span>
+            <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Built into the price</span>
+          </span>
+        </div>
+      </div>
+      <p class="pw-bottom" aria-live="polite">
+        <span x-show="mode==='self'">A low headline rate &mdash; then van hire, fuel, your time and floor space you never fully use stack up on top.</span>
+        <span x-show="mode==='managed'" x-cloak>One all-in weekly price from <strong>&pound;15</strong> &mdash; collection, packing and redelivery built in, and you pay only for the volume your belongings take up.</span>
+      </p>
+    </div>
+
+    <h3 class="pw-h3">No deposit, no tie-in, no surprises</h3>
+    <p class="pw-body">We keep everything transparent because that is how we would want to be treated. Every quote is clear and fixed, there is no deposit and no minimum contract, and you deal with the same family team from your first call to the day your things come back. Your belongings are fully insured throughout, stored in a dry, alarmed, 24/7 CCTV-monitored facility, and handled by a LAPADA-accredited team trusted with antiques and high-value items as readily as everyday boxes. If your circumstances change, you can scale up, scale down or finish entirely with just 24 hours&rsquo; notice.</p>
+
+    <h3 class="pw-h3">Get an exact price for your storage</h3>
+    <p class="pw-body">Not sure how many containers you&rsquo;ll need? Use the calculator on this page for an instant estimate, take a couple of minutes with our <a href="storage-size-guide.html">storage size guide</a>, or simply tell us the rooms involved and we&rsquo;ll work it out for you. Either way we&rsquo;ll send a clear, no-obligation quote within 24 hours, covering collection and redelivery anywhere across <a href="areas-we-cover.html">West Sussex</a>. Browse our full range of <a href="storage-solutions.html">storage solutions</a> or <a href="contact.html">get a free quote</a> to see exactly what your storage will cost.</p>
+  </div>
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('pwPricing', () => ({
+        selected: 0,
+        displayPrice: 15,
+        scenarios: [
+          { id:'flat1',  label:'1-bed flat',  sub:'or a single, packed room', boxes:1, price:15, band:'from', plus:false },
+          { id:'house2', label:'2-bed house', sub:'a typical family move',     boxes:2, price:30, band:'from', plus:false },
+          { id:'house3', label:'3-bed house', sub:'a fuller household',        boxes:3, price:45, band:'from', plus:false },
+          { id:'biz',    label:'Business',     sub:'stock or paperwork',        boxes:1, price:15, band:'from', plus:true  }
+        ],
+        get current() { return this.scenarios[this.selected] || this.scenarios[0]; },
+        select(i) {
+          this.selected = i;
+          this.animatePrice(this.current.price);
+        },
+        animatePrice(target) {
+          var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          if (reduce) { this.displayPrice = target; return; }
+          var start = this.displayPrice, t0 = performance.now(), dur = 480, self = this;
+          var step = function(t) {
+            var p = Math.min(1, (t - t0) / dur);
+            self.displayPrice = Math.round(start + (target - start) * p);
+            if (p < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        },
+        init() { this.displayPrice = this.current.price; }
+      }));
+    });
+  </script>
+</section>''',
         centered("bg-white","What&rsquo;s Always Included","Every storage plan includes the essentials &mdash; no surprises.",
           '<div class="grid grid-cols-12 gap-x-6 gap-y-5 mt-8">'+"".join('<div class="col-span-12 sm:col-span-6 lg:col-span-3 flex items-start gap-2 text-base xl:text-lg">'+CHK+'<span>'+x+'</span></div>' for x in ["Collection from your door","Your own sealed wooden container","24/7 CCTV &amp; alarmed store","Full insurance cover","Redelivery on 24 hours notice","Flexible weekly &amp; 4-week terms","No deposit, no hidden fees","Family-run, LAPADA accredited"])+'</div>'),
         split("bg-lightgrey","Optional Extras",["Add professional packing materials, extended insurance cover for higher-value items, or help unpacking when your belongings come home.","Tell us what you need on your free quote and we&rsquo;ll tailor a price."],IMG("hero-team-loading.webp"),"Team packing belongings for storage"),
