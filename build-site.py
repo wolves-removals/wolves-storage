@@ -2141,10 +2141,15 @@ def build():
 .pw-h2{color:#23282d;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.1;font-weight:800;letter-spacing:-.01em;margin:0 0 22px;}
 .pw-h2 em{font-style:normal;color:#5d6a75;}
 .pw-intro{font-size:clamp(1.05rem,1.7vw,1.25rem);line-height:1.7;color:#46505a;margin:0;max-width:840px;}
-.pw-stats{display:flex;flex-wrap:wrap;align-items:center;gap:0;margin:30px 0 0;}
-.pw-stat{padding-right:22px;margin-right:22px;border-right:1px solid rgba(35,40,45,.13);font-size:.95rem;color:#46505a;line-height:1.4;margin-top:8px;}
-.pw-stat:last-child{border-right:0;margin-right:0;padding-right:0;}
-.pw-stat strong{display:block;color:#5d6a75;font-weight:800;font-size:1.3rem;letter-spacing:-.01em;}
+.pw-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.6vw,18px);margin:clamp(30px,4vw,44px) 0 0;}
+.pw-stat{position:relative;display:flex;flex-direction:column;gap:12px;background:linear-gradient(155deg,#F5F2EA 0%,#EAE5D8 100%);border:1px solid rgba(105,119,131,.18);border-radius:18px;padding:clamp(20px,2.4vw,26px);overflow:hidden;isolation:isolate;}
+.pw-stat::before{content:"";position:absolute;top:0;left:clamp(20px,2.4vw,26px);width:34px;height:3px;background:linear-gradient(90deg,#6f7d89,#566069);border-radius:0 0 3px 3px;}
+.pw-stat::after{content:"";position:absolute;right:-32px;bottom:-36px;width:120px;height:120px;border-radius:28px;background:rgba(105,119,131,.07);transform:rotate(18deg);z-index:-1;}
+.pw-stat-ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:#fff;border:1px solid rgba(105,119,131,.2);color:#5d6a75;box-shadow:0 5px 12px -7px rgba(74,85,96,.5);}
+.pw-stat-ic svg{width:22px;height:22px;}
+.pw-stat-num{display:flex;align-items:baseline;gap:6px;font-size:clamp(2rem,3.6vw,2.7rem);font-weight:800;color:#3b434b;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+.pw-stat-num span{font-size:.92rem;font-weight:700;color:#828c96;letter-spacing:0;}
+.pw-stat-label{font-size:.92rem;color:#5a636c;line-height:1.45;font-weight:500;}
 
 /* ---- Numbered segment ---- */
 .pw-seg{display:grid;grid-template-columns:96px minmax(0,1fr);gap:clamp(22px,4vw,54px);align-items:start;padding:clamp(34px,5vw,58px) 0;border-top:1px solid rgba(35,40,45,.13);}
@@ -2211,8 +2216,13 @@ def build():
   .pw-num{font-size:2.6rem;line-height:1;}
   .pw-body{max-width:none;}
 }
+@media (max-width:620px){
+  .pw-stats{grid-template-columns:1fr;}
+  .pw-stat{flex-direction:row;align-items:center;flex-wrap:wrap;gap:14px;}
+  .pw-stat-num{flex:0 0 auto;}
+  .pw-stat-label{flex:1 1 100%;}
+}
 @media (max-width:560px){
-  .pw-stat{font-size:.9rem;}
   .pw-choice{flex:1 1 46%;}
 }
 @media (max-width:640px){
@@ -2231,9 +2241,21 @@ def build():
     <p class="pw-intro">Storage with us starts at just &pound;15 a week, and the way we price it is refreshingly straightforward &mdash; you pay a low weekly rate for each wooden container your belongings fill, and nothing else. Each container holds around 250 cubic feet, roughly the contents of a one-bedroom flat or a single, well-packed room. If you have more to store we simply add another container, so you only ever pay for the space you actually use rather than renting an oversized room and paying for empty air. There is no deposit, no joining fee and no hidden charges &mdash; the price we quote is the price you pay.</p>
 
     <div class="pw-stats" aria-hidden="true">
-      <span class="pw-stat"><strong>&pound;15</strong> starting weekly rate</span>
-      <span class="pw-stat"><strong>250</strong> cu ft per container</span>
-      <span class="pw-stat"><strong>24h</strong> notice to change</span>
+      <div class="pw-stat">
+        <span class="pw-stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 13.3 13.3 20.5a2 2 0 0 1-2.8 0l-6.5-6.5a2 2 0 0 1-.6-1.4V5a2 2 0 0 1 2-2h6.6a2 2 0 0 1 1.4.6l6.5 6.5a2 2 0 0 1 0 2.8Z"/><circle cx="8" cy="8" r="1.3"/></svg></span>
+        <span class="pw-stat-num">&pound;15<span>/week</span></span>
+        <span class="pw-stat-label">Starting rate for each container you fill</span>
+      </div>
+      <div class="pw-stat">
+        <span class="pw-stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8 21 7.4v9.2L12 21.2 3 16.6V7.4Z"/><path d="M3 7.4 12 12l9-4.6"/><path d="M12 12v9.2"/></svg></span>
+        <span class="pw-stat-num">250<span>cu ft</span></span>
+        <span class="pw-stat-label">Space per container &mdash; about a one-bed flat</span>
+      </div>
+      <div class="pw-stat">
+        <span class="pw-stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+        <span class="pw-stat-num">24h<span>notice</span></span>
+        <span class="pw-stat-label">To collect, redeliver or change your space</span>
+      </div>
     </div>
 
     <!-- Segment 01 -->
