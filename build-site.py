@@ -447,7 +447,8 @@ SOCIALS_URLS = ["https://www.instagram.com/wolvesremovals/","https://www.faceboo
   "https://x.com/WolvesRemovals","https://www.tumblr.com/wolvesremovalsltd","https://www.youtube.com/@wolvesremovals"]
 # Independent third-party trust corroborators for sameAs (entity disambiguation + near-YMYL trust).
 # Add Checkatrade profile, Companies House, Wikidata Q-ID, Google Business Profile here once confirmed.
-TRUST_URLS = ["https://lapada.org/dealers/wolves-removals/"]
+TRUST_URLS = ["https://lapada.org/dealers/wolves-removals/",
+  "https://www.checkatrade.com/trades/wolvesremovals"]
 ORG = json.dumps({"@context":"https://schema.org","@type":["SelfStorage","MovingCompany","LocalBusiness"],
   "@id":BASE+"#business",
   "name":"Wolves Storage Sussex","url":BASE,"telephone":"+441903893731","email":EMAIL,"priceRange":"From £15 per week",
