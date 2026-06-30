@@ -99,26 +99,43 @@
 .pw-result-meta{width:100%;font-size:.98rem;line-height:1.6;color:#46505a;margin:10px 0 0;max-width:520px;}
 .pw-result-meta strong{color:#5d6a75;font-weight:800;}
 
-/* ---- Managed vs self (segment 03) — hairline ledger with a cross-out reveal, not a card ---- */
-.pw-compare{position:relative;margin:clamp(24px,3vw,34px) 0 0;padding:clamp(26px,3.5vw,40px);border:1px solid rgba(105,119,131,.18);border-radius:20px;background:linear-gradient(155deg,#F5F2EA 0%,#EAE5D8 100%);overflow:hidden;isolation:isolate;max-width:760px;}
+/* ---- Managed vs self (segment 03) — side-by-side comparison matrix ---- */
+.pw-compare{position:relative;margin:clamp(24px,3vw,34px) 0 0;padding:clamp(26px,3.5vw,40px);border:1px solid rgba(105,119,131,.18);border-radius:20px;background:linear-gradient(155deg,#F5F2EA 0%,#EAE5D8 100%);overflow:hidden;isolation:isolate;max-width:880px;}
 .pw-compare::before{content:"";position:absolute;top:0;left:clamp(26px,3.5vw,40px);width:40px;height:3px;background:linear-gradient(90deg,#6f7d89,#566069);border-radius:0 0 3px 3px;}
 .pw-compare::after{content:"";position:absolute;right:-54px;bottom:-64px;width:210px;height:210px;border-radius:46px;background:rgba(105,119,131,.06);transform:rotate(18deg);z-index:-1;}
-.pw-cinstruct{margin:0 0 16px;font-size:.9rem;color:#6b7480;}
-.pw-toggle{position:relative;display:flex;background:rgba(255,255,255,.6);border:1px solid rgba(105,119,131,.22);box-shadow:inset 0 1px 3px rgba(74,85,96,.08);border-radius:999px;padding:5px;max-width:440px;}
-.pw-tbtn{position:relative;z-index:1;flex:1;background:none;border:0;padding:13px 14px;font-size:.97rem;font-weight:700;color:#5a636c;cursor:pointer;border-radius:999px;transition:color .25s ease;}
-.pw-tbtn.pw-on{color:#fff;}
-.pw-tbtn:focus-visible{outline:2px solid #23282d;outline-offset:2px;}
-.pw-tslider{position:absolute;top:5px;left:5px;width:calc(50% - 5px);height:calc(100% - 10px);background:linear-gradient(180deg,#6f7d89,#566069);box-shadow:0 7px 18px -7px rgba(74,85,96,.6);border-radius:999px;transition:transform .32s cubic-bezier(.4,0,.2,1);}
-.pw-tslider-right{transform:translateX(100%);}
-.pw-ledger{margin:24px 0 0;}
-.pw-row{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:13px 16px;border-bottom:1px solid rgba(105,119,131,.16);border-radius:10px;transition:background .2s ease;}.pw-row:nth-of-type(odd){background:rgba(255,255,255,.55);}.pw-row:hover{background:rgba(255,255,255,.9);}
-.pw-rowlabel{font-weight:600;color:#3b434b;font-size:1rem;}
-.pw-rowvals{display:flex;align-items:baseline;gap:12px;text-align:right;flex:none;justify-content:flex-end;}
-.pw-cost{font-weight:700;color:#23282d;transition:color .35s ease,opacity .35s ease,text-decoration-color .35s ease;font-variant-numeric:tabular-nums;}
-.pw-cost.pw-struck{text-decoration:line-through;text-decoration-color:rgba(35,40,45,.45);text-decoration-thickness:2px;color:#9aa1a8;font-weight:600;}
-.pw-incl{display:inline-flex;align-items:center;font-weight:800;color:#46505a;background:rgba(105,119,131,.12);border:1px solid rgba(105,119,131,.3);padding:3px 12px;border-radius:999px;font-size:.92rem;font-variant-numeric:tabular-nums;}
-.pw-bottom{margin:24px 0 0;font-size:1.06rem;line-height:1.7;color:#3b434b;min-height:1.7em;}
-.pw-bottom strong{color:#23282d;font-weight:800;}
+.pw-cinstruct{margin:0 0 26px;font-size:.95rem;line-height:1.55;color:#5a636c;max-width:540px;}
+.pw-matrix{display:grid;grid-template-columns:minmax(150px,1.32fr) minmax(120px,1fr) minmax(134px,1.06fr);column-gap:clamp(10px,1.6vw,18px);position:relative;}
+.pw-cell{position:relative;display:flex;align-items:center;}
+/* dimension rail */
+.pw-d{gap:13px;padding:18px 6px 18px 2px;border-bottom:1px solid rgba(105,119,131,.13);}
+.pw-dic{flex:0 0 auto;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.72);border:1px solid rgba(105,119,131,.2);color:#5d6a75;}
+.pw-dic svg{width:20px;height:20px;}
+.pw-dlabel{font-weight:600;color:#37414a;font-size:1.05rem;line-height:1.25;}
+.pw-h-d{border-bottom:0;}
+.pw-f-d{align-items:flex-start;padding:18px 6px 0 2px;font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:#6b7480;}
+/* shared option-column chip + value */
+.pw-s,.pw-m{justify-content:center;gap:10px;padding:18px 12px;text-align:center;}
+.pw-sval{color:#7d838b;font-weight:600;font-size:1.01rem;}
+.pw-mval{color:#23282d;font-weight:700;font-size:1.03rem;line-height:1.25;}
+.pw-x,.pw-check{flex:0 0 auto;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;}
+.pw-x{background:rgba(150,134,110,.16);color:#a4937c;}
+.pw-x svg{width:11px;height:11px;}
+.pw-check{background:rgba(105,119,131,.17);color:#46505a;}
+.pw-check svg{width:13px;height:13px;}
+/* self column-card (recessed) */
+.pw-h-s,.pw-s,.pw-f-s{background:rgba(105,119,131,.05);border-left:1px solid rgba(105,119,131,.14);border-right:1px solid rgba(105,119,131,.14);}
+.pw-h-s{border-top:1px solid rgba(105,119,131,.14);border-radius:14px 14px 0 0;flex-direction:column;justify-content:flex-end;padding:18px 10px 15px;text-align:center;font-size:.74rem;text-transform:uppercase;letter-spacing:.07em;font-weight:800;color:#9aa1a8;}
+.pw-f-s{border-bottom:1px solid rgba(105,119,131,.14);border-radius:0 0 14px 14px;flex-direction:column;justify-content:center;padding:16px 12px 18px;text-align:center;color:#8b9097;font-weight:600;font-size:.95rem;}
+/* managed column-card (elevated) */
+.pw-h-m,.pw-m,.pw-f-m{background:#fff;border-left:1px solid rgba(105,119,131,.3);border-right:1px solid rgba(105,119,131,.3);}
+.pw-h-m{border-top:1px solid rgba(105,119,131,.3);border-radius:14px 14px 0 0;flex-direction:column;justify-content:flex-end;align-items:center;gap:9px;padding:20px 10px 16px;text-align:center;box-shadow:0 -16px 30px -22px rgba(74,85,96,.45);}
+.pw-h-m::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:44px;height:3px;background:linear-gradient(90deg,#6f7d89,#566069);border-radius:0 0 3px 3px;}
+.pw-f-m{border-bottom:1px solid rgba(105,119,131,.3);border-radius:0 0 14px 14px;flex-direction:column;justify-content:center;gap:2px;padding:15px 12px 18px;text-align:center;box-shadow:0 28px 46px -30px rgba(74,85,96,.6);}
+.pw-pill{display:inline-flex;align-items:center;gap:5px;background:#5d6a75;color:#fff;font-size:.61rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;padding:5px 11px;border-radius:999px;box-shadow:0 7px 16px -8px rgba(74,85,96,.85);}
+.pw-pill svg{width:11px;height:11px;}
+.pw-h-mlabel{font-size:.84rem;text-transform:uppercase;letter-spacing:.05em;font-weight:800;color:#23282d;}
+.pw-f-m strong{font-size:1.22rem;color:#23282d;font-weight:800;letter-spacing:-.01em;}
+.pw-f-m span{font-size:.85rem;color:#5a636c;}
 
 /* ---- Responsive ---- */
 @media (max-width:720px){
@@ -135,13 +152,17 @@
 @media (max-width:560px){
   .pw-choice{flex:1 1 46%;}
 }
-@media (max-width:640px){
-  .pw-row{flex-direction:column;align-items:flex-start;gap:6px;}
-  .pw-rowvals{text-align:left;justify-content:flex-start;}
-  .pw-toggle{max-width:none;}
+@media (max-width:600px){
+  .pw-matrix{grid-template-columns:minmax(0,1.3fr) minmax(58px,.8fr) minmax(80px,1fr);}
+  .pw-dic{display:none;}
+  .pw-d{padding:12px 8px 12px 0;}
+  .pw-s{padding:12px 9px;}
+  .pw-h-m,.pw-m,.pw-f-m{padding-left:9px;padding-right:9px;}
+  .pw-dlabel,.pw-sval,.pw-mval{font-size:.85rem;}
+  .pw-h-mlabel{font-size:.72rem;}
 }
 @media (prefers-reduced-motion:reduce){
-  .pw-box,.pw-choice,.pw-choice-label,.pw-body a,.pw-tslider,.pw-cost,.pw-tbtn{transition:none !important;}
+  .pw-box,.pw-choice,.pw-choice-label,.pw-body a{transition:none !important;}
 }
 </style><section class="pw-pricing" x-data="pwPricing()">
   <div class="pw-wrap">
@@ -226,68 +247,46 @@
         <h3 class="pw-h3">Managed storage vs a self-storage unit</h3>
         <p class="pw-body">A drive-up self-storage unit can look cheaper on the headline rate, but the real cost adds up quickly once you factor in van hire, fuel, the hours spent driving back and forth, and paying for floor space you never fully use. With our managed model there is nothing to hire and nothing to carry: collection from your door and redelivery are quoted upfront as one clear charge, our team packs and loads everything for you, and because we stack sealed containers efficiently in a secure warehouse you pay only for the volume your belongings take up. For most households and businesses across West Sussex it works out cleaner, more secure and better value &mdash; with none of the heavy lifting.</p>
 
-        <div class="pw-compare" x-data="{mode:'self'}">
-          <p class="pw-cinstruct">Toggle to see what a self-storage unit really costs &mdash; then watch the hidden charges fall away.</p>
-          <div class="pw-toggle" role="group" aria-label="Compare a self-storage unit with our managed storage">
-            <span class="pw-tslider" :class="{'pw-tslider-right':mode==='managed'}" aria-hidden="true"></span>
-            <button type="button" class="pw-tbtn" :class="{'pw-on':mode==='self'}" :aria-pressed="(mode==='self').toString()" @click="mode='self'">Self-storage unit</button>
-            <button type="button" class="pw-tbtn" :class="{'pw-on':mode==='managed'}" :aria-pressed="(mode==='managed').toString()" @click="mode='managed'">Managed (us)</button>
+        <div class="pw-compare">
+          <p class="pw-cinstruct">See it side by side. A self-storage unit looks cheap on the sticker &mdash; then the van, the fuel and the lost weekends pile on top. Ours stays one flat weekly price.</p>
+          <div class="pw-matrix" role="group" aria-label="A self-storage unit compared with our managed storage">
+
+            <div class="pw-cell pw-h-d" aria-hidden="true"></div>
+            <div class="pw-cell pw-h-s">A self-storage unit</div>
+            <div class="pw-cell pw-h-m"><span class="pw-pill"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7.5l3 3 6-7"/></svg>The Wolves way</span><span class="pw-h-mlabel">Managed storage</span></div>
+
+            <div class="pw-cell pw-d"><span class="pw-dic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 13.3 13.3 20.5a2 2 0 0 1-2.8 0l-6.5-6.5A2 2 0 0 1 3.4 12V5a2 2 0 0 1 2-2H12a2 2 0 0 1 1.4.6l6.5 6.5a2 2 0 0 1 0 2.8Z"/><circle cx="7.8" cy="7.8" r="1.3"/></svg></span><span class="pw-dlabel">Headline rate</span></div>
+            <div class="pw-cell pw-s"><span class="pw-x"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l10 10M15 5 5 15"/></svg></span><span class="pw-sval">Cheap on paper</span></div>
+            <div class="pw-cell pw-m"><span class="pw-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span><span class="pw-mval">&pound;15/wk storage</span></div>
+
+            <div class="pw-cell pw-d"><span class="pw-dic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="10.5" height="8" rx="1"/><path d="M13 9.5h3.6l3.4 3.4V15h-2.2"/><circle cx="6.6" cy="17" r="1.8"/><circle cx="16.8" cy="17" r="1.8"/></svg></span><span class="pw-dlabel">Van hire</span></div>
+            <div class="pw-cell pw-s"><span class="pw-x"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l10 10M15 5 5 15"/></svg></span><span class="pw-sval">&pound;60&ndash;&pound;100</span></div>
+            <div class="pw-cell pw-m"><span class="pw-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span><span class="pw-mval">We bring the van</span></div>
+
+            <div class="pw-cell pw-d"><span class="pw-dic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2s5 5.4 5 8.8a5 5 0 0 1-10 0c0-3.4 5-8.8 5-8.8Z"/></svg></span><span class="pw-dlabel">Fuel &amp; mileage</span></div>
+            <div class="pw-cell pw-s"><span class="pw-x"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l10 10M15 5 5 15"/></svg></span><span class="pw-sval">On top</span></div>
+            <div class="pw-cell pw-m"><span class="pw-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span><span class="pw-mval">In your quote</span></div>
+
+            <div class="pw-cell pw-d"><span class="pw-dic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.2v5l3.4 2"/></svg></span><span class="pw-dlabel">Hours driving back and forth</span></div>
+            <div class="pw-cell pw-s"><span class="pw-x"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l10 10M15 5 5 15"/></svg></span><span class="pw-sval">Your weekends</span></div>
+            <div class="pw-cell pw-m"><span class="pw-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span><span class="pw-mval">Zero &mdash; we do it</span></div>
+
+            <div class="pw-cell pw-d"><span class="pw-dic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 10h17M10 20.5V10"/></svg></span><span class="pw-dlabel">Floor space you never fully use</span></div>
+            <div class="pw-cell pw-s"><span class="pw-x"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l10 10M15 5 5 15"/></svg></span><span class="pw-sval">Paid for in full</span></div>
+            <div class="pw-cell pw-m"><span class="pw-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span><span class="pw-mval">Only what you use</span></div>
+
+            <div class="pw-cell pw-d"><span class="pw-dic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.9 20.6 7.4v9.2L12 21.1 3.4 16.6V7.4Z"/><path d="M3.4 7.4 12 12l8.6-4.6M12 12v9.1"/></svg></span><span class="pw-dlabel">Packing &amp; loading</span></div>
+            <div class="pw-cell pw-s"><span class="pw-x"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l10 10M15 5 5 15"/></svg></span><span class="pw-sval">You do the lifting</span></div>
+            <div class="pw-cell pw-m"><span class="pw-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span><span class="pw-mval">Our team does it</span></div>
+
+            <div class="pw-cell pw-d"><span class="pw-dic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4.5 20 11"/><path d="M5.8 9.8V19h12.4V9.8"/><path d="M10 19v-4.5h4V19"/></svg></span><span class="pw-dlabel">Collection &amp; redelivery</span></div>
+            <div class="pw-cell pw-s"><span class="pw-x"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l10 10M15 5 5 15"/></svg></span><span class="pw-sval">Not offered</span></div>
+            <div class="pw-cell pw-m"><span class="pw-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span><span class="pw-mval">One clear charge</span></div>
+
+            <div class="pw-cell pw-f-d">Bottom line</div>
+            <div class="pw-cell pw-f-s">It all stacks up</div>
+            <div class="pw-cell pw-f-m"><strong>&pound;15/week</strong><span>one clear charge</span></div>
           </div>
-          <div class="pw-ledger">
-            <div class="pw-row">
-              <span class="pw-rowlabel">Headline rate</span>
-              <span class="pw-rowvals">
-                <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">Cheap on paper</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>&pound;15/wk storage</span>
-              </span>
-            </div>
-            <div class="pw-row">
-              <span class="pw-rowlabel">Van hire</span>
-              <span class="pw-rowvals">
-                <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">&pound;60&ndash;&pound;100</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>We bring the van</span>
-              </span>
-            </div>
-            <div class="pw-row">
-              <span class="pw-rowlabel">Fuel &amp; mileage</span>
-              <span class="pw-rowvals">
-                <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">On top</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Covered in your quote</span>
-              </span>
-            </div>
-            <div class="pw-row">
-              <span class="pw-rowlabel">Hours driving back and forth</span>
-              <span class="pw-rowvals">
-                <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">Your weekends</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>None</span>
-              </span>
-            </div>
-            <div class="pw-row">
-              <span class="pw-rowlabel">Floor space you never fully use</span>
-              <span class="pw-rowvals">
-                <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">Paid for in full</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Only the volume you use</span>
-              </span>
-            </div>
-            <div class="pw-row">
-              <span class="pw-rowlabel">Packing &amp; loading</span>
-              <span class="pw-rowvals">
-                <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">You do the lifting</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>Our team does it</span>
-              </span>
-            </div>
-            <div class="pw-row">
-              <span class="pw-rowlabel">Collection &amp; redelivery</span>
-              <span class="pw-rowvals">
-                <span class="pw-cost" :class="{'pw-struck':mode==='managed'}">Not offered</span>
-                <span class="pw-incl" x-show="mode==='managed'" x-cloak x-transition>One clear charge</span>
-              </span>
-            </div>
-          </div>
-          <p class="pw-bottom" aria-live="polite">
-            <span x-show="mode==='self'">A low headline rate &mdash; then van hire, fuel, your time and floor space you never fully use stack up on top.</span>
-            <span x-show="mode==='managed'" x-cloak>Storage from <strong>&pound;15</strong> a week, with collection, packing and redelivery quoted upfront as one clear charge &mdash; and you pay only for the volume your belongings take up.</span>
-          </p>
         </div>
       </div>
     </div>
