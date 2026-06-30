@@ -448,11 +448,13 @@ SOCIALS_URLS = ["https://www.instagram.com/wolvesremovals/","https://www.faceboo
 # Independent third-party trust corroborators for sameAs (entity disambiguation + near-YMYL trust).
 # Add Checkatrade profile, Companies House, Wikidata Q-ID, Google Business Profile here once confirmed.
 TRUST_URLS = ["https://lapada.org/dealers/wolves-removals/",
-  "https://www.checkatrade.com/trades/wolvesremovals"]
+  "https://www.checkatrade.com/trades/wolvesremovals",
+  "https://find-and-update.company-information.service.gov.uk/company/10474120"]
 ORG = json.dumps({"@context":"https://schema.org","@type":["SelfStorage","MovingCompany","LocalBusiness"],
   "@id":BASE+"#business",
-  "name":"Wolves Storage Sussex","url":BASE,"telephone":"+441903893731","email":EMAIL,"priceRange":"From £15 per week",
+  "name":"Wolves Storage Sussex","legalName":"Wolves Removals Limited","url":BASE,"telephone":"+441903893731","email":EMAIL,"priceRange":"From £15 per week",
   "currenciesAccepted":"GBP","paymentAccepted":"Cash, Credit Card, Debit Card, Bank Transfer","foundingDate":"2016",
+  "identifier":{"@type":"PropertyValue","propertyID":"GB-COH","value":"10474120"},
   "image":BASE+"images/wolves-storage-logo@480.webp","logo":BASE+"images/wolves-storage-logo@480.webp",
   "hasMap":"https://www.google.com/maps?q=Doryln+House,+London+Road,+Ashington,+Pulborough,+West+Sussex+RH20+3JT",
   "address":{"@type":"PostalAddress","streetAddress":"Doryln House, London Road, Ashington","addressLocality":"Pulborough","addressRegion":"West Sussex","postalCode":"RH20 3JT","addressCountry":"GB"},
