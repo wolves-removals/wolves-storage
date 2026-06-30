@@ -449,7 +449,8 @@ SOCIALS_URLS = ["https://www.instagram.com/wolvesremovals/","https://www.faceboo
 # Add Checkatrade profile, Companies House, Wikidata Q-ID, Google Business Profile here once confirmed.
 TRUST_URLS = ["https://lapada.org/dealers/wolves-removals/",
   "https://www.checkatrade.com/trades/wolvesremovals",
-  "https://find-and-update.company-information.service.gov.uk/company/10474120"]
+  "https://find-and-update.company-information.service.gov.uk/company/10474120",
+  "https://share.google/gsquHQmymm0Uzstx1"]
 ORG = json.dumps({"@context":"https://schema.org","@type":["SelfStorage","MovingCompany","LocalBusiness"],
   "@id":BASE+"#business",
   "name":"Wolves Storage Sussex","legalName":"Wolves Removals Limited","url":BASE,"telephone":"+441903893731","email":EMAIL,"priceRange":"From £15 per week",
