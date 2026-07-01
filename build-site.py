@@ -725,7 +725,7 @@ WHYUS_CONTENT = {
    "/images/gallery-clipboard.webp","Wolves Storage Sussex branded clipboard used for clear, no-obligation storage quotes"),
  'areas-we-cover.html':(
    "Why West Sussex Stores With Wolves",
-   "Because we&rsquo;re based in Ashington and have served the county since 2016, we know West Sussex inside out &mdash; and the managed model means we come to you. One family-run team collects, stores and redelivers, wherever you are in the area.",
+   "Because we&rsquo;re based in Ashington, West Sussex, and have served the county since 2016, we know West Sussex inside out &mdash; and the managed model means we come to you. One family-run team collects, stores and redelivers, wherever you are in the area.",
    "It&rsquo;s a local, fully insured and "+_wl("about.html","LAPADA-accredited")+" service trusted by estate agents across the region. Explore our "+_wl("storage-solutions.html","storage solutions")+" or see "+_wl("pricing.html","prices")+" from just &pound;15 a week.",
    "/images/hero-fleet.webp","Wolves Storage Sussex van fleet that collects and redelivers across West Sussex"),
  'gallery.html':(
@@ -811,14 +811,14 @@ def town_map(t):
     if m<=1:
         fnum="Ashington HQ"; fsub="You&rsquo;re right on our doorstep"
     else:
-        fnum="~"+str(m)+" miles"; fsub="from our Ashington HQ &middot; same-day redelivery"
+        fnum="~"+str(m)+" miles"; fsub="from our Ashington, West Sussex HQ &middot; same-day redelivery"
     return ('<section class="cov-sec relative bg-lightgrey w-full pt-8 lg:pt-12 pb-8 lg:pb-12 border-border" aria-label="Storage coverage area for '+town+'">'
             +COV_CSS+
             '<div class="container"><div class="grid grid-cols-12 gap-6 lg:gap-10 items-center">'
             '<div class="col-span-12 lg:col-span-5">'
             '<span class="cov-eyebrow">Local Coverage</span>'
             '<h2 class="relative leading-tight text-black mt-3">We Cover '+town+'</h2>'
-            '<p class="mt-3">From our alarmed warehouse in Ashington (RH20 3JT) we collect from and redeliver right across '+town+' and the surrounding area &mdash; just tell us your postcode.</p>'
+            '<p class="mt-3">From our alarmed warehouse in Ashington, West Sussex (RH20 3JT) we collect from and redeliver right across '+town+' and the surrounding area &mdash; just tell us your postcode.</p>'
             +checklist(["Door-to-door collection &amp; redelivery","Sealed, alarmed &amp; fully insured storage","From &pound;15/week, no deposit"])+
             '<div class="cov-ctarow">'+btn("Get a Free Quote","contact.html","px-8 lg:px-10")+
             '<a class="cov-call" href="tel:+441903893731" aria-label="Call us on '+PHONE1+'">'+COV_PHONE+'<span>Call '+PHONE1+'</span></a>'
@@ -1788,7 +1788,7 @@ def reviews_page():
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">What customers tell us matters most</h3>'
            '<p>Read through our feedback and the same themes come up again and again: belongings returned in exactly the condition they left in, a friendly team that turns up when they say they will, clear and honest pricing with no surprises, and the reassurance of dealing with the same people from the first quote to the final redelivery. Because we&rsquo;re a small, family-run team rather than a faceless national chain, those details don&rsquo;t slip through the cracks.</p>'
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">Independently verified, not cherry-picked</h3>'
-           '<p>Our reviews are collected and verified through Trustindex, which gathers genuine, spam-checked feedback from multiple platforms in one place &mdash; so what you see is the real picture, not a hand-picked selection. We&rsquo;re also LAPADA-accredited, Checkatrade-verified and fully insured, and we&rsquo;re recommended by respected estate agents across the region.</p>'
+           '<p>Our reviews are collected and verified through <a href="https://www.trustindex.io/reviews/www.wolves-removals.co.uk" target="_blank" rel="noopener">Trustindex</a>, which gathers genuine, spam-checked feedback from multiple platforms in one place &mdash; 478 five-star reviews in total, of which our verified Google reviews are shown below &mdash; so what you see is the real picture, not a hand-picked selection. We&rsquo;re also LAPADA-accredited, Checkatrade-verified and fully insured, and we&rsquo;re recommended by respected estate agents across the region.</p>'
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">Trusted right across West Sussex</h3>'
            '<p>From <a href="storage-horsham.html">Horsham</a> and <a href="storage-crawley.html">Crawley</a> to the <a href="storage-worthing.html">Worthing</a> and <a href="storage-chichester.html">Chichester</a> coast, families and businesses across the county have chosen us for storage they don&rsquo;t have to worry about. Wherever you are, you can expect the same standard of care that earned those five-star reviews &mdash; see every <a href="areas-we-cover.html">area we cover</a>.</p>'
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">See for yourself, then store with confidence</h3>'
@@ -2002,7 +2002,7 @@ COST_BODY = (
 
 MANAGED_BODY = (
  '<p class="blg-lead"><strong>Managed container storage comes to you</strong> &mdash; we collect, pack, seal, store and redeliver your belongings &mdash; while a self-storage unit is a space you rent and fill yourself. The right choice comes down to how much effort you want to spend, how protected your things need to be, and the true all-in cost.</p>'
- '<p>For many West Sussex households the real question isn&rsquo;t &ldquo;which is cheaper?&rdquo; but &ldquo;who does the work, and who is responsible for my things?&rdquo; Here is an honest, side-by-side look at the two models &mdash; including the times a self-storage unit still wins.</p>'
+ '<p>For many West Sussex households the real question isn&rsquo;t &ldquo;which is cheaper?&rdquo; but &ldquo;who does the work, and who is responsible for my things?&rdquo; Here is an honest, side-by-side look at the two models &mdash; including the times a self-storage unit still wins. Whichever you choose, the <a href="https://www.ssauk.com/customer-info/selecting-a-storage-provider.html" target="_blank" rel="noopener">Self Storage Association UK</a> advises checking a provider&rsquo;s security, cleanliness and insurance first.</p>'
  '<div class="blg-keyrow">'
  '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h13V6H3z"/><path d="M16 9h3l2 3v1h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg></span><b>It comes to you</b><span>We collect and redeliver across West Sussex &mdash; no hire van, no driving.</span></div>'
  '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span><b>Your own container</b><span>Sealed and logged &mdash; not a shared open unit you share a corridor with.</span></div>'
@@ -2045,7 +2045,7 @@ MANAGED_BODY = (
  '<div class="blg-callout"><strong>From our collections:</strong> most people who try managed storage are surprised they ever considered driving a hire van to a unit themselves. We collect across West Sussex from &pound;15 a week &mdash; <a href="contact.html">get a free quote</a> and we&rsquo;ll cost collection and redelivery upfront, or see how the service works step by step on our <a href="how-it-works.html">how it works</a> page.</div>')
 
 PACK_BODY = (
- '<p class="blg-lead"><strong>Pack furniture for storage by cleaning and drying it, wrapping it in breathable covers and lifting it off the floor</strong> &mdash; never sealing wood, leather or upholstery in airtight plastic. The single most common cause of mouldy, musty furniture coming out of storage is plastic that traps moisture against it.</p>'
+ '<p class="blg-lead"><strong>Pack furniture for storage by cleaning and drying it, wrapping it in breathable covers and lifting it off the floor</strong> &mdash; never sealing wood, leather or upholstery in airtight plastic. The single most common cause of mouldy, musty furniture coming out of storage is plastic that traps moisture against it &mdash; the same reason UK <a href="https://www.nationalarchives.gov.uk/archives-sector/advice-and-guidance/managing-your-collection/caring-for-archives/" target="_blank" rel="noopener">conservation guidance</a> avoids airtight packaging.</p>'
  '<p>Good packing is what decides whether furniture comes back in the condition it went in. Below is how to prepare and wrap each type properly, what to use instead of plastic and newspaper, and the mistakes that cause damage months later.</p>'
  '<div class="blg-keyrow">'
  '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 10.5a6 6 0 0 1-12 0C6 9.5 12 3 12 3z"/></svg></span><b>Clean &amp; dry first</b><span>Moisture, food residue and sweat all feed mould once the doors close.</span></div>'
@@ -2132,7 +2132,7 @@ PROHIBIT_BODY = (
 
 MOVE_BODY = (
  '<p class="blg-lead"><strong>When your sale and purchase don&rsquo;t complete on the same day, storage bridges the gap</strong> &mdash; we collect your belongings before you move out, store them safely through the in-between, and redeliver once you&rsquo;re in. This is the timeline and checklist for a smooth West Sussex move.</p>'
- '<p>Moving home rarely runs to a perfect schedule: chains slip, completion dates move, and sometimes you are out before you are in. Managed storage takes the pressure off, and a little planning makes the whole thing calmer. Here is when to book, what to do, and how storing between homes works.</p>'
+ '<p>Moving home rarely runs to a perfect schedule: chains slip, completion dates move, and sometimes you are out before you are in &mdash; <a href="https://www.gov.uk/government/news/home-buying-and-selling-to-become-quicker-and-cheaper" target="_blank" rel="noopener">roughly one in three property sales falls through</a> before completion. Managed storage takes the pressure off, and a little planning makes the whole thing calmer. Here is when to book, what to do, and how storing between homes works.</p>'
  '<div class="blg-keyrow">'
  '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18"/><path d="M8 2v4M16 2v4"/></svg></span><b>Bridge the gap</b><span>Storage covers the days between moving out and moving in.</span></div>'
  '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h13V6H3z"/><path d="M16 9h3l2 3v1h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg></span><b>Collected before completion</b><span>We pack and take your things before you hand over the keys.</span></div>'
@@ -2326,7 +2326,7 @@ SEASON_BODY = (
  '<li><strong>Winter gear, heaters and spare bedding</strong> through the summer.</li>'
  '</ul>'
  '<h2>How do you store garden furniture over winter?</h2>'
- '<p>Store garden furniture over winter by cleaning and drying it first, then keeping it somewhere dry and ventilated rather than a cold, damp shed. A cold metal shed sweats with condensation and rusts metal and grows mould on cushions &mdash; the same dew-point effect that ruins furniture in an unheated unit.</p>'
+ '<p>Store garden furniture over winter by cleaning and drying it first, then keeping it somewhere dry and ventilated rather than a cold, damp shed. The <a href="https://www.rhs.org.uk/garden-jobs/furniture-maintaining-garden-seats-and-tables" target="_blank" rel="noopener">RHS</a> advises the same &mdash; clean and put furniture away at the end of summer in dry weather. A cold metal shed sweats with condensation and rusts metal and grows mould on cushions &mdash; the same dew-point effect that ruins furniture in an unheated unit.</p>'
  '<blockquote class="blg-pull">A damp shed is where garden furniture goes to rust &mdash; clean it, dry it, and keep it somewhere the air actually moves.<cite>Winter care for outdoor kit</cite></blockquote>'
  '<p>Wrap and pack it the same way you would indoor pieces &mdash; see <a href="blog-how-to-pack-furniture-storage.html">how to pack furniture without wrecking it</a>, and why the <a href="blog-furniture-storage-sussex-winter.html">dry environment matters</a> through a Sussex winter.</p>'
  '<h2>When should you store seasonal items?</h2>'
