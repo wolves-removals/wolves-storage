@@ -144,6 +144,25 @@ A11Y_CSS=('<style>'
   '.text-green{color:#1b7f3b}'                                   # darker green ticks meet 3:1 graphical contrast
   '.enquiry-form input,.enquiry-form select,.enquiry-form textarea{border:1px solid #6b7280}'  # 3:1 input borders
   '.enquiry-form input::placeholder,.enquiry-form textarea::placeholder{color:#5b626b}'         # readable placeholder
+  # --- mobile tap-target & legibility (audited 2026-07-01) ---
+  '.enquiry-form .enq-chip span{padding:.7rem 1.05rem;min-height:44px;display:inline-flex;align-items:center;font-size:.9rem}'  # 44px enquiry chips
+  '.enquiry-form .enq-chip input[type=checkbox]{width:1px;height:1px}'                            # kill 18px ghost checkbox
+  'a[href^="mailto:"]{overflow-wrap:anywhere}'                                              # long emails wrap, no 360px shave
+  '@media(max-width:640px){'
+    '.scalc-step{width:42px;height:42px;font-size:1.2rem}'                                        # >=40px stepper +/- on phones
+    '.scalc-stepper input{width:46px}'
+    '.scalc-tab{padding:.55rem .95rem;min-height:40px;font-size:.9rem}'                           # taller room tabs
+    '.scalc-input{font-size:1rem}'                                                                # 16px = no iOS focus zoom
+    '.scalc-item-vol{font-size:.8rem}'
+    '.gal-cap{font-size:1rem}.gal-lb-count{font-size:.8125rem}'
+  '}'
+  # map scroll-trap guard: tap-to-activate veil (mobile only; wrapper injected by footer JS)
+  '.map-guard{position:relative}'
+  '.map-guard>iframe,.map-guard .leaflet-container{pointer-events:none}'
+  '.map-guard.is-live>iframe,.map-guard.is-live .leaflet-container{pointer-events:auto}'
+  '.map-guard__veil{position:absolute;inset:0;z-index:5;border:0;background:transparent;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding:0 0 12px}'
+  '.map-guard.is-live .map-guard__veil{display:none}'
+  '.map-guard__hint{padding:6px 14px;border-radius:9999px;background:rgba(35,40,45,.85);color:#fff;font:600 .8rem/1 Barlow,system-ui,sans-serif;box-shadow:0 4px 14px -4px rgba(0,0,0,.5)}'
   '</style>')
 def split(bg, h2, paras, img, alt, reverse=False):
     body = "".join(f'<p>{p}</p>' for p in paras)
@@ -182,7 +201,7 @@ CG_CSS=('<style>'
   '.cg-blob{position:absolute;right:-150px;bottom:-150px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(246,187,6,.13),rgba(246,187,6,0) 68%);pointer-events:none;z-index:0}'
   '.cg-wrap{position:relative;z-index:1;max-width:74rem;margin:0 auto}'
   '.cg-head{text-align:center;max-width:54rem;margin:0 auto}'
-  '.cg-ey{display:inline-flex;align-items:center;gap:.5rem;color:#F6BB06;font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;margin-bottom:.7rem}'
+  '.cg-ey{display:inline-flex;align-items:center;gap:.5rem;color:#F3F1EC;font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.82rem;margin-bottom:.7rem}'
   '.cg-ey::before,.cg-ey::after{content:"";width:18px;height:1px;background:rgba(246,187,6,.55)}'
   '.cg-h2{color:#fff;font-weight:800;font-size:1.85rem;line-height:1.12;margin:0}'
   '@media(min-width:1024px){.cg-h2{font-size:2.3rem}}'
@@ -301,18 +320,54 @@ def process():
       '</div></div>')
     return centered("bg-beige","Our Step-by-Step Storage Process","We handle the heavy lifting, literally &mdash; here&rsquo;s how storing with us works.",inner)
 
-def faq(items):
+FQ_CSS=('<style>'
+ '.fq-sec{position:relative;overflow:hidden;background:linear-gradient(180deg,#fbfaf7,#f3f1ec)}'
+ '.fq-sec::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(35,40,45,.05) 1px,transparent 1.6px);background-size:22px 22px;-webkit-mask-image:radial-gradient(100% 74% at 50% 0,#000 24%,transparent 74%);mask-image:radial-gradient(100% 74% at 50% 0,#000 24%,transparent 74%);pointer-events:none}'
+ '.fq-wrap{position:relative;z-index:1;max-width:48rem;margin:0 auto}'
+ '.fq-head{text-align:center;margin:0 0 1.8rem}'
+ '.fq-kick{display:inline-flex;align-items:center;gap:.55rem;font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#697783}'
+ '.fq-kick i{width:22px;height:2px;border-radius:2px;background:linear-gradient(90deg,#5d6a75,#828c96);display:block}'
+ '.fq-head h2{font-size:clamp(1.6rem,2.9vw,2.15rem);font-weight:800;color:#23282d;letter-spacing:-.018em;margin:.55rem 0 .4rem;line-height:1.1}'
+ '.fq-head p{font-size:1rem;color:#697783;margin:0}'
+ '.fq-item{background:#fff;border:1px solid rgba(105,119,131,.18);border-radius:14px;margin:0 0 .72rem;transition:border-color .2s ease,box-shadow .2s ease}'
+ '.fq-item:hover{border-color:rgba(93,106,117,.4)}'
+ '.fq-item.is-open{border-color:#46505a;box-shadow:0 18px 38px -28px rgba(74,85,96,.6)}'
+ '.fq-q{display:flex;align-items:center;gap:.9rem;width:100%;text-align:left;cursor:pointer;border:0;background:none;padding:1.05rem 1.2rem;color:#23282d;font-family:inherit}'
+ '.fq-q:focus-visible{outline:2px solid #5d6a75;outline-offset:-3px;border-radius:14px}'
+ '.fq-num{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(155deg,#6f7d89,#46505a);color:#fff;font-weight:800;font-size:.76rem;font-variant-numeric:tabular-nums;transition:background .2s ease}'
+ '.fq-item.is-open .fq-num{background:linear-gradient(155deg,#46505a,#23282d)}'
+ '.fq-qt{flex:1;font-size:1.05rem;font-weight:700;line-height:1.35}'
+ '.fq-chev{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(105,119,131,.1);color:#5d6a75;transition:transform .25s ease,background .2s ease,color .2s ease}'
+ '.fq-chev svg{width:17px;height:17px}'
+ '.fq-item.is-open .fq-chev{transform:rotate(180deg);background:#46505a;color:#fff}'
+ '.fq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}'
+ '.fq-item.is-open .fq-a{grid-template-rows:1fr}'
+ '.fq-a>div{overflow:hidden;min-height:0}'
+ '.fq-ainner{padding:0 1.2rem 1.15rem 3.5rem;font-size:1rem;line-height:1.65;color:#46505a}'
+ '.fq-ainner p{margin:0}@media(max-width:520px){.fq-ainner{padding-left:1.2rem}}'
+ '.fq-foot{text-align:center;margin-top:1.7rem;font-size:.96rem;color:#54606b}'
+ '.fq-foot a{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;color:#23282d;text-decoration:none;border-bottom:2px solid #dad6c2;transition:border-color .18s ease}'
+ '.fq-foot a:hover{border-color:#5d6a75}.fq-foot a svg{width:16px;height:16px}'
+ '@media(prefers-reduced-motion:reduce){.fq-a,.fq-chev,.fq-num{transition:none}}'
+ '</style>')
+
+def faq(items, eyebrow="Storage, answered", heading="Frequently Asked Questions", sub="The questions West Sussex customers ask us most."):
+    _ch='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
     cards=""
-    for q,a in items:
-        cards+=('<div class="faq-card" x-data="{open:false}" :class="open && \'is-open\'">'
-                '<button type="button" class="faq-head" @click="open=!open" :aria-expanded="open ? \'true\' : \'false\'">'
-                '<span class="faq-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-6 h-6"><path d="M3 3h8v8H3zm10 5h8v13h-8zM3 13h8v8H3z"/></svg></span>'
-                f'<span class="faq-q">{q}</span>'
-                '<span class="faq-toggle" :class="open && \'is-open\'"><svg viewBox="0 0 20 20" class="w-5 h-5 fill-current" aria-hidden="true"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg></span></button>'
-                f'<div class="faq-body" x-show="open" x-cloak x-transition.duration.200ms><p>{a}</p></div></div>')
-    inner=f'<div class="grid grid-cols-12"><div class="col-span-12 lg:col-span-10 lg:col-start-2"><div class="faq-list">{cards}</div></div></div>'
-    return (f'<section class="relative bg-beige w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container">'
-            f'<div class="text-center mb-6 lg:mb-8"><h2 class="relative leading-tight text-black">Storage &mdash; Your Questions Answered</h2></div>{inner}</div></section>')
+    for i,(q,a) in enumerate(items,1):
+        cards+=('<div class="fq-item" x-data="{open:false}" :class="open && \'is-open\'">'
+                '<button type="button" class="fq-q" @click="open=!open" :aria-expanded="open ? \'true\' : \'false\'">'
+                '<span class="fq-num">'+f'{i:02d}'+'</span>'
+                f'<span class="fq-qt">{q}</span>'
+                '<span class="fq-chev" aria-hidden="true">'+_ch+'</span></button>'
+                '<div class="fq-a" :aria-hidden="open ? \'false\' : \'true\'"><div>'
+                f'<div class="fq-ainner"><p>{a}</p></div></div></div></div>')
+    foot=('<p class="fq-foot">Still have a question? <a href="contact.html">Talk to the family team'
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></p>')
+    return (FQ_CSS+'<section class="fq-sec relative w-full pt-9 lg:pt-16 pb-9 lg:pb-16 border-border"><div class="container"><div class="fq-wrap">'
+            '<div class="fq-head"><span class="fq-kick"><i></i>'+eyebrow+'</span>'
+            f'<h2>{heading}</h2><p>{sub}</p></div>'
+            +cards+foot+'</div></div></section>')
 
 GAL_ZOOM='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>'
 GAL_ARR_L='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>'
@@ -332,7 +387,7 @@ GAL_CSS=('<style>'
   '.gal-tile:hover .gal-cap::before,.gal-tile:focus-visible .gal-cap::before{width:28px}'
   '.gal-badge{position:absolute;top:.7rem;right:.7rem;z-index:2;width:40px;height:40px;border-radius:.72rem;display:flex;align-items:center;justify-content:center;background:#E8E6DA;color:#697783;box-shadow:0 6px 16px -6px rgba(0,0,0,.5);opacity:0;transform:translateY(-4px) scale(.9);transition:opacity .3s ease,transform .3s ease,background .3s ease,color .3s ease}'
   '.gal-tile:hover .gal-badge,.gal-tile:focus-visible .gal-badge{opacity:1;transform:none}.gal-tile:hover .gal-badge{background:#FC9700;color:#fff}'
-  '.gal-eyebrow{display:inline-block;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.55rem}'
+  '.gal-eyebrow{display:inline-block;color:#5d6a75;font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.55rem}'
   '.gal-lb[x-cloak]{display:none}'
   '.gal-lb{position:fixed;inset:0;z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;background:rgba(20,22,24,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}'
   '.gal-lb-stage{position:relative;display:flex;align-items:center;justify-content:center;max-width:min(1100px,94vw)}'
@@ -485,10 +540,10 @@ def head(d):
     canon = BASE if d["file"]=="index.html" else BASE+d["file"]
     gpos = d.get("geo_pos","50.9270;-0.4470"); gplace = d.get("geo_place","Ashington, Pulborough, West Sussex"); gicbm = gpos.replace(";",", ")
     return ('<!DOCTYPE html>\n<html lang="en-GB">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
-        f'<title>{d["title"]}</title>\n<meta name="description" content="{d["meta"]}">\n<meta name="robots" content="index, follow">\n'
+        f'<title>{d["title"]}</title>\n<meta name="description" content="{d["meta"]}">\n<meta name="robots" content="{"noindex, follow" if d.get("noindex") else "index, follow"}">\n'
         f'<link rel="canonical" href="{canon}">\n<meta name="theme-color" content="#697783">\n'+SPLIT_CSS+'\n'
         f'<meta name="geo.region" content="GB-WSX"><meta name="geo.placename" content="{gplace}"><meta name="geo.position" content="{gpos}"><meta name="ICBM" content="{gicbm}">\n'
-        f'<meta property="og:type" content="website"><meta property="og:site_name" content="Wolves Storage Sussex"><meta property="og:title" content="{d["title"]}"><meta property="og:description" content="{d["meta"]}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{BASE}{d["hero"].lstrip("/")}"><meta property="og:locale" content="en_GB">\n'
+        f'<meta property="og:type" content="{"article" if d.get("slug")=="blogpost" else "website"}"><meta property="og:site_name" content="Wolves Storage Sussex"><meta property="og:title" content="{d["title"]}"><meta property="og:description" content="{d["meta"]}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{BASE}{d["hero"].lstrip("/")}"><meta property="og:locale" content="en_GB">\n'
         f'<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{d["title"]}"><meta name="twitter:description" content="{d["meta"]}"><meta name="twitter:image" content="{BASE}{d["hero"].lstrip("/")}">\n'
         '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="manifest" href="/site.webmanifest">\n'
         '<link rel="preload" href="/fonts/Barlow-Regular.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/Barlow-Semibold.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/Barlow-Bold.woff2" as="font" type="font/woff2" crossorigin>\n'
@@ -546,7 +601,7 @@ CX_CSS=('<style>'
   '.cx-sec::before{content:"";position:absolute;inset:0;background:radial-gradient(110% 120% at 12% -10%,rgba(252,151,0,.18),rgba(252,151,0,0) 55%);pointer-events:none}'
   '.cx-sec::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
   '.cx-sec .container{position:relative;z-index:1}'
-  '.cx-eyebrow{display:inline-block;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.55rem}'
+  '.cx-eyebrow{display:inline-block;color:#F3F1EC;font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.55rem}'
   '.cx-sec h2{color:#fff}'
   '.cx-rule{display:block;width:54px;height:3px;border-radius:3px;background:linear-gradient(90deg,#FC9700,#F6BB06);margin:.85rem 0 1.15rem}'
   '.cx-sec p{color:rgba(255,255,255,.85)}'
@@ -711,8 +766,8 @@ COV_PHONE='<svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" a
 COV_NAV='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg>'
 COV_TRUCK='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 5h13v10h-13z"/><path d="M14.5 8h4l3 3.2V15h-7z"/><circle cx="5.5" cy="17.5" r="1.9"/><circle cx="17.5" cy="17.5" r="1.9"/></svg>'
 COV_CSS=('<style>'
-  '.cov-eyebrow{display:inline-flex;align-items:center;gap:.55rem;font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#FC9700}'
-  '.cov-eyebrow::before{content:"";width:26px;height:2px;border-radius:2px;background:linear-gradient(90deg,#FC9700,#F6BB06)}'
+  '.cov-eyebrow{display:inline-flex;align-items:center;gap:.55rem;font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5d6a75}'
+  '.cov-eyebrow::before{content:"";width:26px;height:2px;border-radius:2px;background:linear-gradient(90deg,#5d6a75,#6f7d89)}'
   '.cov-ctarow{margin-top:1.5rem;display:flex;flex-wrap:wrap;align-items:center;gap:.9rem 1.4rem}'
   '.cov-call{display:inline-flex;align-items:center;gap:.5rem;font-weight:700;color:#262626;text-decoration:none;transition:color .25s ease}'
   '.cov-call:hover{color:#FC9700}.cov-call:focus-visible{outline:2px solid #FC9700;outline-offset:3px;border-radius:6px}.cov-call svg{color:#FC9700;flex:none}'
@@ -865,7 +920,7 @@ SVCX_CSS=('<style>'
   '.svcx::before{content:"";position:absolute;inset:0;background:radial-gradient(110% 120% at 15% -10%,rgba(252,151,0,.18),rgba(252,151,0,0) 55%);pointer-events:none}'
   '.svcx::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
   '.svcx-head{position:relative;z-index:1;text-align:center;margin-bottom:2.4rem}'
-  '.svcx-eyebrow{display:inline-block;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.7rem}'
+  '.svcx-eyebrow{display:inline-block;color:#F3F1EC;font-weight:700;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.7rem}'
   '.svcx-head h2{color:#fff;margin:0}'
   '.svcx-lead{color:rgba(255,255,255,.82);font-size:1.05rem;font-weight:500;max-width:50rem;margin:.7rem auto 0}'
   '.svcx-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr;gap:1.1rem}'
@@ -906,7 +961,7 @@ USP_CSS=('<style>'
   '.uspx::before{content:"";position:absolute;inset:0;background:radial-gradient(110% 120% at 85% -10%,rgba(252,151,0,.20),rgba(252,151,0,0) 55%);pointer-events:none}'
   '.uspx::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
   '.uspx-head{position:relative;z-index:1;text-align:center;margin-bottom:2.4rem}'
-  '.uspx-eyebrow{display:inline-block;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.7rem}'
+  '.uspx-eyebrow{display:inline-block;color:#F3F1EC;font-weight:700;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.7rem}'
   '.uspx-head h2{color:#fff;margin:0}'
   '.uspx-lead{color:rgba(255,255,255,.82);font-size:1.05rem;font-weight:500;max-width:46rem;margin:.7rem auto 0}'
   '.uspx-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr;gap:1.1rem}'
@@ -961,8 +1016,8 @@ AREA_CSS=('<style>'
   '.acov-panel{position:relative;overflow:hidden;max-width:66rem;margin:0 auto;border-radius:1.5rem;padding:2rem 1.4rem 2.2rem;background:linear-gradient(155deg,#edece4 0%,#e3e0d2 100%);border:1px solid #dcd8c8;box-shadow:0 26px 64px -34px rgba(38,38,38,.4)}'
   '@media(min-width:768px){.acov-panel{padding:2.4rem 2.2rem 2.6rem}}'
   '.acov-panel::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
-  '.acov-eyebrow{display:flex;align-items:center;justify-content:center;gap:.65rem;color:#FC9700;font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;margin:0 0 1.5rem}'
-  '.acov-eyebrow::before,.acov-eyebrow::after{content:"";width:26px;height:2px;border-radius:2px;background:#FC9700;opacity:.55}'
+  '.acov-eyebrow{display:flex;align-items:center;justify-content:center;gap:.65rem;color:#5d6a75;font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;margin:0 0 1.5rem}'
+  '.acov-eyebrow::before,.acov-eyebrow::after{content:"";width:26px;height:2px;border-radius:2px;background:#5d6a75;opacity:.55}'
   '.acov-grid{display:grid;grid-template-columns:1fr;gap:.85rem}'
   '@media(min-width:640px){.acov-grid{grid-template-columns:1fr 1fr}}'
   '@media(min-width:1024px){.acov-grid{grid-template-columns:repeat(3,1fr);gap:1rem}}'
@@ -1019,6 +1074,7 @@ TPRICE_CSS=('<style>'
   '.tp-trust{position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-top:1.5rem}'
   '.tp-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.34rem .72rem;border-radius:999px;font-size:.74rem;font-weight:600;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22)}'
   '.tp-chip .st{color:#F6BB06}'
+  '.tp-price .button-orange{font-size:.9rem;padding:.8rem 1.15rem;white-space:normal;max-width:100%;line-height:1.25;text-align:center}'
   '.tp-detail{padding:2.3rem 2rem;display:grid;grid-template-columns:1fr;gap:1.8rem 2.5rem}'
   '@media(min-width:640px){.tp-detail{grid-template-columns:1fr 1fr}}'
   '.tp-h{position:relative;font-weight:800;color:#262626;font-size:1.02rem;text-transform:uppercase;letter-spacing:.04em;padding-bottom:.6rem;margin:0 0 1.05rem}'
@@ -1784,6 +1840,1403 @@ def all_towns_strip():
         "Dedicated local pages for the towns and villages we cover right across West Sussex and just over the border &mdash; find yours.",
         LTS_CSS+'<div class="lts-panel"><div class="lts-grid">'+cols+'</div></div>')
 
+BLG_CSS=('<style>.blg-prose{max-width:46rem;margin-left:auto;margin-right:auto}'
+  '.blg-prose p{font-size:1.125rem;line-height:1.75;color:#46505a;margin:0 0 1.1rem}'
+  '.blg-prose a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(105,119,131,.5);text-underline-offset:3px}'
+  '.blg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}'
+  '.blg-card{display:flex;flex-direction:column;background:#fff;border:1px solid rgba(105,119,131,.18);border-radius:16px;overflow:hidden;transition:box-shadow .2s ease,transform .2s ease}'
+  '.blg-card:hover{box-shadow:0 18px 42px -26px rgba(74,85,96,.55);transform:translateY(-3px)}'
+  '.blg-thumb{position:relative;aspect-ratio:16/10;width:100%;background:linear-gradient(155deg,#6f7d89,#46505a)}'
+  '.blg-thumb span{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#fff;background:rgba(0,0,0,.24);border-radius:999px;padding:4px 11px}'
+  '.blg-body{padding:1.2rem 1.35rem 1.45rem;display:flex;flex-direction:column;flex:1}'
+  '.blg-body h3{font-size:1.12rem;line-height:1.3;color:#23282d;font-weight:800;margin:0 0 .55rem}'
+  '.blg-body p{font-size:.95rem;line-height:1.55;color:#46505a;margin:0 0 1.05rem;flex:1}'
+  '.blg-soon{align-self:flex-start;font-size:.72rem;font-weight:700;color:#5d6a75;background:rgba(105,119,131,.12);border:1px solid rgba(105,119,131,.22);border-radius:999px;padding:3px 12px}</style>')
+
+# ─────────────────────────  BLOG STRUCTURE  ─────────────────────────
+# Data model = single source of truth. Category (topic cluster) + area tags
+# (safe location dimension) drive the hub, category pages, post pages AND the
+# page-specific tiles. NO thin per-town pages (Panda / scaled-content-abuse risk).
+BLOG_CATEGORIES = [
+  dict(slug="protecting-belongings", name="Protecting Your Belongings", short="Protecting belongings",
+       desc="Damp, mould and the conservation science of keeping stored furniture, leather, documents and electronics safe."),
+  dict(slug="costs-pricing", name="Storage Costs &amp; Pricing", short="Costs &amp; pricing",
+       desc="What storage really costs in West Sussex &mdash; and why managed collection often works out cheaper than a &lsquo;budget&rsquo; unit."),
+  dict(slug="managed-vs-self", name="Managed vs Self-Storage", short="Managed vs self-storage",
+       desc="How collected, sealed-container storage compares with driving your things to a self-storage unit."),
+  dict(slug="moving-home", name="Moving Home", short="Moving home",
+       desc="Storing your belongings between homes when your completion dates don&rsquo;t quite line up."),
+  dict(slug="packing", name="Packing &amp; Preparing", short="Packing",
+       desc="How to pack and prepare your belongings so they come back in the same condition they left."),
+  dict(slug="downsizing", name="Downsizing &amp; Life Events", short="Downsizing",
+       desc="Calm, practical storage guidance for downsizing, probate, divorce and clearing a home."),
+  dict(slug="business", name="Business Storage", short="Business",
+       desc="Stock, archive and equipment storage for West Sussex businesses, tradespeople and online sellers."),
+  dict(slug="local-guides", name="Local Storage Guides", short="Local guides",
+       desc="Town-by-town storage and moving guides for the West Sussex areas we collect from."),
+]
+CAT_BY_SLUG = {c["slug"]:c for c in BLOG_CATEGORIES}
+BLOG_AREAS = ["Worthing","Horsham","Storrington","Pulborough","Ashington","Steyning","Henfield","Chichester"]
+
+WINTER_BODY = (
+ '<p class="blg-lead"><strong>Managed container storage protects furniture through a Sussex winter</strong> by keeping it in a dry, ventilated building rather than an unheated metal unit, where cold surfaces drop below the dew point and condensation forms. Wolves Storage Sussex packs and seals your furniture into wooden containers stored in a dry, alarmed warehouse in Ashington, West Sussex, from &pound;15 a week.</p>'
+ '<p>Most damage to furniture in storage isn&rsquo;t dramatic. It&rsquo;s slow &mdash; damp, condensation and mould creeping in over a cold, wet British winter. Below is the actual science of why that happens, and how to make sure it doesn&rsquo;t happen to yours.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 10.5a6 6 0 0 1-12 0C6 9.5 12 3 12 3z"/></svg></span><b>Dew point</b><span>Cold metal drops below it and surfaces &ldquo;sweat&rdquo; &mdash; no leak needed.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2 20h20z"/><path d="M12 10v4.4"/><path d="M12 17.3v.2"/></svg></span><b>~70% RH</b><span>Mould can take hold in about three months &mdash; days at ~90%.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.4-3.2 7.6-8 9-4.8-1.4-8-4.6-8-9V6z"/></svg></span><b>Damp &amp; mould</b><span>The one storage loss insurance usually won&rsquo;t pay out on.</span></div>'
+ '</div>'
+ '<h2>Why do unheated storage units get damp in winter?</h2>'
+ '<p>Unheated storage units get damp in winter because their cold metal walls, roof and roller door drop below the <span class="blg-mark">dew point</span> of the surrounding air, so water condenses on them &mdash; no leak needed. Thin metal has almost no thermal mass, so it cools fast and &ldquo;sweats&rdquo; whenever milder, moisture-laden air arrives.</p>'
+ '<blockquote class="blg-pull">A cold metal unit doesn&rsquo;t need a leak to get wet &mdash; it condenses water straight out of the air the moment milder, damp weather arrives.<cite>The condensation trap</cite></blockquote>'
+ '<p>A British winter is the perfect recipe for it: long cold spells broken by milder, wet weather, so warmer damp air keeps meeting cold metal and condensing on it. It gets worse as the temperature falls, because the same amount of moisture in cold air is a far higher <em>relative</em> humidity than in warm air. A cold drive-up unit can therefore sit above the level where mould grows for weeks at a time, even when there is no visible water. UK archival storage guidance &mdash; the <a href="https://cdn.nationalarchives.gov.uk/documents/information-management/environmental-management.pdf" target="_blank" rel="noopener">National Archives&rsquo; environmental-management standards</a> and the British Standard <strong class="blg-mark">BS&nbsp;4971:2017</strong> (which replaced PD&nbsp;5454) &mdash; recommends controlled humidity and ventilation for exactly this reason: to keep surfaces above the dew point and stop pockets of stagnant, damp air forming.</p>'
+ '<h2>At what humidity does mould grow on stored furniture?</h2>'
+ '<p>Mould grows on stored furniture once relative humidity stays above about 70%, where it can take hold within roughly three months; at 90% it can appear within days. That is why storage <em>duration</em> matters as much as the humidity itself: the longer furniture sits in a damp space, the higher the risk.</p>'
+ '<table class="blg-table blg-table--risk"><thead><tr><th>Relative humidity</th><th>Mould risk on furniture</th></tr></thead><tbody>'
+ '<tr class="lo"><td>Below ~65%</td><td>Effectively safe</td></tr>'
+ '<tr class="mid"><td>~70%</td><td>Mould in ~3 months</td></tr>'
+ '<tr class="hi"><td>~90%</td><td>Mould in days</td></tr></tbody></table>'
+ '<p class="blg-src">Source: UK conservation guidance &mdash; <a href="https://cdn.nationalarchives.gov.uk/documents/information-management/environmental-management.pdf" target="_blank" rel="noopener">The National Archives</a> on environmental management of stored materials.</p>'
+ '<h2>Which household items suffer most in a cold storage unit?</h2>'
+ '<p>Solid wood, leather, upholstery, mattresses and electronics are the household items that suffer most in a cold, damp storage unit, because each one either absorbs moisture from the air or attracts condensation when warmer, damp air meets a cold surface. The damage is gradual and often invisible until the item comes back out.</p>'
+ '<ul>'
+ '<li><strong>Solid wood and veneers</strong> are hygroscopic &mdash; they take on and give off moisture with the surrounding air, so a unit that swings between damp and dry can warp joints, lift veneer and crack panels.</li>'
+ '<li><strong>Leather</strong> needs steady, moderate humidity (around 45&ndash;55% RH). Too damp and it grows mould; too dry and it stiffens and cracks &mdash; and sealing it in plastic makes both worse.</li>'
+ '<li><strong>Upholstery and mattresses</strong> act like sponges; they are usually the first things to smell musty or spot with mould after a damp winter.</li>'
+ '<li><strong>Electronics and metal-framed items</strong> attract condensation when cold meets warmer, moist air &mdash; the same dew-point effect that makes the unit itself &ldquo;sweat&rdquo;.</li>'
+ '<li><strong>Paper, books and photographs</strong> cockle and spot (&ldquo;foxing&rdquo;), and ordinary cardboard or newspaper packed against them can leave acidic marks.</li>'
+ '</ul>'
+ '<p>Across our winter collections in West Sussex, the pieces that come out of unheated garages and metal lock-ups in the worst condition are almost always solid-wood furniture, leather and mattresses. A dry, ventilated <a href="long-term-storage.html">long-term storage</a> environment is what keeps each of these materials in the condition it went in.</p>'
+ '<h2>How should you prepare furniture for storage?</h2>'
+ '<p>Prepare furniture for storage by cleaning and fully drying it, conditioning leather and wood, and covering it with breathable blankets &mdash; never airtight plastic, which traps moisture and causes mould or cracking within months. Keep everything off the floor and away from external walls, where damp collects.</p>'
+      '<div class="blg-callout"><strong>Packing it right:</strong> how you wrap furniture decides how it comes out &mdash; never seal wood, leather or upholstery in airtight plastic. We cover preparing and wrapping every type in full in <a href="blog-how-to-pack-furniture-storage.html">how to pack furniture for storage without wrecking it</a>.</div>'
+ '<h2>How does Wolves Storage Sussex protect furniture for winter storage?</h2>'
+ '<p>Wolves Storage Sussex protects furniture for winter storage by collecting it from your door, wrapping it in breathable covers, and sealing it into a logged wooden container kept in a dry, ventilated and alarmed warehouse in Ashington, West Sussex. Nothing is left exposed to the cold or handled again until you ask for it back.</p>'
+ '<div class="blg-flow">'
+      '<div class="st"><span class="n">1</span><b>Collect</b><span>From your door, anywhere in West Sussex</span></div>'
+      '<div class="st"><span class="n">2</span><b>Blanket-wrap</b><span>Breathable covers &mdash; never airtight plastic</span></div>'
+      '<div class="st"><span class="n">3</span><b>Seal &amp; log</b><span>Into your own sealed, logged container</span></div>'
+      '<div class="st"><span class="n">4</span><b>Store dry</b><span>Dry, ventilated, alarmed warehouse</span></div>'
+      '<div class="st"><span class="n">5</span><b>Redeliver</b><span>Back to your door on 24 hrs&rsquo; notice</span></div>'
+      '</div>'
+      '<p>Keeping every surface above the dew point and the air moving is what stops condensation forming through a West Sussex winter. Every container is logged and fully insured while it is with us &mdash; see the full process on our <a href="how-it-works.html">how it works</a> page.</p>'
+ '<h2>Does storage insurance cover damp or mould damage?</h2>'
+ '<p>Storage insurance usually does not cover damp, condensation or mould &mdash; these are <span class="blg-mark">standard policy exclusions</span>, treated as preventable rather than sudden events. That means the storage <em>environment</em>, not the insurance certificate, is your real protection against the most common form of storage damage.</p>'
+ '<blockquote class="blg-pull">The damage that ruins most stored furniture &mdash; damp and mould &mdash; is the one loss a storage policy usually won&rsquo;t pay for. The dry environment, not the certificate, is your real protection.<cite>Damp &amp; mould &mdash; a standard UK storage insurance exclusion</cite></blockquote>'
+ '<p>It&rsquo;s a point worth pausing on. You can insure against fire, flood and theft, but the slow damage that actually ruins most stored furniture &mdash; damp and mould &mdash; is the thing a policy typically won&rsquo;t pay out on. So a dry, ventilated, managed building isn&rsquo;t a luxury; it&rsquo;s the risk control that matters most.</p>'
+ '<h2>Is a managed storage company responsible for your furniture?</h2>'
+ '<p>A managed storage company that collects, packs, seals and stores your furniture usually takes on a higher duty of care than a self-storage unit, because under UK law taking your goods into its keeping can create a <span class="blg-mark">bailment</span>. A self-storage unit is normally only a licence to occupy space, with your belongings kept there at your own risk.</p>'
+ '<div class="blg-callout"><strong>Who&rsquo;s responsible?</strong> Because we collect, pack and take your furniture into our care, managed storage can carry a higher legal duty than an own-risk self-storage unit. We unpack the full comparison in <a href="blog-managed-vs-self-storage.html">managed container storage vs a self-storage unit</a>.</div>'
+ '<h2>How long can furniture safely stay in storage?</h2>'
+ '<p>Furniture can stay in storage safely for as long as you need, provided the environment stays dry &mdash; because the risk to stored furniture comes from damp and mould, not from time itself. A few months in a damp, unheated unit can do more harm than years in a dry, ventilated one.</p>'
+ '<blockquote class="blg-pull">It&rsquo;s the damp, not the time. Well-prepared furniture can sit in a dry, ventilated container through a winter or a long renovation &mdash; but in a cold, damp unit, every week adds to the risk.<cite>The environment matters more than the length of stay</cite></blockquote>'
+ '<h2>What should you do when furniture comes out of storage?</h2>'
+ '<p>When furniture comes out of storage, let it acclimatise to room temperature before you unwrap it or switch anything on, because a cold item brought into a warm room can attract condensation just as a cold unit does. Give solid wood, leather and electronics a day to settle.</p>'
+ '<div class="blg-callout"><strong>When it comes back:</strong> unwrap breathable covers gradually and leave drawers and doors open for a few hours so trapped air can move, and give electronics and white goods time to reach room temperature before powering them on &mdash; switching a cold appliance on too soon is a common way to damage it. Because we redeliver to your door across West Sussex, most customers simply unwrap and use their furniture straight away.</div>'
+ '<h2>What does managed furniture storage cost in West Sussex?</h2>'
+ '<p>Managed furniture storage with Wolves Storage Sussex starts at <strong>&pound;15 a week</strong> for the storage itself, with no deposit and collection and redelivery quoted upfront. The fair comparison with a &ldquo;cheaper&rdquo; self-storage unit has to include the costs a unit quietly adds on top of the advertised rent.</p>'
+ '<div class="blg-callout"><strong>The full cost picture:</strong> a self-storage unit&rsquo;s advertised rent leaves out compulsory insurance, van hire and your own time. We break the numbers down in <a href="blog-storage-cost-west-sussex.html">how much storage really costs in West Sussex</a> &mdash; or see our <a href="pricing.html">storage pricing</a> page.</div>'
+ '<h2>Managed container storage vs a self-storage unit in winter</h2>'
+ '<p>For winter storage, a managed container in a dry, ventilated warehouse protects furniture far better than an unheated drive-up unit, because the building is kept above the dew point and the air keeps moving, instead of your belongings tracking the cold and damp outside.</p>'
+ '<table class="blg-table blg-table--vs"><thead><tr><th>&nbsp;</th><th>Managed container</th><th>Unheated drive-up unit</th></tr></thead><tbody>'
+ '<tr><td>Environment</td><td>Dry, ventilated warehouse</td><td>Tracks the cold outside</td></tr>'
+ '<tr><td>Condensation</td><td>Surfaces above dew point</td><td>Metal &ldquo;sweats&rdquo;</td></tr>'
+ '<tr><td>Wrapping</td><td>We seal it breathably</td><td>You wrap it (often in plastic)</td></tr>'
+ '<tr><td>Your effort</td><td>We collect &amp; store</td><td>You drive &amp; carry</td></tr></tbody></table>'
+ '<p>For furniture going into <a href="long-term-storage.html">long-term storage</a> over a winter or longer, the dry environment is what keeps it in the condition it went in. We collect from your door across West Sussex, from &pound;15 a week.</p>'
+ '<div class="blg-callout"><strong>From our collections:</strong> because we pack, seal and store thousands of items a year, we see first-hand how badly an unheated garage or metal unit treats furniture over a damp Sussex winter &mdash; and why a dry, ventilated container makes the difference.</div>')
+
+COST_BODY = (
+ '<p class="blg-lead"><strong>Managed storage in West Sussex starts at &pound;15 a week</strong> with Wolves Storage Sussex &mdash; but the price that really matters is the <em>all-in</em> cost, not the headline rent. Once you add insurance, transport and your own time, a &ldquo;cheaper&rdquo; self-storage unit is often the dearer option.</p>'
+ '<p>Storage pricing is rarely as simple as the figure on the advert. Below is the honest, all-in cost of storing your belongings in West Sussex &mdash; what you pay, what hides in the small print, and how the collected, managed model compares with driving your things to a self-storage unit.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13 21l-9-9V4h8z"/><circle cx="8.5" cy="8.5" r="1.4"/></svg></span><b>From &pound;15/week</b><span>Managed container storage, no deposit, collection &amp; redelivery quoted upfront.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M7 21v-7"/><path d="M12 21V8"/><path d="M17 21v-4"/></svg></span><b>&pound;25&ndash;&pound;30 / sq ft</b><span>The UK self-storage average per year (Self Storage Association UK) &mdash; before extras.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h13V6H3z"/><path d="M16 9h3l2 3v1h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg></span><b>No van, no trips</b><span>We collect and redeliver, so there is no hire van, fuel or double handling to pay for.</span></div>'
+ '</div>'
+ '<h2>How much does storage cost in West Sussex?</h2>'
+ '<p>Managed container storage in West Sussex costs from &pound;15 a week for the storage itself, with no deposit and collection and redelivery quoted upfront. A self-storage unit can advertise less per week, but its true cost includes mandatory insurance, transport and your own time &mdash; which usually closes the gap and then some.</p>'
+ '<p>The table below compares the two on a like-for-like, all-in basis for a typical household load:</p>'
+ '<table class="blg-table blg-table--vs"><thead><tr><th>&nbsp;</th><th>Managed container (Wolves)</th><th>Self-storage unit</th></tr></thead><tbody>'
+ '<tr><td>Weekly price</td><td>From &pound;15</td><td>Headline rent only</td></tr>'
+ '<tr><td>Deposit</td><td>None</td><td>Often a month upfront</td></tr>'
+ '<tr><td>Insurance</td><td>Included</td><td>Usually compulsory, charged on top</td></tr>'
+ '<tr><td>Transport</td><td>We collect &amp; redeliver</td><td>Van or trailer hire + fuel, two trips</td></tr>'
+ '<tr><td>Your time</td><td>None &mdash; we do the lifting</td><td>Loading &amp; unloading, twice</td></tr>'
+ '<tr><td>Access</td><td>On request, by arrangement</td><td>Opening hours only</td></tr></tbody></table>'
+ '<p>For exact figures on your load, see our <a href="pricing.html">storage pricing</a> page or <a href="contact.html">get a free quote</a> &mdash; collection and redelivery are costed upfront, with no hidden fees.</p>'
+ '<h2>What does &pound;15 a week include?</h2>'
+ '<p>The &pound;15 a week covers the managed container storage itself: your own sealed, logged container in a dry, ventilated, alarmed warehouse in Ashington, West Sussex, insured throughout. Collection and redelivery are quoted upfront and added separately, so you always know the full cost before you book.</p>'
+ '<ul>'
+ '<li><strong>Your own private container</strong>, sealed and logged &mdash; not a shared open unit.</li>'
+ '<li><strong>A dry, ventilated, alarmed warehouse</strong> that protects against the damp and mould a cold unit can&rsquo;t.</li>'
+ '<li><strong>Insurance throughout</strong> your belongings&rsquo; stay with us.</li>'
+ '<li><strong>No deposit and no hidden fees</strong>, on flexible weekly and 4-week terms.</li>'
+ '</ul>'
+ '<p>Because the environment is built to keep furniture in the condition it arrived in, you are paying for protection as well as space &mdash; see <a href="blog-furniture-storage-sussex-winter.html">how a dry container protects furniture through a Sussex winter</a>.</p>'
+ '<h2>Why is a &ldquo;cheaper&rdquo; self-storage unit often more expensive?</h2>'
+ '<p>A self-storage unit is often dearer overall because its advertised rent leaves out the costs you only discover later. UK self-storage averages roughly &pound;25 to &pound;30 per square foot a year (Self Storage Association UK), and on top of that rent most units add several extras:</p>'
+ '<ul>'
+ '<li><strong>Compulsory insurance</strong>, which most operators require before you can store.</li>'
+ '<li><strong>Van or trailer hire and fuel</strong> for two trips &mdash; moving in, and moving out.</li>'
+ '<li><strong>Your own time</strong> loading and unloading twice, often with help you have to arrange.</li>'
+ '<li><strong>A padlock, and access limited to opening hours.</strong></li>'
+ '</ul>'
+ '<blockquote class="blg-pull">The cheapest weekly rent rarely wins once the van, the fuel, the insurance and two days of your own time are added in.<cite>The true cost of a &ldquo;budget&rdquo; unit</cite></blockquote>'
+ '<h2>How much storage space do you actually need?</h2>'
+ '<p>The amount of space you need is the biggest factor in what storage costs, because you pay for volume. As a rough guide, the contents of a one-bedroom flat fit in a single managed container, and you simply add another as you need more &mdash; so you only ever pay for the space you use.</p>'
+ '<table class="blg-table"><thead><tr><th>Roughly what fits</th><th>Typical need</th></tr></thead><tbody>'
+ '<tr><td>A few rooms or an overflow</td><td>Part of one container</td></tr>'
+ '<tr><td>A 1-bed flat&rsquo;s contents</td><td>One container</td></tr>'
+ '<tr><td>A 2&ndash;3 bed house</td><td>Two to three containers</td></tr></tbody></table>'
+ '<p>Not sure how much you need? Our <a href="storage-size-guide.html">storage size guide</a> helps you estimate, and we confirm it when we see the load &mdash; you are never charged for space you don&rsquo;t use.</p>'
+ '<h2>How can you keep your storage costs down?</h2>'
+ '<p>Keep storage costs down by storing only what you will want back, choosing the right amount of space, and picking a model that doesn&rsquo;t bill you for transport and your own time. A managed weekly price with no deposit is the easiest to budget for, especially on a short, flexible term.</p>'
+ '<ul>'
+ '<li><strong>Declutter first</strong> &mdash; don&rsquo;t pay to store what you would throw out anyway.</li>'
+ '<li><strong>Right-size the space</strong> so you are not renting a half-empty unit.</li>'
+ '<li><strong>Avoid the hidden extras</strong> &mdash; collected storage removes the van, fuel and double handling.</li>'
+ '<li><strong>Use flexible terms</strong> so you only pay for the weeks you need.</li>'
+ '</ul>'
+ '<div class="blg-callout"><strong>From our customers:</strong> the people surprised by storage costs are almost always comparing a headline weekly rent against our all-in price. Once the van, fuel, insurance and time go into the same column, a collected &pound;15-a-week container is usually the cheaper way to store across West Sussex. For long stays, our <a href="long-term-storage.html">long-term storage</a> works the same way &mdash; one weekly price, no surprises.</div>')
+
+MANAGED_BODY = (
+ '<p class="blg-lead"><strong>Managed container storage comes to you</strong> &mdash; we collect, pack, seal, store and redeliver your belongings &mdash; while a self-storage unit is a space you rent and fill yourself. The right choice comes down to how much effort you want to spend, how protected your things need to be, and the true all-in cost.</p>'
+ '<p>For many West Sussex households the real question isn&rsquo;t &ldquo;which is cheaper?&rdquo; but &ldquo;who does the work, and who is responsible for my things?&rdquo; Here is an honest, side-by-side look at the two models &mdash; including the times a self-storage unit still wins.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h13V6H3z"/><path d="M16 9h3l2 3v1h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg></span><b>It comes to you</b><span>We collect and redeliver across West Sussex &mdash; no hire van, no driving.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span><b>Your own container</b><span>Sealed and logged &mdash; not a shared open unit you share a corridor with.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.4-3.2 7.6-8 9-4.8-1.4-8-4.6-8-9V6z"/></svg></span><b>Higher duty of care</b><span>Handing goods into managed keeping can carry a greater legal responsibility.</span></div>'
+ '</div>'
+ '<h2>What is the difference between managed storage and self-storage?</h2>'
+ '<p>The difference is who does the work and where your belongings live. With managed container storage, our team collects your items, packs and seals them into your own logged container, and keeps it in a managed warehouse &mdash; you never visit. With self-storage, you hire a unit, move everything yourself, and come and go as you please.</p>'
+ '<table class="blg-table blg-table--vs"><thead><tr><th>&nbsp;</th><th>Managed container (Wolves)</th><th>Self-storage unit</th></tr></thead><tbody>'
+ '<tr><td>How it works</td><td>We collect, pack, seal &amp; store</td><td>You rent a unit and fill it</td></tr>'
+ '<tr><td>Getting it there</td><td>Door to door &mdash; we do it</td><td>You hire a van and drive</td></tr>'
+ '<tr><td>Your space</td><td>A private, sealed container</td><td>A room you access yourself</td></tr>'
+ '<tr><td>Who lifts it</td><td>Our trained team</td><td>You (and any help you arrange)</td></tr>'
+ '<tr><td>Routine access</td><td>On request, we redeliver</td><td>Anytime, in opening hours</td></tr>'
+ '<tr><td>Best for</td><td>Hands-off, protected storage</td><td>Frequent self-access</td></tr></tbody></table>'
+ '<h2>Which is more convenient?</h2>'
+ '<p>Managed container storage is the more convenient choice for most people, because it removes the van, the driving and the heavy lifting entirely &mdash; we collect from your door across West Sussex and bring everything back when you need it. A self-storage unit is only more convenient if you genuinely need to reach your things yourself, often.</p>'
+ '<blockquote class="blg-pull">There&rsquo;s no van to hire, no Saturday lost to lifting, and nothing to drive anywhere &mdash; it comes to you, and it goes back when you ask.<cite>The managed difference</cite></blockquote>'
+ '<h2>Which keeps your belongings safer?</h2>'
+ '<p>Managed container storage generally keeps belongings safer, because each item is packed and sealed into a logged container in an alarmed, monitored warehouse, and the managed handling can carry a higher legal duty of care than a self-storage unit, where goods are usually held at your own risk.</p>'
+ '<p>When a company collects your things and takes them into its keeping, that arrangement can amount to a bailment under UK law &mdash; a recognised duty to take reasonable care of them. A drive-up unit is normally just a licence to occupy space, with the contract placing the risk on you. The managed warehouse is also kept dry and ventilated, which guards against the damp and mould that quietly ruin things in a cold unit &mdash; see <a href="blog-furniture-storage-sussex-winter.html">how a dry container protects furniture through a Sussex winter</a>.</p>'
+ '<ul>'
+ '<li><strong>Sealed, logged containers</strong> &mdash; your things are not loose in a shared space.</li>'
+ '<li><strong>Alarmed, monitored, staff-controlled warehouse</strong> rather than an unstaffed lock-up.</li>'
+ '<li><strong>A dry, ventilated environment</strong> that a cold metal unit can&rsquo;t match.</li>'
+ '<li><strong>Insured throughout</strong>, with a higher duty of care than own-risk self-storage.</li>'
+ '</ul>'
+ '<h2>Which is cheaper?</h2>'
+ '<p>Managed container storage often works out cheaper overall, because a self-storage unit&rsquo;s lower headline rent usually has compulsory insurance, van hire, fuel and your own time added on top. Managed storage starts at &pound;15 a week with collection and redelivery quoted upfront.</p>'
+ '<p>We compare the real, all-in numbers &mdash; including the costs a unit hides &mdash; in our guide to <a href="blog-storage-cost-west-sussex.html">how much storage really costs in West Sussex</a>.</p>'
+ '<h2>When does a self-storage unit still make sense?</h2>'
+ '<p>A self-storage unit still makes sense when you need to reach your belongings yourself, frequently. If you are dipping into your things every week, the freedom of your own key and drive-up access can outweigh the convenience of a collected, managed container.</p>'
+ '<ul>'
+ '<li><strong>Fast-moving stock</strong> you pick from weekly, or a project you visit constantly.</li>'
+ '<li><strong>A vehicle or trailer</strong> you want on a drive-up plot.</li>'
+ '<li><strong>You want the only key</strong> and the option to call in any time during opening hours.</li>'
+ '</ul>'
+ '<p>If, on the other hand, you will rarely touch your things until you want them back, managed storage is almost always the better fit.</p>'
+ '<h2>Managed or self-storage: which should you choose?</h2>'
+ '<p>Choose managed container storage if you want your belongings collected, protected and out of the way with no effort, and self-storage if frequent self-access matters more to you than convenience, protection or all-in cost. For most West Sussex moves, downsizes and renovations, the managed model wins on all three.</p>'
+ '<div class="blg-callout"><strong>From our collections:</strong> most people who try managed storage are surprised they ever considered driving a hire van to a unit themselves. We collect across West Sussex from &pound;15 a week &mdash; <a href="contact.html">get a free quote</a> and we&rsquo;ll cost collection and redelivery upfront, or see how the service works step by step on our <a href="how-it-works.html">how it works</a> page.</div>')
+
+PACK_BODY = (
+ '<p class="blg-lead"><strong>Pack furniture for storage by cleaning and drying it, wrapping it in breathable covers and lifting it off the floor</strong> &mdash; never sealing wood, leather or upholstery in airtight plastic. The single most common cause of mouldy, musty furniture coming out of storage is plastic that traps moisture against it.</p>'
+ '<p>Good packing is what decides whether furniture comes back in the condition it went in. Below is how to prepare and wrap each type properly, what to use instead of plastic and newspaper, and the mistakes that cause damage months later.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 10.5a6 6 0 0 1-12 0C6 9.5 12 3 12 3z"/></svg></span><b>Clean &amp; dry first</b><span>Moisture, food residue and sweat all feed mould once the doors close.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h13a3 3 0 1 0-3-3"/><path d="M3 12h17a3 3 0 1 1-3 3"/><path d="M3 16h9a3 3 0 1 1-3 3"/></svg></span><b>Breathable, not plastic</b><span>Airtight plastic traps damp against wood, leather and fabric.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V7"/><path d="M5 12l7-7 7 7"/><path d="M5 20h14"/></svg></span><b>Up off the floor</b><span>Keep items raised and away from cold external walls where damp gathers.</span></div>'
+ '</div>'
+ '<h2>How do you prepare furniture before storing it?</h2>'
+ '<p>Prepare furniture before storage by cleaning it thoroughly, drying it completely, conditioning leather and wood, and dismantling what you can. Anything packed away dirty or damp will feed mould as soon as the container is sealed, so preparation matters more than the wrapping itself.</p>'
+ '<ul>'
+ '<li><strong>Clean every surface</strong> and let it dry fully &mdash; especially upholstery and anything that has been outdoors.</li>'
+ '<li><strong>Condition leather and wood</strong> so they go into store supple, not dry and brittle.</li>'
+ '<li><strong>Dismantle where practical</strong> &mdash; bed frames, tables and flat-pack &mdash; and bag the fixings, taped to the piece.</li>'
+ '<li><strong>Empty and dry white goods</strong>, leaving the doors ajar so nothing sours inside.</li>'
+ '</ul>'
+ '<h2>Should you wrap furniture in plastic for storage?</h2>'
+ '<p>No &mdash; you should not wrap solid wood, leather or upholstery in airtight plastic for storage. Plastic seals moisture against the surface, and once the container is closed that trapped damp has nowhere to go: fabric and wood grow mould, and leather can stiffen and crack within months. Breathable blankets or cotton let the material breathe instead.</p>'
+ '<blockquote class="blg-pull">Wrapping a sofa or a wooden chest tightly in plastic <em>feels</em> protective &mdash; but it is the single most common cause of musty, mouldy furniture coming out of storage.<cite>The mistake we see most</cite></blockquote>'
+ '<h2>How do you pack different types of furniture?</h2>'
+ '<p>Pack each material to suit how it reacts to moisture: wrap solid wood and leather in breathable covers, stand mirrors and glass upright and padded, and clean and fully dry upholstery before covering it. The table below covers the pieces people most often store.</p>'
+ '<table class="blg-table"><thead><tr><th>Item</th><th>How to pack it</th></tr></thead><tbody>'
+ '<tr><td>Solid wood &amp; veneer</td><td>Dust, wax, wrap in breathable blankets; pad the corners</td></tr>'
+ '<tr><td>Leather</td><td>Clean, condition, cover with cotton &mdash; never plastic</td></tr>'
+ '<tr><td>Sofas &amp; mattresses</td><td>Clean, dry fully, cover with breathable fabric, store flat</td></tr>'
+ '<tr><td>Mirrors, glass &amp; art</td><td>Pad and stand upright; acid-free tissue on polished faces</td></tr>'
+ '<tr><td>Electronics</td><td>Original boxes if you can; keep dry; let them acclimatise</td></tr></tbody></table>'
+ '<h2>How should you stack furniture in storage?</h2>'
+ '<p>Stack furniture in storage with the heaviest, sturdiest pieces at the base, nothing resting on upholstery or polished tops, and a little air space between items. Protect surfaces with blankets where they touch, and store mattresses flat rather than folded on edge.</p>'
+ '<ul>'
+ '<li><strong>Heaviest, sturdiest items at the bottom</strong>, lighter and more fragile on top.</li>'
+ '<li><strong>Nothing heavy on sofas, mattresses or polished surfaces</strong> &mdash; they dent and mark.</li>'
+ '<li><strong>Blankets between pieces that touch</strong>, to stop rubbing and scuffs.</li>'
+ '<li><strong>A small gap for air</strong>, so nothing sits pressed against a cold surface.</li>'
+ '</ul>'
+ '<h2>What should you not use to pack furniture?</h2>'
+ '<p>Don&rsquo;t use airtight plastic, ordinary newspaper or cardboard against polished surfaces, or any damp materials. Plastic traps moisture; newspaper and cardboard are acidic and can mark a finish; and anything stored damp will grow mould once it is sealed in.</p>'
+ '<ul>'
+ '<li><strong>Airtight plastic or shrink wrap</strong> on wood, leather or fabric.</li>'
+ '<li><strong>Newspaper or ordinary cardboard</strong> against polished or painted surfaces &mdash; use acid-free tissue.</li>'
+ '<li><strong>Damp blankets, covers or items</strong> &mdash; everything goes in dry.</li>'
+ '<li><strong>Overfilled drawers or boxes</strong> that crush whatever sits beneath them.</li>'
+ '</ul>'
+ '<div class="blg-callout"><strong>From our collections:</strong> the musty smell people dread almost always traces back to two things &mdash; packing damp, or sealing organics in plastic. When we collect and pack items into your container we use breathable wrapping for exactly this reason. See <a href="furniture-storage.html">furniture storage</a> for how we handle it, or read why a dry container matters in our guide to <a href="blog-furniture-storage-sussex-winter.html">furniture storage through a Sussex winter</a>.</div>')
+
+PROHIBIT_BODY = (
+ '<p class="blg-lead"><strong>You can&rsquo;t store flammable or explosive items, fuel, gas bottles, perishable food, living plants or animals, illegal or stolen goods, or unsealed hazardous chemicals.</strong> UK storage rules and insurance exclude them because of the fire, health, pest and legal risks they bring.</p>'
+ '<p>Most of what you own is perfectly fine to store. A short list of items is not &mdash; not to be awkward, but because they are a fire risk, a health risk, or against the law. Here is what you can&rsquo;t put into storage in the UK, why, and what to do with it instead.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a6 6 0 0 0 6-6c0-4-4-5-4-9 0 0-3 2-3 5 0 1-1 1-1 0 0-1-1-2-1-2s-3 2-3 6a6 6 0 0 0 6 6z"/></svg></span><b>Nothing flammable</b><span>Fuel, gas bottles, aerosols, paint and fireworks are all fire hazards.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21c0-9 6-14 16-14 0 10-6 14-14 14"/><path d="M9 17c2-3 5-5 8-6"/></svg></span><b>Nothing living or perishable</b><span>Food, plants and animals rot, attract pests, or simply can&rsquo;t be stored.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></span><b>Nothing illegal</b><span>Stolen goods, drugs and weapons are not allowed anywhere, ever.</span></div>'
+ '</div>'
+ '<h2>What items are not allowed in storage?</h2>'
+ '<p>The items not allowed in storage are fuels and flammables, pressurised gas and aerosols, explosives, perishable food, living plants or animals, illegal goods, and hazardous chemicals. The table below lists what you can&rsquo;t store and the reason for each.</p>'
+ '<table class="blg-table"><thead><tr><th>What you can&rsquo;t store</th><th>Why not</th></tr></thead><tbody>'
+ '<tr><td>Petrol, fuel &amp; flammable liquids</td><td>Serious fire and vapour risk</td></tr>'
+ '<tr><td>Gas bottles, aerosols &amp; pressurised cans</td><td>Can leak, ignite or explode</td></tr>'
+ '<tr><td>Fireworks, explosives &amp; ammunition</td><td>Dangerous, and usually illegal to store</td></tr>'
+ '<tr><td>Perishable food</td><td>Rots, smells and attracts pests</td></tr>'
+ '<tr><td>Plants, animals or anything living</td><td>Living things cannot be stored</td></tr>'
+ '<tr><td>Illegal or stolen goods, drugs, weapons</td><td>Against the law</td></tr>'
+ '<tr><td>Hazardous &amp; toxic chemicals</td><td>Leaks and fumes harm people and goods</td></tr>'
+ '<tr><td>Wet, damp or unsealed items</td><td>Cause mould and damage to other belongings</td></tr></tbody></table>'
+ '<h2>Why can&rsquo;t you store these things?</h2>'
+ '<p>You can&rsquo;t store these things because each one puts the building, other people&rsquo;s belongings or your own safety at risk &mdash; and most are written out of storage insurance and the law. Fuel and gas are fire hazards regulated by the <a href="https://www.hse.gov.uk/fireandexplosion/about.htm" target="_blank" rel="noopener">Health and Safety Executive under DSEAR</a>, food and damp items attract pests and mould, and illegal goods are not permitted anywhere.</p>'
+ '<blockquote class="blg-pull">If it can catch fire, rot, or get you into trouble with the law, it can&rsquo;t go into storage &mdash; those are really the only rules.<cite>The short version</cite></blockquote>'
+ '<h2>What about gas bottles, paint, batteries and white goods?</h2>'
+ '<p>The trickiest items are the everyday ones. Gas bottles, paint and aerosols are not allowed because they are flammable or pressurised; loose lithium batteries are best avoided for the same reason; and white goods are fine once they are emptied, drained and fully dried.</p>'
+ '<ul>'
+ '<li><strong>Gas bottles, BBQ gas &amp; camping fuel</strong> &mdash; not allowed; return or dispose of them safely.</li>'
+ '<li><strong>Paint, varnish &amp; aerosols</strong> &mdash; flammable; use them up or take them to a recycling centre.</li>'
+ '<li><strong>Lithium batteries, e-bikes &amp; scooters</strong> &mdash; check first; loose or damaged batteries are a fire risk.</li>'
+ '<li><strong>Fridges, freezers &amp; washing machines</strong> &mdash; fine once emptied, drained and dried, with the doors left ajar.</li>'
+ '<li><strong>Cash, jewellery &amp; key documents</strong> &mdash; better kept with you; storage insurance limits high-value valuables.</li>'
+ '</ul>'
+ '<h2>What should you do with items you can&rsquo;t store?</h2>'
+ '<p>Deal with items you can&rsquo;t store before collection day rather than hiding them in a box. Slipping a fuel can or a gas bottle into a container puts everyone at risk and voids your cover &mdash; and most of these things can be used up, returned, or taken to a recycling centre instead.</p>'
+ '<ul>'
+ '<li><strong>Use it up or give it away</strong> &mdash; half-tins of paint, cleaning products and food.</li>'
+ '<li><strong>Take it to a recycling centre</strong> &mdash; your council&rsquo;s household waste site takes paint, chemicals and batteries.</li>'
+ '<li><strong>Return pressurised items</strong> &mdash; gas suppliers take back empty and part-full bottles.</li>'
+ '<li><strong>Keep valuables with you</strong> &mdash; cash, jewellery and important documents are safest at home.</li>'
+ '</ul>'
+ '<div class="blg-callout"><strong>Not sure about something?</strong> If you&rsquo;re ever unsure whether an item is allowed, just ask before collection day &mdash; we would always rather check than risk it. See what we <em>do</em> store on our <a href="storage-solutions.html">storage solutions</a> page, or <a href="contact.html">get in touch</a> and we&rsquo;ll talk it through.</div>')
+
+MOVE_BODY = (
+ '<p class="blg-lead"><strong>When your sale and purchase don&rsquo;t complete on the same day, storage bridges the gap</strong> &mdash; we collect your belongings before you move out, store them safely through the in-between, and redeliver once you&rsquo;re in. This is the timeline and checklist for a smooth West Sussex move.</p>'
+ '<p>Moving home rarely runs to a perfect schedule: chains slip, completion dates move, and sometimes you are out before you are in. Managed storage takes the pressure off, and a little planning makes the whole thing calmer. Here is when to book, what to do, and how storing between homes works.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18"/><path d="M8 2v4M16 2v4"/></svg></span><b>Bridge the gap</b><span>Storage covers the days between moving out and moving in.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h13V6H3z"/><path d="M16 9h3l2 3v1h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg></span><b>Collected before completion</b><span>We pack and take your things before you hand over the keys.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9h14v-9"/><path d="M9.5 19v-5h5v5"/></svg></span><b>Redelivered when you&rsquo;re in</b><span>Back to your new door on 24 hours&rsquo; notice.</span></div>'
+ '</div>'
+ '<h2>Why do you need storage when moving home?</h2>'
+ '<p>You need storage when moving home whenever your move-out and move-in days don&rsquo;t line up &mdash; a gap in the chain, a renovation before you settle in, or downsizing into a smaller place. Storage holds your belongings safely so the dates don&rsquo;t dictate the move.</p>'
+ '<blockquote class="blg-pull">The day you have to be out is rarely the day you can move in &mdash; storage is what stops that gap turning into a crisis.<cite>Why people store when they move</cite></blockquote>'
+ '<h2>When should you book moving storage?</h2>'
+ '<p>Book moving storage as soon as you have a likely completion date, ideally a few weeks ahead, so your collection slot is locked in. With managed storage we collect before you move out and redeliver once you are in &mdash; the steps below show how it fits around your move.</p>'
+ '<div class="blg-flow">'
+ '<div class="st"><span class="n">1</span><b>Plan &amp; book</b><span>As soon as a completion date looks likely</span></div>'
+ '<div class="st"><span class="n">2</span><b>We collect</b><span>Before you move out &mdash; packed and sealed</span></div>'
+ '<div class="st"><span class="n">3</span><b>Stored</b><span>Safe in our dry warehouse through the gap</span></div>'
+ '<div class="st"><span class="n">4</span><b>You complete</b><span>Move into your new home, stress-free</span></div>'
+ '<div class="st"><span class="n">5</span><b>We redeliver</b><span>To your door on 24 hours&rsquo; notice</span></div>'
+ '</div>'
+ '<h2>A moving and storage checklist for West Sussex</h2>'
+ '<p>Use this checklist to keep a West Sussex move on track: declutter early, get your quotes in, pack room by room, and keep the essentials with you. The less you have to move twice, the cheaper and calmer the whole thing is.</p>'
+ '<ul>'
+ '<li><strong>Declutter first</strong> &mdash; sell, donate or recycle what you won&rsquo;t take with you.</li>'
+ '<li><strong>Get your storage quote in early</strong>, so your collection date and costs are confirmed before completion.</li>'
+ '<li><strong>Pack and label room by room</strong> &mdash; see <a href="blog-how-to-pack-furniture-storage.html">how to pack furniture without wrecking it</a>.</li>'
+ '<li><strong>Sort utilities, post redirection and address changes</strong> a couple of weeks out.</li>'
+ '<li><strong>Keep valuables, documents and a moving-day bag with you</strong>, not in the container.</li>'
+ '</ul>'
+ '<h2>What if your move is delayed?</h2>'
+ '<p>If your move is delayed, your belongings simply stay in store a little longer &mdash; there is no penalty and nothing to rearrange. Managed storage runs on flexible weekly terms, so a slipped completion date or a chain hold-up just extends the storage by the days you need, and we redeliver whenever you finally get the keys.</p>'
+ '<h2>How does storing between homes work?</h2>'
+ '<p>Storing between homes works on flexible weekly terms: we collect and seal your belongings into your own container, keep it in our dry warehouse in Ashington, West Sussex, and redeliver to your new home on 24 hours&rsquo; notice &mdash; for as long as the gap lasts, whether that is a weekend or a few months.</p>'
+ '<div class="blg-callout"><strong>Moving in West Sussex?</strong> Collected <a href="short-term-storage.html">short-term storage</a> means we pack, collect and store your belongings, then redeliver to your new home &mdash; the gap between completion dates is handled for you. <a href="contact.html">Get a free quote</a> with collection and redelivery costed upfront.</div>')
+
+DOWNSIZE_BODY = (
+ '<p class="blg-lead"><strong>Storage gives you time and space when you&rsquo;re downsizing, sorting a probate estate, or clearing a family home</strong> &mdash; we collect everything from the door, store it safely, and you decide what to keep, sell or pass on at your own pace, with nothing to rush.</p>'
+ '<p>Downsizing and clearing a home are rarely just practical jobs. They come with deadlines, emotions and far more belongings than a new place can hold. Collected storage takes the lifting and the time pressure off, so you can make calm decisions rather than rushed ones.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h13V6H3z"/><path d="M16 9h3l2 3v1h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg></span><b>Collected from the door</b><span>No skip-hire panic and no lifting &mdash; we come to you.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><b>Sort at your own pace</b><span>Flexible weekly terms mean no deadline to empty a room by.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg></span><b>Keep, sell or pass on</b><span>Make decisions calmly, not under pressure on clearance day.</span></div>'
+ '</div>'
+ '<h2>How does storage help when you&rsquo;re downsizing?</h2>'
+ '<p>Storage helps when you&rsquo;re downsizing by holding the belongings that don&rsquo;t fit the new home while you decide what to do with them. Instead of rushing every choice on moving day, you move what you need, store the rest, and sort it room by room when you have the headspace.</p>'
+ '<blockquote class="blg-pull">The hardest part of downsizing isn&rsquo;t the moving &mdash; it&rsquo;s deciding. Storage buys you the time to decide well.<cite>Why storage makes downsizing easier</cite></blockquote>'
+ '<h2>Storage for probate and clearing a family home</h2>'
+ '<p>When you are clearing a family home or dealing with a probate estate, storage gives executors and relatives breathing room. Belongings can be collected and kept safe while <a href="https://www.gov.uk/applying-for-probate" target="_blank" rel="noopener">probate</a> is granted and the estate is settled, items are shared between family, and decisions are made &mdash; without a property having to be emptied to a deadline.</p>'
+ '<ul>'
+ '<li><strong>Empty the property without losing anything</strong> &mdash; everything is logged and stored, not skipped in haste.</li>'
+ '<li><strong>Give the family time</strong> to decide who keeps what, even at a distance.</li>'
+ '<li><strong>Hold items safely</strong> until they can be valued, sold or passed on.</li>'
+ '</ul>'
+ '<h2>How do you decide what to keep?</h2>'
+ '<p>Decide what to keep by sorting belongings into simple groups &mdash; keep, pass on, sell, and not sure &mdash; and let storage hold the &ldquo;not sure&rdquo; pile rather than forcing a snap decision. The things that matter become clearer with a little time and distance.</p>'
+ '<ul>'
+ '<li><strong>Keep</strong> what you have room and love for in the new home.</li>'
+ '<li><strong>Pass on or sell</strong> what others would value more than a storage shelf.</li>'
+ '<li><strong>Store the &ldquo;not sure&rdquo; pile</strong> and revisit it without pressure.</li>'
+ '</ul>'
+ '<h2>How long can you store while you decide?</h2>'
+ '<p>You can store for as long as you need while you decide &mdash; there is no fixed end date. Downsizing and probate decisions take time, and flexible weekly terms mean the &ldquo;not sure&rdquo; pile can sit safely for weeks or months while you, or the family, work through it at a pace that feels right.</p>'
+ '<h2>What about the things nobody wants to keep?</h2>'
+ '<p>The things nobody wants don&rsquo;t have to be decided on clearance day. Storage holds them while you arrange to sell, donate or pass them on &mdash; to family, a charity, an auction house or a house-clearance specialist &mdash; rather than sending anything to a skip in a rushed afternoon you might regret.</p>'
+ '<h2>A calmer way to downsize</h2>'
+ '<p>The calmest way to downsize is to take it in stages rather than all at once:</p>'
+ '<ul>'
+ '<li><strong>Move what you know you want</strong> into the new home first.</li>'
+ '<li><strong>Collect the rest into storage</strong>, so the old property can be handed over on time.</li>'
+ '<li><strong>Sort one box or category at a time</strong> &mdash; keep, pass on, or let go.</li>'
+ '<li><strong>Release items from storage</strong> as decisions are made, with no deadline.</li>'
+ '</ul>'
+ '<div class="blg-callout"><strong>No rush, no heavy lifting.</strong> We collect across West Sussex, store everything safely on flexible weekly terms, and redeliver or release items whenever you&rsquo;re ready. See our <a href="long-term-storage.html">long-term storage</a>, read what it <a href="blog-storage-cost-west-sussex.html">really costs</a>, or <a href="contact.html">talk to us</a> &mdash; we&rsquo;ll keep it calm and simple.</div>')
+
+BUSINESS_BODY = (
+ '<p class="blg-lead"><strong>Business storage frees up expensive floor space without a long warehouse lease</strong> &mdash; we collect, store and redeliver stock, archives and equipment for West Sussex businesses, on flexible weekly terms, with everything logged and insured.</p>'
+ '<p>Whether you&rsquo;re an online seller drowning in stock, a tradesperson short of van space, or an office that has to keep years of records, renting a warehouse is overkill. Collected container storage gives you the space when you need it and takes it away when you don&rsquo;t.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5"/><path d="M20 15v5h-5"/><path d="M4 15v5h5"/><path d="M20 9V4h-5"/></svg></span><b>Free up floor space</b><span>Clear the office, unit or van without renting a whole warehouse.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.4-3.2 7.6-8 9-4.8-1.4-8-4.6-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span><b>Logged &amp; insured</b><span>Every container is sealed, logged and insured while it is with us.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12l9 5 9-5"/></svg></span><b>Scale up or down</b><span>Add or release containers as your stock and seasons change.</span></div>'
+ '</div>'
+ '<h2>What can businesses store?</h2>'
+ '<p>Businesses can store stock and packaging, archives and records, tools and equipment, office furniture during a move, and any seasonal overflow that doesn&rsquo;t fit right now. If it isn&rsquo;t hazardous and you don&rsquo;t need it to hand every day, it can go into a managed container.</p>'
+ '<table class="blg-table"><thead><tr><th>What businesses store</th><th>Examples</th></tr></thead><tbody>'
+ '<tr><td>Stock &amp; packaging</td><td>Online-seller inventory, seasonal lines</td></tr>'
+ '<tr><td>Archives &amp; records</td><td>Files and paperwork you have to keep</td></tr>'
+ '<tr><td>Tools &amp; equipment</td><td>Trade kit and machinery between jobs</td></tr>'
+ '<tr><td>Office furniture</td><td>Desks and chairs during a move or refit</td></tr>'
+ '<tr><td>Overflow &amp; seasonal</td><td>Whatever won&rsquo;t fit your space today</td></tr></tbody></table>'
+ '<h2>Why use managed storage for business goods?</h2>'
+ '<p>Managed storage suits business goods because each container is collected, sealed, logged and insured, and you scale the space up or down without committing to a lease. The managed model can also carry a higher duty of care than a self-access unit, which matters for stock and records.</p>'
+ '<blockquote class="blg-pull">A warehouse lease is a fixed cost you carry all year &mdash; collected container storage is space you only pay for while you need it.<cite>Storage that flexes with the business</cite></blockquote>'
+ '<p>For how the collected model compares with a self-access unit, see <a href="blog-managed-vs-self-storage.html">managed container storage vs a self-storage unit</a>.</p>'
+ '<h2>How much does business storage cost?</h2>'
+ '<p>Business storage costs from &pound;15 a week per container, with no deposit and collection quoted upfront &mdash; and unlike a warehouse there is no lease, no business rates, no fit-out and no fixed term. You add containers when stock builds up and release them when it clears, so you only pay for the space you are actually using.</p>'
+ '<p>For the full picture of what storage costs and how it compares, see <a href="blog-storage-cost-west-sussex.html">how much storage really costs in West Sussex</a>.</p>'
+ '<h2>How do you access business stock in storage?</h2>'
+ '<p>You access business stock by requesting it: we retrieve your container or specific items and redeliver to your premises, usually on 24 hours&rsquo; notice. Collected storage suits stock, archives and equipment you use periodically rather than pick from hourly &mdash; for daily, hands-on access, a self-access unit may suit better.</p>'
+ '<h2>Which West Sussex businesses use storage?</h2>'
+ '<p>All sorts of West Sussex businesses use collected storage to free up space without committing to a unit or a warehouse:</p>'
+ '<ul>'
+ '<li><strong>Online sellers</strong> holding stock, packaging and seasonal lines between order peaks.</li>'
+ '<li><strong>Tradespeople</strong> keeping tools, materials and machinery safe between jobs.</li>'
+ '<li><strong>Offices</strong> storing archives, records and furniture during a move or refit.</li>'
+ '<li><strong>Event, retail and seasonal businesses</strong> whose stock peaks and dips through the year.</li>'
+ '</ul>'
+ '<h2>How long should you keep business records?</h2>'
+ '<p>UK companies must keep their accounting records for at least six years (<a href="https://www.gov.uk/running-a-limited-company/company-and-accounting-records" target="_blank" rel="noopener">gov.uk</a>), and often keep other statutory records longer. That makes dry, logged container storage a tidy home for archive boxes you rarely open but legally can&rsquo;t throw away &mdash; off-site, but retrievable on request.</p>'
+ '<div class="blg-callout"><strong>Free up your space this month.</strong> We collect from your premises across West Sussex, store your stock, archives or equipment in a dry, alarmed warehouse, and bring it back when you need it. See <a href="business-storage.html">business storage</a> or <a href="contact.html">get a free quote</a> with collection costed upfront.</div>')
+
+WORTHING_BODY = (
+ '<p class="blg-lead"><strong>Wolves Storage Sussex covers Worthing and the whole BN11&ndash;BN14 area</strong> with collected container storage for homes and businesses along the coast, from &pound;15 a week. Whether you&rsquo;re moving within Worthing, caught between homes, or simply short of space, we bring the storage to your door.</p>'
+ '<p>Worthing is a town of busy family homes, downsizers and seasonal comings and goings &mdash; and not much spare space. Collected storage is built for exactly that: no unit to drive to, no van to hire, just space that arrives when you need it and leaves when you don&rsquo;t.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.4-7-11a7 7 0 0 1 14 0c0 5.6-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg></span><b>Covers BN11&ndash;BN14</b><span>Worthing, Tarring, Goring, Broadwater, Durrington and the coast.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h13V6H3z"/><path d="M16 9h3l2 3v1h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg></span><b>Collected from your door</b><span>No drive-up unit &mdash; we pack, collect and store for you.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13 21l-9-9V4h8z"/><circle cx="8.5" cy="8.5" r="1.4"/></svg></span><b>From &pound;15/week</b><span>No deposit; collection and redelivery quoted upfront.</span></div>'
+ '</div>'
+ '<h2>Do you offer storage in Worthing?</h2>'
+ '<p>Yes &mdash; Wolves Storage Sussex offers collected container storage right across Worthing, from the seafront through Tarring, Goring, Broadwater and Durrington. Instead of renting a drive-up unit, you have your belongings collected from your door, sealed into your own container, and stored in our dry warehouse nearby in Ashington.</p>'
+ '<p>You can see the local detail on our <a href="storage-worthing.html">Worthing storage</a> page, or read on for what people store and how it works.</p>'
+ '<h2>What do people in Worthing store?</h2>'
+ '<p>People in Worthing most often store furniture while downsizing, belongings between homes, students&rsquo; things over summer, and the seasonal kit a coastal home collects. If it isn&rsquo;t hazardous and you don&rsquo;t need it every day, it can be collected and stored.</p>'
+ '<ul>'
+ '<li><strong>Downsizers</strong> holding furniture while they decide what fits the new place.</li>'
+ '<li><strong>Households between homes</strong> bridging a gap in the chain.</li>'
+ '<li><strong>Students and renters</strong> storing over the summer or between lets.</li>'
+ '<li><strong>Seasonal and overflow items</strong> a busy coastal home has no room for.</li>'
+ '</ul>'
+ '<blockquote class="blg-pull">Space is the one thing a Worthing home never has enough of &mdash; collected storage adds it without you driving a single box anywhere.<cite>Why locals store with us</cite></blockquote>'
+ '<h2>Storage when moving home in Worthing</h2>'
+ '<p>When a Worthing move doesn&rsquo;t run to schedule &mdash; a chain slips, or you&rsquo;re out before you&rsquo;re in &mdash; storage bridges the gap. We collect before you hand over the keys, keep everything safe for as long as it takes, and redeliver to your new home on 24 hours&rsquo; notice. Our <a href="blog-moving-storage-checklist-west-sussex.html">moving and storage checklist</a> walks through the timeline.</p>'
+ '<h2>Which areas of Worthing do you cover?</h2>'
+ '<p>We cover the whole of Worthing and the surrounding BN11&ndash;BN14 area for collected storage, including:</p>'
+ '<ul>'
+ '<li><strong>Central Worthing, the seafront and West Worthing</strong> (BN11).</li>'
+ '<li><strong>Goring-by-Sea and Ferring</strong> (BN12), and nearby Ferring and East Preston.</li>'
+ '<li><strong>Tarring, Salvington and Broadwater</strong> (BN13).</li>'
+ '<li><strong>Durrington, Findon Valley and the northern estates</strong> (BN13&ndash;BN14), plus Lancing and Sompting close by.</li>'
+ '</ul>'
+ '<h2>How much is storage in Worthing?</h2>'
+ '<p>Storage in Worthing starts from &pound;15 a week per container, with no deposit and collection and redelivery quoted upfront. You only pay for the space you use, on flexible weekly terms &mdash; see <a href="blog-storage-cost-west-sussex.html">what storage really costs</a> for the full breakdown.</p>'
+ '<h2>What happens on collection day?</h2>'
+ '<p>On collection day we come to your Worthing address, wrap and pack your belongings, seal them into your own logged container, and take them to our dry, alarmed warehouse &mdash; you don&rsquo;t lift a thing or drive anywhere. When you want them back, we redeliver to your door on 24 hours&rsquo; notice.</p>'
+ '<h2>How does collected storage work in Worthing?</h2>'
+ '<p>Collected storage in Worthing works door to door: we come to you, pack and seal your belongings into your own logged container, store it in our dry, alarmed warehouse, and bring it back whenever you need it. You only pay for the container space you use, on flexible weekly terms.</p>'
+ '<div class="blg-callout"><strong>Need storage in Worthing?</strong> See local detail on our <a href="storage-worthing.html">Worthing storage</a> page, compare the <a href="blog-storage-cost-west-sussex.html">real cost of storage</a>, or <a href="contact.html">get a free quote</a> with collection and redelivery costed upfront.</div>')
+
+RENO_BODY = (
+ '<p class="blg-lead"><strong>Storing your home&rsquo;s contents during a renovation keeps furniture safe from dust, damp and damage</strong> &mdash; and gives the builders a clear space to work. We collect everything from the door, store it in a dry warehouse, and redeliver when the work is done.</p>'
+ '<p>Building work and furniture don&rsquo;t mix. Dust gets into everything, wet trades raise the humidity, and tradespeople need room to move. Clearing the contents into collected storage protects your things and speeds the job up &mdash; then it all comes back to a finished home.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7a4 4 0 0 0-5 5l-6 6 2 2 6-6a4 4 0 0 0 5-5l-2.5 2.5L9 10.5 11.5 8z"/></svg></span><b>Clear space for the works</b><span>Empty rooms let trades move faster and more safely.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 10.5a6 6 0 0 1-12 0C6 9.5 12 3 12 3z"/></svg></span><b>Safe from dust &amp; damp</b><span>Out of the dust, paint and moisture a build kicks up.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9h14v-9"/><path d="M9.5 19v-5h5v5"/></svg></span><b>Back when it&rsquo;s done</b><span>Redelivered to your finished home on 24 hours&rsquo; notice.</span></div>'
+ '</div>'
+ '<h2>Why store furniture during a renovation?</h2>'
+ '<p>You store furniture during a renovation to protect it from the dust, paint, knocks and raised humidity that building work brings &mdash; and to give the trades a clear, safe space. Furniture pushed into one room and sheeted over still gets dusty, damp and in the way; collected storage takes it out of the firing line entirely.</p>'
+ '<blockquote class="blg-pull">A sheet over the sofa won&rsquo;t stop plaster dust, damp or a stray boot &mdash; the only real protection is getting it out of the room.<cite>Why people clear the room</cite></blockquote>'
+ '<h2>What should you store during building work?</h2>'
+ '<p>Store anything the work could damage or that gets in the way: soft furnishings, wooden and upholstered furniture, electronics, artwork and anything valuable. Keep only what you need day to day, and let storage hold the rest until the dust has settled &mdash; literally.</p>'
+ '<ul>'
+ '<li><strong>Sofas, beds and wooden furniture</strong> &mdash; dust and damp are hardest on these.</li>'
+ '<li><strong>Electronics, art and valuables</strong> &mdash; keep them well away from the work.</li>'
+ '<li><strong>Soft furnishings and rugs</strong> &mdash; they hold dust and smells.</li>'
+ '<li><strong>Anything in the trades&rsquo; way</strong> &mdash; a clear room is a faster, safer job.</li>'
+ '</ul>'
+ '<h2>How does storage work around a renovation?</h2>'
+ '<p>Storage works around a renovation on flexible weekly terms, because building projects rarely finish on time. We collect and seal your contents into your own container, keep it in our dry, alarmed warehouse for as long as the work runs over, and redeliver in stages or all at once when you&rsquo;re ready.</p>'
+ '<p>Because the warehouse is dry and ventilated, your furniture is better protected than it would be under a sheet in a damp, half-finished house &mdash; see <a href="blog-furniture-storage-sussex-winter.html">how a dry container protects furniture</a>, or our <a href="furniture-storage.html">furniture storage</a> service.</p>'
+ '<h2>Can you access your things during the renovation?</h2>'
+ '<p>Yes &mdash; if you need something back mid-project, we redeliver it on request, usually on 24 hours&rsquo; notice. So if a room finishes early, or you realise you need a particular item, it doesn&rsquo;t have to wait until the whole job is done.</p>'
+ '<h2>What if the renovation overruns?</h2>'
+ '<p>If the renovation overruns &mdash; as building work so often does &mdash; your storage simply continues on the same flexible weekly terms, with no penalty and nothing to rearrange. You pay only for the extra weeks, and we redeliver whenever the work is finally finished.</p>'
+ '<h2>Should you keep valuables out of storage during the works?</h2>'
+ '<p>Keep small valuables, cash, jewellery and important documents with you during a renovation rather than in any store. Everything else &mdash; furniture, electronics, soft furnishings and the contents of the rooms being worked on &mdash; is better off collected and stored safely until the dust has settled.</p>'
+ '<div class="blg-callout"><strong>Renovating in West Sussex?</strong> We collect your furniture before the work starts, keep it safe in <a href="long-term-storage.html">long-term storage</a> for as long as the project takes, and bring it back to a finished home. <a href="contact.html">Get a free quote</a> with collection costed upfront.</div>')
+
+SEASON_BODY = (
+ '<p class="blg-lead"><strong>Seasonal storage clears the garage and loft of the things you only use half the year</strong> &mdash; garden furniture, the BBQ, parasols, Christmas decorations &mdash; and keeps them dry and safe until the season comes round again. We collect, store and bring them back when you need them.</p>'
+ '<p>Half of what fills a garage or shed is out of season at any one time. Storing it properly frees up the space you actually use, and keeps it out of the damp, unheated sheds where garden kit and decorations slowly rot, rust and grow mould.</p>'
+ '<div class="blg-keyrow">'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span><b>Off-season space</b><span>Clear the garage, shed and loft of what you&rsquo;re not using.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 10.5a6 6 0 0 1-12 0C6 9.5 12 3 12 3z"/></svg></span><b>Dry &amp; protected</b><span>Out of the damp sheds where garden kit rusts and rots.</span></div>'
+ '<div class="blg-keycard"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg></span><b>Back in season</b><span>Redelivered when summer &mdash; or Christmas &mdash; comes round.</span></div>'
+ '</div>'
+ '<h2>What can you put into seasonal storage?</h2>'
+ '<p>You can put almost any out-of-season item into storage: garden furniture, the BBQ, parasols and loungers in winter; heaters, winter gear and Christmas decorations in summer. As long as it is clean, dry and not hazardous, it can be collected and stored until you need it.</p>'
+ '<ul>'
+ '<li><strong>Garden furniture, loungers &amp; parasols</strong> over the winter months.</li>'
+ '<li><strong>The BBQ and outdoor kit</strong> &mdash; cleaned and with the gas removed.</li>'
+ '<li><strong>Christmas decorations and lights</strong> the rest of the year.</li>'
+ '<li><strong>Winter gear, heaters and spare bedding</strong> through the summer.</li>'
+ '</ul>'
+ '<h2>How do you store garden furniture over winter?</h2>'
+ '<p>Store garden furniture over winter by cleaning and drying it first, then keeping it somewhere dry and ventilated rather than a cold, damp shed. A cold metal shed sweats with condensation and rusts metal and grows mould on cushions &mdash; the same dew-point effect that ruins furniture in an unheated unit.</p>'
+ '<blockquote class="blg-pull">A damp shed is where garden furniture goes to rust &mdash; clean it, dry it, and keep it somewhere the air actually moves.<cite>Winter care for outdoor kit</cite></blockquote>'
+ '<p>Wrap and pack it the same way you would indoor pieces &mdash; see <a href="blog-how-to-pack-furniture-storage.html">how to pack furniture without wrecking it</a>, and why the <a href="blog-furniture-storage-sussex-winter.html">dry environment matters</a> through a Sussex winter.</p>'
+ '<h2>When should you store seasonal items?</h2>'
+ '<p>Store seasonal items at the end of the season you have finished with, and bring them back just before you need them again. A simple rhythm keeps the garage clear all year round:</p>'
+ '<table class="blg-table"><thead><tr><th>Store away</th><th>When</th></tr></thead><tbody>'
+ '<tr><td>Garden furniture, BBQ, parasols</td><td>Autumn, once the garden season ends</td></tr>'
+ '<tr><td>Heaters, winter gear, spare bedding</td><td>Spring, as the weather warms up</td></tr>'
+ '<tr><td>Christmas decorations and lights</td><td>January, after the festive season</td></tr></tbody></table>'
+ '<h2>What can&rsquo;t you put into seasonal storage?</h2>'
+ '<p>You can&rsquo;t store the gas and fuel that often live with seasonal kit. BBQ gas bottles, patio-heater gas and petrol for mowers or strimmers are all flammable and not allowed &mdash; remove the gas, store the appliance clean and empty, and see <a href="blog-what-cant-you-store-uk.html">what you can&rsquo;t put in storage</a> for the full list.</p>'
+ '<h2>Is seasonal storage worth it?</h2>'
+ '<p>Seasonal storage is worth it when the space you reclaim matters more than the weekly cost &mdash; a clear garage you can park in, or a loft you can use, for a few pounds a week. On flexible weekly terms you only pay for the months the items are away, and good garden furniture lasts far longer kept dry than left to a damp shed.</p>'
+ '<h2>How does collected seasonal storage work?</h2>'
+ '<p>Collected seasonal storage works on flexible weekly terms, so you store only for the months you don&rsquo;t need the items. We collect your garden furniture or decorations from the door, keep them in our dry warehouse, and redeliver when the season turns &mdash; no lugging things to a unit and back twice a year.</p>'
+ '<div class="blg-callout"><strong>Reclaim your garage this season.</strong> We collect your out-of-season kit across West Sussex, keep it dry in <a href="long-term-storage.html">long-term storage</a>, and bring it back when you need it. <a href="contact.html">Get a free quote</a> with collection and redelivery costed upfront.</div>')
+
+BLOG_POSTS = [
+  dict(slug="furniture-storage-sussex-winter", published=True, category="protecting-belongings",
+       areas=["all"], date="2026-06-20",
+       title="Will My Furniture Survive a Sussex Winter in Storage?",
+       card="Will my furniture survive a Sussex winter?",
+       excerpt="The condensation science behind why unheated units &lsquo;sweat&rsquo; in winter &mdash; and how a dry, ventilated container keeps furniture, leather and electronics safe.",
+       seo_title="Furniture Storage in a Sussex Winter | Wolves Storage Sussex",
+       meta="Will your furniture survive a Sussex winter in storage? The damp and mould science, and how a dry managed container keeps it safe. From £15/week.",
+       hero=IMG(HERO_FURNITURE[0]), hero_alt="Furniture wrapped and prepared for dry, managed storage in West Sussex",
+       faqs=[("Will my furniture get damp in storage?","Not in a dry, ventilated, managed store. Damp and mould form when furniture sits in an unheated unit whose cold surfaces drop below the dew point. A managed container in a dry, ventilated warehouse keeps surfaces above the dew point, so condensation doesn't form."),
+             ("Should I wrap furniture in plastic for storage?","No. Airtight plastic traps moisture against the furniture, which causes mould on fabric and wood and can dry out and crack leather within months. Use breathable furniture blankets or cotton covers instead."),
+             ("How long can furniture stay in storage safely?","Indefinitely in a dry, managed store. The risk to stored furniture comes from damp, not time — so the quality of the environment, not the length of stay, is what matters."),
+             ("Is damp or mould damage covered by storage insurance?","Usually not. Damp, condensation and mould are standard exclusions on storage insurance because they are considered preventable, so a dry, ventilated, managed environment is your real protection.")],
+       body=WINTER_BODY),
+  dict(slug="storage-cost-west-sussex", published=True, category="costs-pricing", areas=["all"], date="2026-06-21",
+       title="How Much Does Storage Really Cost in West Sussex?", card="How much does storage really cost in West Sussex?",
+       excerpt="The honest, all-in cost of storage near you &mdash; and why &pound;15/week managed storage often beats a &lsquo;cheaper&rsquo; self-storage unit once the van, fuel and your time are added.",
+       seo_title="Storage Costs in West Sussex | Wolves Storage Sussex",
+       meta="What storage really costs in West Sussex: the all-in price with insurance, transport and time included, and why managed storage from &pound;15/week often wins.",
+       hero=IMG(HERO_WAREHOUSE[0]), hero_alt=HERO_WAREHOUSE[1],
+       faqs=[("Is there a deposit for storage?","No. Wolves Storage Sussex charges no deposit &mdash; managed container storage starts from &pound;15 a week, with collection and redelivery quoted upfront and no hidden fees."),
+             ("Is managed storage cheaper than self-storage?","Often, yes, once the all-in cost is compared. A self-storage unit adds compulsory insurance, van or trailer hire, fuel and your own time on top of the advertised rent, which usually makes a collected &pound;15-a-week container the cheaper option."),
+             ("What affects the cost of storage?","The main factors are how much space you need and how long you store. With managed storage you only pay for the container space you use, with no deposit, on flexible weekly or 4-week terms."),
+             ("Is there a minimum storage term?","Storage runs on flexible weekly and 4-week terms, so you only pay for the time you actually need.")],
+       body=COST_BODY),
+  dict(slug="managed-vs-self-storage", published=True, category="managed-vs-self", areas=["all"], date="2026-06-22",
+       title="Managed Container Storage vs a Self-Storage Unit", card="Managed container storage vs a self-storage unit",
+       excerpt="No unit to drive to, no van to hire, no guessing a size. How the collected, sealed-container model really compares &mdash; and the two times self-storage still wins.",
+       seo_title="Managed Storage vs Self-Storage | Wolves Storage Sussex",
+       meta="Managed container storage vs a self-storage unit: how they compare on effort, safety and all-in cost &mdash; and the times self-storage still wins.",
+       hero=IMG(HERO_LOADING[0]), hero_alt=HERO_LOADING[1],
+       faqs=[("Is managed storage better than self-storage?","For most people storing without frequent access, yes &mdash; it is collected, protected and often cheaper once the all-in cost is compared. Self-storage suits those who need regular self-access to their unit."),
+             ("Do I get my own container with managed storage?","Yes. Your belongings are packed and sealed into your own logged container, not a shared open unit."),
+             ("Can I still access my things in managed storage?","Yes &mdash; on request. We redeliver to your door across West Sussex, so you do not need to travel to a unit yourself."),
+             ("Is managed storage more secure than self-storage?","Generally, yes. Sealed, logged containers sit in an alarmed, monitored warehouse, and managed handling can carry a higher legal duty of care than own-risk self-storage.")],
+       body=MANAGED_BODY),
+  dict(slug="moving-storage-checklist-west-sussex", published=True, category="moving-home", areas=["all"], date="2026-06-25",
+       title="Moving Home in West Sussex: A Storage Timeline &amp; Checklist", card="A West Sussex moving &amp; storage checklist",
+       excerpt="When your completion dates don&rsquo;t line up, where do your belongings go? A practical timeline and checklist for storing between homes across West Sussex.",
+       seo_title="Moving &amp; Storage Checklist West Sussex | Wolves Storage",
+       meta="Moving home in West Sussex? A storage timeline and checklist for the gap between completion dates &mdash; when to book, what to do, and how it works.",
+       hero=IMG(HERO_LOADING[0]), hero_alt=HERO_LOADING[1],
+       faqs=[("Can you store belongings between house moves?","Yes. Managed storage is ideal for the gap between completion dates &mdash; we collect before you move out, store everything safely, and redeliver to your new home when you are in, on flexible weekly terms."),
+             ("How far in advance should you book moving storage?","Book as soon as a completion date looks likely, ideally a few weeks ahead, so your collection slot is confirmed. Managed storage can often still be arranged at shorter notice if a chain moves suddenly."),
+             ("How long can you store things between homes?","As long as you need &mdash; from a weekend to several months. Storage runs on flexible weekly and 4-week terms, so you only pay for the time the gap lasts."),
+             ("Do you collect, or do I bring my things to you?","We collect from your old home and redeliver to your new one across West Sussex \u2014 you don\u2019t need to transport anything yourself. Collection and redelivery are quoted upfront.")],
+       body=MOVE_BODY),
+  dict(slug="how-to-pack-furniture-storage", published=True, category="packing", areas=["all"], date="2026-06-23",
+       title="How to Pack Furniture for Storage Without Wrecking It", card="How to pack furniture without wrecking it",
+       excerpt="Why you should never seal solid wood or leather in plastic, what acid-free tissue is really for, and the packing mistakes that cause damage months later.",
+       seo_title="How to Pack Furniture for Storage | Wolves Storage Sussex",
+       meta="How to pack furniture for storage without wrecking it: why you never seal wood or leather in plastic, what to use instead, and how to pack each material.",
+       hero=IMG(HERO_PACKING[0]), hero_alt=HERO_PACKING[1],
+       faqs=[("Should you wrap furniture in plastic for storage?","No. Airtight plastic traps moisture against the furniture, causing mould on fabric and wood and cracking leather within months. Use breathable furniture blankets or cotton instead."),
+             ("How do you stop furniture being damaged in storage?","Clean and fully dry everything, wrap it in breathable covers, keep it off the floor, and store it somewhere dry and ventilated. Most storage damage comes from damp, not knocks."),
+             ("What should you not pack furniture in?","Avoid airtight plastic, and don\u2019t put newspaper or ordinary cardboard against polished surfaces \u2014 both are acidic. Never pack anything away damp."),
+             ("Should you dismantle furniture for storage?","Where practical, yes. Dismantling beds, tables and flat-pack protects the joints and saves space \u2014 keep the fixings bagged and taped to the piece.")],
+       body=PACK_BODY),
+  dict(slug="what-cant-you-store-uk", published=True, category="packing", areas=["all"], date="2026-06-24",
+       title="What Can&rsquo;t You Put in Storage? (UK Rules)", card="What can&rsquo;t you put in storage?",
+       excerpt="The items UK storage rules and insurance won&rsquo;t allow &mdash; flammables, fuel, food, plants and illegal goods &mdash; why each is banned, and what to do with them instead.",
+       seo_title="What Can&rsquo;t You Put in Storage? | Wolves Storage Sussex",
+       meta="What can&rsquo;t you put in storage in the UK? The prohibited items &mdash; flammables, fuel, food, plants, illegal goods &mdash; why each is banned, and what to do instead.",
+       hero=IMG(HERO_WAREHOUSE[0]), hero_alt=HERO_WAREHOUSE[1],
+       faqs=[("Can you store a fridge or washing machine?","Yes, once it is emptied, drained and fully dried with the door left ajar. Never store white goods wet or with food inside, as they will grow mould and smell."),
+             ("Can you store paint, aerosols or gas bottles?","No. Paint, aerosols, gas bottles and other flammable or pressurised items are not allowed in storage because of the fire and explosion risk."),
+             ("Can you store lithium batteries or an e-bike?","Check first. Loose or damaged lithium batteries are a fire risk, so they are best kept out of storage or stored only when undamaged and advised as safe."),
+             ("What happens if you store a prohibited item?","It can void your insurance and breach the storage agreement, and dangerous items put the whole facility at risk &mdash; so always ask before collection day if you are unsure.")],
+       body=PROHIBIT_BODY),  dict(slug="storage-downsizing-probate", published=True, category="downsizing", areas=["all"], date="2026-06-26",
+       title="Storage for Downsizing, Probate &amp; Clearing a Home", card="Storage for downsizing, probate &amp; clearing a home",
+       excerpt="A calm, practical guide to storing belongings during a downsize or bereavement &mdash; collected from the door, so you never have to lift a thing.",
+       seo_title="Storage for Downsizing &amp; Probate | Wolves Storage Sussex",
+       meta="Storage for downsizing, probate or clearing a family home in West Sussex &mdash; collected from the door and stored at your own pace, with no rush.",
+       hero=IMG(HERO_FURNITURE[0]), hero_alt=HERO_FURNITURE[1],
+       faqs=[("Can you store belongings while downsizing?","Yes. We collect what doesn\u2019t fit the new home, store it on flexible weekly terms, and you decide what to keep, sell or pass on at your own pace \u2014 with no deadline to empty a room by."),
+             ("Can storage help when clearing a home after a bereavement?","Yes. Belongings can be collected and kept safe while a probate estate is settled and the family decides who keeps what, so the property can be emptied without anything being lost or rushed."),
+             ("How long can you store things for?","As long as you need \u2014 weekly and 4-week terms mean there is no fixed end date, which suits downsizing and probate where decisions take time."),
+             ("Do you do the lifting?","Yes. We collect everything from the door across West Sussex and redeliver or release items when you are ready, so there is no heavy lifting for you.")],
+       body=DOWNSIZE_BODY),
+  dict(slug="business-storage-west-sussex", published=True, category="business", areas=["all"], date="2026-06-27",
+       title="Business Storage in West Sussex: Stock, Archives &amp; Trades", card="Business storage: stock, archives &amp; trades",
+       excerpt="Free up floor space without renting a warehouse &mdash; collected, sealed container storage for West Sussex businesses, online sellers and tradespeople.",
+       seo_title="Business Storage in West Sussex | Wolves Storage Sussex",
+       meta="Business storage in West Sussex: collected, logged, insured containers for stock, archives and equipment &mdash; free up floor space without a warehouse lease.",
+       hero=IMG(HERO_WAREHOUSE[0]), hero_alt=HERO_WAREHOUSE[1],
+       faqs=[("What can a business store?","Stock and packaging, archives and records, tools and equipment, office furniture during a move, and any seasonal overflow \u2014 anything that is not hazardous and you do not need to hand every day."),
+             ("Is business storage cheaper than renting a warehouse?","Usually, because you only pay for the container space you use, on flexible weekly terms, with no long lease, business rates or fit-out \u2014 and collection and redelivery are quoted upfront."),
+             ("Can you store business archives and records?","Yes. Dry, logged container storage suits archive boxes you rarely open but must keep \u2014 most UK businesses keep accounting records for at least six years \u2014 and we retrieve them on request."),
+             ("Can you collect from our premises?","Yes. We collect from businesses across West Sussex, store everything in a dry, alarmed warehouse, and redeliver when you need it.")],
+       body=BUSINESS_BODY),
+  dict(slug="storage-moving-worthing", published=True, category="local-guides", areas=["Worthing"], date="2026-06-28",
+       title="Storage in Worthing: A Local Guide (BN11&ndash;BN14)", card="Storage &amp; moving in Worthing",
+       excerpt="Collected container storage across Worthing and BN11&ndash;BN14 &mdash; what locals store, storage when a move falls through, and how door-to-door storage works.",
+       seo_title="Storage in Worthing (BN11&ndash;BN14) | Wolves Storage Sussex",
+       meta="Collected container storage in Worthing and across BN11&ndash;BN14 &mdash; what locals store, storage between homes, and how door-to-door storage works, from &pound;15/week.",
+       hero=IMG(HERO_AERIAL[0]), hero_alt=HERO_AERIAL[1],
+       faqs=[("Do you offer storage in Worthing?","Yes. We offer collected container storage across Worthing and BN11\u2013BN14, including Tarring, Goring, Broadwater and Durrington \u2014 collected from your door and stored in our dry warehouse nearby in Ashington."),
+             ("Do I have to drive to a storage unit in Worthing?","No. We collect from your door across Worthing, so there is no drive-up unit, no van to hire and no lifting \u2014 we pack, collect and store for you."),
+             ("How much is storage in Worthing?","Managed container storage starts from \u00a315 a week with no deposit, and collection and redelivery are quoted upfront. You only pay for the container space you use."),
+             ("Can you store my things if my Worthing move falls through?","Yes. If a sale or chain falls through, we keep your belongings safely in store on flexible weekly terms and redeliver whenever your move finally goes ahead.")],
+       body=WORTHING_BODY),
+  dict(slug="storage-during-renovation", published=True, category="moving-home", areas=["all"], date="2026-06-29",
+       title="Storing Your Home During a Renovation", card="Storing your home during a renovation",
+       excerpt="Keep furniture safe from dust, damp and damage during building work &mdash; and give the trades a clear space. Collected storage that comes back to a finished home.",
+       seo_title="Storage During a Renovation | Wolves Storage Sussex",
+       meta="Storing your home during a renovation: protect furniture from dust, damp and damage, clear the space for the trades, and get it back when the work is done.",
+       hero=IMG(HERO_FURNITURE[0]), hero_alt=HERO_FURNITURE[1],
+       faqs=[("Should you put furniture in storage during a renovation?","Yes, where you can. Building work brings dust, paint, knocks and raised humidity, and a sheet over the furniture won\u2019t stop them \u2014 collected storage protects your things and gives the trades a clear space."),
+             ("How long can you store furniture during building work?","As long as the project takes. Storage runs on flexible weekly terms, which suits renovations that overrun, and we redeliver in stages or all at once when you are ready."),
+             ("Do you collect the furniture for me?","Yes. We collect and seal everything into your own container before the work starts and redeliver to your finished home, so there is no lifting at either end."),
+             ("Is storage better than sheeting furniture up at home?","Usually. A dry, ventilated warehouse protects furniture far better than a sheet in a dusty, damp, half-finished house, where condensation and knocks do the real damage.")],
+       body=RENO_BODY),
+  dict(slug="seasonal-storage-garden-furniture", published=True, category="protecting-belongings", areas=["all"], date="2026-06-30",
+       title="Seasonal Storage: Garden Furniture &amp; Kit Through a UK Winter", card="Seasonal storage for garden furniture &amp; kit",
+       excerpt="Clear the garage of out-of-season kit &mdash; garden furniture, the BBQ, Christmas decorations &mdash; and keep it dry and safe until the season comes round again.",
+       seo_title="Seasonal &amp; Garden Furniture Storage | Wolves Storage Sussex",
+       meta="Seasonal storage in West Sussex: clear the garage of garden furniture, the BBQ and Christmas decorations, and keep them dry until the season comes round.",
+       hero=IMG(HERO_WAREHOUSE[0]), hero_alt=HERO_WAREHOUSE[1],
+       faqs=[("How do you store garden furniture over winter?","Clean and dry it first, then keep it somewhere dry and ventilated rather than a cold, damp shed. A cold shed sweats with condensation, which rusts metal and grows mould on cushions."),
+             ("Can you store a BBQ or gas heater?","You can store the BBQ or heater itself once it is clean, but never with the gas bottle attached \u2014 gas bottles are flammable and not allowed in storage."),
+             ("Can you store Christmas decorations?","Yes. Decorations, lights and artificial trees store well in a dry warehouse the rest of the year, and we redeliver them when the season comes round."),
+             ("Do you collect seasonal items?","Yes. We collect your out-of-season kit from the door across West Sussex, store it on flexible weekly terms, and bring it back when you need it.")],
+       body=SEASON_BODY),
+]
+
+def blog_url(p): return "blog-"+p["slug"]+".html"
+def blog_cat_url(c): return "blog-"+c["slug"]+".html"
+
+def blog_card(p):
+    cat=CAT_BY_SLUG[p["category"]]
+    if p.get("published"):
+        thumb='<a href="'+blog_url(p)+'" class="blg-thumb-link"><img src="'+p["hero"]+'" alt="'+p.get("hero_alt",p["title"])+'" width="800" height="500" loading="lazy" decoding="async" class="blg-thumb-img"><span class="blg-cat-tag">'+cat["short"]+'</span></a>'
+        head='<h3><a href="'+blog_url(p)+'">'+p["card"]+'</a></h3>'
+        foot='<a class="blg-readmore" href="'+blog_url(p)+'">Read the guide &rarr;</a>'
+    else:
+        thumb='<div class="blg-thumb"><span class="blg-cat-tag">'+cat["short"]+'</span></div>'
+        head='<h3>'+p["card"]+'</h3>'
+        foot='<span class="blg-soon">Coming soon</span>'
+    areasjs="['"+"','".join(p["areas"])+"']"
+    srch=re.sub(r"[^a-z0-9 ]+"," ",html.unescape(p["title"]+" "+p["card"]+" "+p["excerpt"]+" "+cat["name"]).lower()).strip()
+    return ('<article class="blg-card" x-show="(catF===\'all\'||catF===\''+p["category"]+'\')&&(areaF===\'all\'||'+areasjs+'.includes(areaF)||'+areasjs+'.includes(\'all\'))&&(q.trim()===\'\'||\''+srch+'\'.includes(q.toLowerCase().trim()))" x-transition>'
+            +thumb+'<div class="blg-body">'+head+'<p>'+p["excerpt"]+'</p>'+foot+'</div></article>')
+
+BLG_CSS2=('<style>.blg-lead{font-size:1.22rem;line-height:1.65;color:#23282d}.blg-byline{font-size:.92rem;color:#828c96;margin-top:.5rem}'
+ '.blg-prose h2{font-size:clamp(1.4rem,2.6vw,1.9rem);line-height:1.25;color:#23282d;font-weight:800;margin:2rem 0 .8rem}'
+ '.blg-prose ul{list-style:none;margin:1.4rem 0;padding:0;display:flex;flex-direction:column;gap:.6rem}'
+ '.blg-prose ul li{position:relative;padding:.7rem 1rem .7rem 3.1rem;font-size:1.02rem;line-height:1.55;color:#46505a;margin:0;background:linear-gradient(180deg,#fff,#faf9f5);border:1px solid rgba(105,119,131,.16);border-radius:12px;box-shadow:0 12px 26px -24px rgba(74,85,96,.55)}'
+ '.blg-prose ul li::before{content:"";position:absolute;left:.85rem;top:.68rem;width:1.55rem;height:1.55rem;border-radius:8px;background:linear-gradient(155deg,#6f7d89,#46505a);box-shadow:0 6px 13px -7px rgba(70,80,90,.8)}'
+ '.blg-prose ul li::after{content:"";position:absolute;left:1.34rem;top:1.12rem;width:.5rem;height:.26rem;border-left:2.2px solid #fff;border-bottom:2.2px solid #fff;transform:rotate(-45deg)}'
+ '.blg-prose ul li strong{color:#23282d}'
+ '.blg-table{width:100%;border-collapse:separate;border-spacing:0;margin:1.5rem 0 .75rem;font-size:.98rem;line-height:1.42;border:1px solid rgba(35,40,45,.10);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 20px 44px -32px rgba(74,85,96,.65)}'
+ '.blg-table thead th{text-align:left;padding:13px 18px;background:linear-gradient(155deg,#46505a,#2f353b);color:#f3f1ec;font-weight:700;font-size:.71rem;letter-spacing:.085em;text-transform:uppercase;border-bottom:1px solid rgba(35,40,45,.2)}'
+ '.blg-table tbody td{text-align:left;padding:13px 18px;color:#46505a;border-bottom:1px solid rgba(105,119,131,.13);vertical-align:top}'
+ '.blg-table tbody tr:last-child td{border-bottom:0}'
+ '.blg-table tbody td:first-child{font-weight:700;color:#23282d;background:#f9f8f6;box-shadow:inset 3px 0 0 rgba(93,106,117,.3)}'
+ '.blg-table tbody tr:hover td{background:rgba(105,119,131,.05)}.blg-table tbody tr:hover td:first-child{background:#f3f1ec}'
+ # comparison ("vs") modifier — highlight the recommended "Managed container" column (col 2), mute the unit column (col 3)
+ '.blg-table--vs thead th:nth-child(2){background:linear-gradient(155deg,#3a444d,#23282d)}'
+ '.blg-table--vs tbody td:nth-child(2){background:rgba(93,106,117,.07);color:#23282d;font-weight:600}'
+ '.blg-table--vs tbody tr:hover td:nth-child(2){background:rgba(93,106,117,.11)}'
+ '.blg-table--vs tbody td:nth-child(2)::before{content:"\\2713";color:#3f9b6b;font-weight:800;margin-right:8px}'
+ '.blg-table--vs tbody td:nth-child(3){color:#7a838c}'
+ # risk modifier — green / amber / red status dot before the risk verdict (last column)
+ '.blg-table--risk tbody td:last-child{font-weight:600}'
+ '.blg-table--risk tbody td:last-child::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:10px;vertical-align:middle;background:#9aa1a8;box-shadow:0 0 0 3px rgba(154,161,168,.16)}'
+ '.blg-table--risk tr.lo td:last-child{color:#2f7d56}.blg-table--risk tr.lo td:last-child::before{background:#3f9b6b;box-shadow:0 0 0 3px rgba(63,155,107,.16)}'
+ '.blg-table--risk tr.mid td:last-child{color:#9a7400}.blg-table--risk tr.mid td:last-child::before{background:#d9a300;box-shadow:0 0 0 3px rgba(217,163,0,.16)}'
+ '.blg-table--risk tr.hi td:last-child{color:#b8443d}.blg-table--risk tr.hi td:last-child::before{background:#d2554e;box-shadow:0 0 0 3px rgba(210,85,78,.16)}'
+ '@media(max-width:520px){.blg-table{font-size:.9rem}.blg-table thead th,.blg-table tbody td{padding:10px 12px}}'
+ '.blg-src{font-size:.85rem;color:#828c96;margin-top:-.5rem}'
+ '.blg-callout{background:#F5F2EA;border-left:4px solid #5d6a75;border-radius:10px;padding:1.1rem 1.3rem;margin:1.6rem 0;font-size:1.05rem;line-height:1.65;color:#3b434b}'
+ '.blg-thumb-link{position:relative;display:block}.blg-thumb-img{aspect-ratio:16/10;width:100%;object-fit:cover;display:block}'
+ '.blg-cat-tag{position:absolute;bottom:12px;left:12px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#fff;background:rgba(35,40,45,.72);border-radius:999px;padding:4px 11px}'
+ '.blg-readmore{align-self:flex-start;font-weight:700;color:#23282d;text-decoration:underline;text-decoration-color:rgba(105,119,131,.5);text-underline-offset:3px;font-size:.95rem}'
+ '.blg-filters{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1.8rem}'
+ '.blg-chip{font-size:.82rem;font-weight:700;color:#46505a;background:#fff;border:1px solid rgba(105,119,131,.28);border-radius:999px;padding:7px 15px;cursor:pointer;transition:all .15s ease}.blg-chip:hover{border-color:#5d6a75}.blg-chip.is-on{background:#46505a;color:#fff;border-color:#46505a}'
+ '.blg-filterlabel{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#828c96;text-align:center;margin-bottom:.6rem}</style>')
+
+CAT_ICONS={
+ "protecting-belongings":'<path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/>',
+ "costs-pricing":'<path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V5a2 2 0 0 1 2-2h8z"/><circle cx="7.8" cy="7.8" r="1.4"/>',
+ "managed-vs-self":'<path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7 3 12h4z"/><path d="M19 7l-2 5h4z"/>',
+ "moving-home":'<rect x="2.5" y="7.5" width="10.5" height="7.5" rx="1"/><path d="M13 9.5h3.6l3.4 3.4V15h-2.2"/><circle cx="6.8" cy="17" r="1.7"/><circle cx="16.6" cy="17" r="1.7"/>',
+ "packing":'<path d="M12 2.9 20.6 7.4v9.2L12 21.1 3.4 16.6V7.4Z"/><path d="M3.4 7.4 12 12l8.6-4.6M12 12v9.1"/>',
+ "downsizing":'<path d="M4 11 12 4.5 20 11"/><path d="M5.8 9.8V19h12.4V9.8"/><path d="M10 19v-4.5h4V19"/>',
+ "business":'<rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5"/>',
+ "local-guides":'<path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/>',
+}
+BLG_HUB_CSS=('<style>.blg-searchwrap{max-width:41rem;margin:0 auto 2.8rem;text-align:center}'
+ '.blg-searchtitle{font-size:clamp(1.3rem,2.4vw,1.7rem);font-weight:800;letter-spacing:-.02em;color:#23282d;margin:0 0 .25rem}'
+ '.blg-searchsub{font-size:.95rem;color:#697783;margin:0 0 1.15rem;font-weight:500}'
+ '.blg-search{position:relative;max-width:41rem;margin:0 auto}'
+ '.blg-search input{width:100%;padding:17px 50px 17px 54px;border:1px solid rgba(105,119,131,.26);border-radius:16px;font-size:1.06rem;font-weight:500;background:linear-gradient(180deg,#fff,#fbfaf7);color:#23282d;box-shadow:0 14px 32px -22px rgba(74,85,96,.6);-webkit-appearance:none;transition:box-shadow .2s ease,border-color .2s ease}'
+ '.blg-search input::placeholder{color:#9aa3ab}'
+ '.blg-search input:focus{outline:none;border-color:#5d6a75;box-shadow:0 0 0 3px rgba(93,106,117,.16),0 16px 32px -20px rgba(74,85,96,.6)}'
+ '.blg-search>svg{position:absolute;left:19px;top:50%;transform:translateY(-50%);width:21px;height:21px;color:#5d6a75}'
+ '.blg-suggest{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.5rem;margin:1rem auto 0}'
+ '.blg-suggest .lbl{font-size:.8rem;font-weight:700;color:#828c96;letter-spacing:.04em}'
+ '.blg-sug{background:#fff;border:1px solid rgba(105,119,131,.2);border-radius:999px;padding:.44rem .9rem;font-size:.85rem;font-weight:700;color:#46505a;cursor:pointer;transition:border-color .16s ease,box-shadow .16s ease,color .16s ease,transform .16s ease}'
+ '.blg-sug:hover{border-color:#5d6a75;color:#23282d;box-shadow:0 10px 20px -14px rgba(74,85,96,.65);transform:translateY(-1px)}'
+ '.bx-inner{max-width:60rem;margin:0 auto;text-align:center}'
+ '.bx-kick{display:inline-flex;align-items:center;gap:.55rem;font-size:.74rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#697783}'
+ '.bx-kick i{width:24px;height:2px;border-radius:2px;background:linear-gradient(90deg,#5d6a75,#6f7d89);display:block}'
+ '.bx-lead{font-size:clamp(1.5rem,2.7vw,2.15rem);font-weight:800;line-height:1.16;letter-spacing:-.022em;color:#23282d;margin:.9rem auto 0;max-width:26ch}'
+ '.bx-lead em{font-style:normal;color:#5d6a75}'
+ '.bx-body{font-size:1.06rem;line-height:1.66;color:#54606b;margin:1.05rem auto 0;max-width:64ch;font-weight:450}'
+ '.bx-body a{font-weight:700;color:#23282d;border-bottom:2px solid #DAD6C2;text-decoration:none;transition:border-color .16s ease}'
+ '.bx-body a:hover{border-color:#FC9700}.bx-body b{color:#23282d;font-weight:700}'
+ '.bx-bar{display:grid;grid-template-columns:1fr;border:1px solid rgba(105,119,131,.18);border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#fff,#fbfaf7);box-shadow:0 16px 34px -28px rgba(74,85,96,.55);margin:1.9rem 0 0}'
+ '@media(min-width:720px){.bx-bar{grid-template-columns:repeat(3,1fr)}}'
+ '.bx-cell{display:flex;align-items:center;justify-content:center;gap:.8rem;padding:1.05rem 1.2rem;border-top:1px solid rgba(105,119,131,.13);text-align:left}'
+ '@media(min-width:720px){.bx-cell{border-top:0;border-left:1px solid rgba(105,119,131,.13)}.bx-cell:first-child{border-left:0}}'
+ '.bx-cell .ic{flex:0 0 auto;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(155deg,#6f7d89,#46505a);color:#fff}'
+ '.bx-cell .ic svg{width:19px;height:19px}'
+ '.bx-cell b{display:block;font-size:.94rem;font-weight:800;color:#23282d;line-height:1.2}'
+ '.bx-cell small{display:block;font-size:.8rem;color:#828c96;font-weight:600;margin-top:1px}'
+ '.bx-links{font-size:1.04rem;color:#54606b;margin:1.5rem 0 0;font-weight:500}'
+ '.bx-links b{color:#23282d;font-weight:800}.bx-links a{font-weight:800;color:#23282d;border-bottom:2px solid #DAD6C2;text-decoration:none;transition:border-color .16s ease}'
+ '.bx-links a:hover{border-color:#FC9700}.bx-links .sep{color:#c2c7cc;margin:0 .45rem}'
+ '.blg-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);border:0;background:rgba(105,119,131,.14);border-radius:999px;width:27px;height:27px;cursor:pointer;color:#46505a;font-size:1.05rem;line-height:1}'
+ '.blg-seclabel{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#828c96;text-align:center;margin:0 0 1.1rem}'
+ '.blg-cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:1rem;margin-bottom:2.8rem}'
+ '.blg-catcard{display:flex;gap:.9rem;align-items:center;text-align:left;width:100%;background:#fff;border:1px solid rgba(105,119,131,.18);border-radius:15px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}'
+ '.blg-catcard:hover{border-color:#5d6a75;box-shadow:0 14px 30px -22px rgba(74,85,96,.55);transform:translateY(-2px)}'
+ '.blg-catcard.is-on{border-color:#46505a;box-shadow:0 0 0 2px #46505a inset}'
+ '.blg-allcard{background:linear-gradient(160deg,#fbfaf7,#f3f1ec)}.blg-allcard .blg-caticon{background:linear-gradient(155deg,#23282d,#46505a)}'
+ '.blg-caticon{flex:0 0 auto;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(155deg,#6f7d89,#46505a);color:#fff}.blg-caticon svg{width:22px;height:22px}'
+ '.blg-catcard h3{font-size:1.02rem;font-weight:800;color:#23282d;margin:0 0 .15rem;line-height:1.2}.blg-catcard p{font-size:.82rem;color:#828c96;margin:0;font-weight:700}'
+ '.blg-areawrap{background:#fff;border:1px solid rgba(105,119,131,.16);border-radius:16px;padding:1.3rem 1.2rem;margin-bottom:2.6rem}'
+ '.blg-resultbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.7rem;margin-bottom:1.5rem;font-size:.95rem;color:#5a636c}'
+ '.blg-resultbar button{font-weight:700;color:#23282d;text-decoration:underline;text-underline-offset:3px;cursor:pointer;background:none;border:0;font-size:.95rem}</style>')
+
+BLGH_CSS = r'''<style>
+/* ============ WOLVES STORAGE SUSSEX — BLOG HERO (Editorial Index, final synthesis) ============ */
+.bh{
+  --ink:#23282D; --ink2:#2F353B; --slate:#46505A; --slate2:#5D6A75;
+  --mute:#697783; --mute2:#828C96;
+  --paper:#F9F8F6; --cream:#F3F1EC; --cream2:#EFEDE6; --deep:#DAD6C2;
+  --accent:#FC9700;
+  position:relative; overflow:hidden;
+  font-family:Barlow,-apple-system,system-ui,sans-serif;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(120% 90% at 90% -12%, #FFFFFF 0%, rgba(255,255,255,0) 44%),
+    radial-gradient(130% 120% at 4% 6%, var(--cream) 0%, rgba(243,241,236,0) 50%),
+    linear-gradient(180deg,var(--paper) 0%, var(--cream2) 100%);
+  padding:clamp(30px,4.4vw,64px) 0 clamp(42px,5vw,74px);
+}
+/* fine dot-grid texture, very subtle paper grain */
+.bh::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background-image:radial-gradient(rgba(35,40,45,.05) 1px, transparent 1.6px);
+  background-size:22px 22px; background-position:-6px -6px;
+  -webkit-mask-image:radial-gradient(120% 100% at 72% 0%, #000 30%, transparent 80%);
+          mask-image:radial-gradient(120% 100% at 72% 0%, #000 30%, transparent 80%);
+  opacity:.9;
+}
+/* oversized faint cream contour ring bleeding off the right edge — depth + negative space */
+.bh::after{
+  content:""; position:absolute; z-index:0; pointer-events:none;
+  width:580px; height:580px; right:-230px; top:-170px; border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(218,214,194,0) 59.4%, rgba(218,214,194,.5) 60%, rgba(218,214,194,0) 63%),
+    radial-gradient(circle at 50% 50%, rgba(218,214,194,.26) 0%, rgba(218,214,194,0) 70%);
+}
+.bh .bh-wrap{position:relative; z-index:2;}
+
+/* vertical side-rail label */
+.bh-rail{
+  position:absolute; left:2px; top:0; bottom:0; width:26px; z-index:3;
+  display:flex; align-items:center; justify-content:center; pointer-events:none;
+}
+.bh-rail span{
+  writing-mode:vertical-rl; transform:rotate(180deg);
+  font-size:10.5px; font-weight:700; letter-spacing:.36em; text-transform:uppercase;
+  color:var(--mute2); white-space:nowrap;
+}
+
+/* ---- editorial grid ---- */
+.bh-grid{
+  display:grid; grid-template-columns:1.1fr .9fr;
+  gap:clamp(28px,3.8vw,60px); align-items:center;
+}
+.bh-grid>*{min-width:0;}
+
+/* ============ LEFT / TYPE COLUMN ============ */
+.bh-top{
+  display:flex; align-items:center; gap:14px;
+  margin:0 0 clamp(22px,2.6vw,30px);
+}
+.bh-top .bh-rule{height:1px; width:46px; background:var(--slate); flex:none;}
+.bh-eyebrow{
+  font-weight:700; font-size:12px; letter-spacing:.26em; text-transform:uppercase;
+  color:var(--slate); white-space:nowrap;
+}
+.bh-dot{
+  width:5px; height:5px; border-radius:50%; background:var(--accent); flex:none;
+  box-shadow:0 0 0 3px rgba(252,151,0,.14);
+}
+.bh-idx{
+  margin-left:auto; font-size:12px; font-weight:600; letter-spacing:.12em;
+  color:var(--mute2); font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.bh-idx b{color:var(--ink); font-weight:800;}
+
+.bh-h1{
+  margin:0; font-weight:800; color:var(--ink);
+  letter-spacing:-.024em; line-height:1.045;
+  font-size:clamp(31px,4.5vw,55px);
+  text-wrap:balance;
+}
+.bh-h1 .bh-l1{display:block;}
+.bh-h1 .bh-soft{color:var(--slate2); font-weight:700;}
+.bh-h1 .bh-em{
+  font-weight:900; color:var(--ink); position:relative; white-space:nowrap;
+}
+/* editorial deep-cream highlight on the key phrase (NOT orange) */
+.bh-h1 .bh-em::after{
+  content:""; position:absolute; left:-.04em; right:-.04em; bottom:.04em; height:.34em;
+  background:linear-gradient(90deg,var(--deep) 0%, rgba(218,214,194,.4) 100%);
+  z-index:-1; border-radius:3px;
+}
+
+.bh-sub{
+  margin:clamp(20px,2.5vw,28px) 0 0; max-width:40ch;
+  font-size:clamp(15px,1.15vw,17px); line-height:1.62;
+  color:var(--slate); font-weight:400;
+}
+.bh-sub b{color:var(--ink2); font-weight:600;}
+
+/* ---- DESKTOP: connected "spec sheet" trust card ---- */
+.bh-spec{
+  margin:clamp(24px,3vw,34px) 0 0; max-width:37em;
+  border:1px solid rgba(35,40,45,.14);
+  border-radius:14px; overflow:hidden;
+  background:linear-gradient(180deg,rgba(249,248,246,.9),rgba(243,241,236,.74));
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 16px 32px -26px rgba(35,40,45,.5);
+}
+.bh-spec-head{
+  display:flex; align-items:center; gap:10px;
+  padding:11px 16px;
+  border-bottom:1px solid rgba(35,40,45,.1);
+  background:rgba(218,214,194,.34);
+}
+.bh-spec-head .bh-mark{
+  width:19px; height:19px; border-radius:6px; flex:none;
+  display:grid; place-items:center; color:#fff;
+  background:linear-gradient(155deg,#5D6A75,#2F353B);
+  box-shadow:0 4px 9px -5px rgba(35,40,45,.7);
+}
+.bh-spec-head .bh-mark svg{width:11px; height:11px;}
+.bh-spec-head .bh-st{
+  font-size:10.5px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--slate2);
+}
+.bh-spec-head .bh-est{
+  margin-left:auto; font-size:9.5px; font-weight:800; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--mute2); white-space:nowrap;
+}
+.bh-spec-list{display:grid; grid-template-columns:1fr 1fr;}
+.bh-row{
+  display:flex; align-items:center; gap:11px;
+  padding:13px 16px;
+  font-size:13px; font-weight:600; color:var(--ink2); line-height:1.25;
+  border-top:1px solid rgba(35,40,45,.07);
+  border-left:1px solid rgba(35,40,45,.07);
+}
+.bh-row:nth-child(odd){border-left:0;}
+.bh-row:nth-child(1),.bh-row:nth-child(2){border-top:0;}
+.bh-row svg{flex:0 0 auto; width:18px; height:18px; color:var(--slate2);}
+.bh-row.bh-key svg{color:var(--accent);}
+.bh-row b{font-weight:700; color:var(--ink);}
+
+/* ---- MOBILE: wrapping pill chips — hidden on desktop ---- */
+.bh-chips{display:none;}
+
+/* ============ RIGHT / FIGURE COLUMN ============ */
+.bh-figcol{position:relative;}
+.bh-figwrap{position:relative;}
+/* grey slate-to-ink depth slab behind the frame (contained, clipped by section) */
+.bh-slab{
+  position:absolute; z-index:0;
+  left:30px; right:-46px; top:24px; bottom:-18px;
+  border-radius:24px;
+  background:linear-gradient(155deg,#5D6A75 0%, #46505A 52%, #2F353B 100%);
+  box-shadow:0 38px 70px -36px rgba(35,40,45,.5);
+}
+.bh-slab::before{
+  content:""; position:absolute; inset:0; border-radius:24px;
+  background-image:radial-gradient(rgba(255,255,255,.085) 1px, transparent 1.4px);
+  background-size:18px 18px; opacity:.6;
+}
+.bh-slab::after{
+  content:""; position:absolute; inset:0; border-radius:24px;
+  background:radial-gradient(90% 70% at 16% 12%, rgba(255,255,255,.12), transparent 60%);
+}
+
+.bh-fig{
+  position:relative; z-index:2; margin:0;
+  border:1px solid rgba(35,40,45,.22);
+  background:var(--paper);
+  padding:9px;
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 26px 50px -28px rgba(35,40,45,.42);
+}
+.bh-imgwrap{position:relative; overflow:hidden; aspect-ratio:4/3.05;}
+.bh-imgwrap img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  filter:saturate(.97) contrast(1.02);
+}
+.bh-imgwrap::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(190deg, rgba(35,40,45,0) 46%, rgba(35,40,45,.3) 100%);
+}
+/* corner tick marks */
+.bh-tick{position:absolute; width:13px; height:13px; z-index:4; pointer-events:none; border:0 solid var(--paper);}
+.bh-tick.tl{left:3px;top:3px;border-left-width:1.6px;border-top-width:1.6px;}
+.bh-tick.tr{right:3px;top:3px;border-right-width:1.6px;border-top-width:1.6px;}
+.bh-tick.bl{left:3px;bottom:3px;border-left-width:1.6px;border-bottom-width:1.6px;}
+.bh-tick.br{right:3px;bottom:3px;border-right-width:1.6px;border-bottom-width:1.6px;}
+
+/* tabular caption tab, top-left of image */
+.bh-phototab{
+  position:absolute; z-index:5; left:16px; top:16px;
+  font-size:10px; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--paper); background:rgba(35,40,45,.6);
+  -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+  padding:6px 11px; border-radius:6px; border:1px solid rgba(255,255,255,.16);
+}
+
+/* required overlay badge, bottom-left */
+.bh-badge{
+  position:absolute; left:16px; bottom:16px; z-index:5;
+  display:inline-flex; align-items:center; gap:9px;
+  padding:9px 14px;
+  background:rgba(35,40,45,.78);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.16);
+  color:var(--paper);
+  font-size:12px; font-weight:600; letter-spacing:.02em;
+  border-radius:4px;
+}
+.bh-badge .bh-pulse{
+  position:relative; width:8px; height:8px; border-radius:50%; background:var(--accent); flex:none;
+  box-shadow:0 0 0 0 rgba(252,151,0,.5); animation:bh-pulse 2.6s ease-out infinite;
+}
+@keyframes bh-pulse{
+  0%{box-shadow:0 0 0 0 rgba(252,151,0,.5);}
+  70%{box-shadow:0 0 0 8px rgba(252,151,0,0);}
+  100%{box-shadow:0 0 0 0 rgba(252,151,0,0);}
+}
+@media (prefers-reduced-motion:reduce){ .bh-badge .bh-pulse{animation:none;} }
+
+/* deep-cream "spec tag" callout, bottom-right of figure */
+.bh-spectag{
+  position:absolute; z-index:6; right:-12px; bottom:30px;
+  display:flex; flex-direction:column; gap:2px;
+  padding:10px 14px;
+  background:var(--deep);
+  border-radius:11px;
+  box-shadow:0 16px 30px -18px rgba(35,40,45,.7), 0 1px 0 rgba(255,255,255,.5) inset;
+}
+.bh-spectag .bh-tk{font-size:9.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--slate2);}
+.bh-spectag .bh-tv{font-size:15px; font-weight:800; letter-spacing:-.015em; color:var(--ink); line-height:1.05;}
+.bh-spectag .bh-tv small{display:block; font-size:10.5px; font-weight:600; color:var(--slate); letter-spacing:0;}
+
+/* small embossed brand-seal coin, top-right corner (kept faint/small) */
+.bh-coin{
+  position:absolute; z-index:6; right:-28px; top:-38px;
+  width:172px; height:172px; border-radius:50%;
+  display:grid; place-items:center;
+  background:radial-gradient(120% 120% at 32% 26%, #FFFFFF, #E7E3D7);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 0 0 3px rgba(249,248,246,.6), 0 18px 32px -20px rgba(35,40,45,.6);
+}
+.bh-coin::before{content:""; position:absolute; inset:5px; border-radius:50%; border:1.2px dotted rgba(105,119,131,.4);}
+.bh-coin img{width:84%; height:84%; object-fit:contain; filter:grayscale(1) contrast(.95) opacity(.85);}
+
+/* caption strip under figure (folio) */
+.bh-folio{
+  position:relative; z-index:3;
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  margin-top:24px; padding-left:2px;
+  font-size:10.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--mute);
+}
+.bh-folio span:first-child{flex:0 1 auto; min-width:0;}
+.bh-folio .bh-fline{height:1px; flex:1 0 22px; background:rgba(35,40,45,.16);}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:980px){
+  .bh-grid{grid-template-columns:1fr; gap:clamp(34px,7vw,46px);}
+  .bh-figcol{order:2; max-width:560px;}
+  .bh-rail{display:none;}
+  .bh-sub{max-width:52ch;}
+}
+/* hide the tabular index before it can crowd the eyebrow row */
+@media (max-width:720px){
+  .bh-idx{display:none;}
+}
+@media (max-width:640px){
+  .bh::after{width:380px; height:380px; right:-190px; top:-130px;}
+  /* drop the depth slab + side callouts on mobile for a bulletproof stack */
+  .bh-slab{display:none;}
+  .bh-spectag{display:none;}
+  .bh-coin{width:132px; height:132px; right:-10px; top:-24px;}
+  .bh-figcol{margin-right:11px;}
+  .bh-imgwrap{aspect-ratio:4/3.2;}
+  .bh-phototab{left:13px; top:13px; font-size:9.5px;}
+  .bh-badge{left:13px; bottom:13px; font-size:11px; padding:8px 12px;}
+  /* swap the spec card for wrapping pill chips */
+  .bh-spec{display:none;}
+  .bh-chips{
+    display:flex; flex-wrap:wrap; gap:8px;
+    list-style:none; margin:26px 0 0; padding:0; max-width:none;
+  }
+  .bh-chips li{
+    display:inline-flex; align-items:center; gap:7px;
+    padding:8px 13px 8px 11px;
+    background:rgba(255,255,255,.7);
+    border:1px solid rgba(35,40,45,.13);
+    border-radius:999px;
+    font-size:12px; font-weight:600; color:var(--ink2);
+  }
+  .bh-chips svg{width:15px; height:15px; color:var(--slate2); flex:none;}
+  .bh-chips li.bh-key svg{color:var(--accent);}
+}
+@media (max-width:420px){
+  .bh-top{gap:11px;}
+  .bh-top .bh-rule{width:26px;}
+  .bh-eyebrow{font-size:11px; letter-spacing:.18em;}
+}
+</style>'''
+
+BH_SECTION = r'''<section class="bh" aria-label="Storage guides hub introduction">
+  <div class="bh-rail" aria-hidden="true"><span>Ashington &middot; West Sussex</span></div>
+  <div class="container bh-wrap">
+    <div class="bh-grid">
+
+      <!-- TYPE COLUMN -->
+      <div class="bh-typecol">
+        <div class="bh-top">
+          <span class="bh-rule" aria-hidden="true"></span>
+          <span class="bh-eyebrow">The Wolves Storage Field Guide</span>
+          <span class="bh-dot" aria-hidden="true"></span>
+          <span class="bh-idx"><b>__NG__</b>&nbsp;__GW__ &middot; Ashington</span>
+        </div>
+
+        <h1 class="bh-h1">
+          <span class="bh-l1">Store smarter in West&nbsp;Sussex,</span>
+          <span class="bh-l1"><span class="bh-soft">backed by real</span> <span class="bh-em">storage science</span></span>
+        </h1>
+
+        <p class="bh-sub">
+          Practical, expert guidance from a family-run managed-storage team in Ashington &mdash;
+          how to keep <b>furniture, electronics and valuables</b> safe from damp, what storage
+          really costs, and how to choose between managed and self-storage.
+        </p>
+
+        <!-- DESKTOP: spec-sheet trust card -->
+        <div class="bh-spec" role="list" aria-label="Why trust this guidance">
+          <div class="bh-spec-head">
+            <span class="bh-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6z"/><path d="M9.5 12l2 2 3.5-3.5"/></svg></span>
+            <span class="bh-st">Wolves Storage &mdash; the essentials</span>
+            <span class="bh-est">Est. 2016</span>
+          </div>
+          <div class="bh-spec-list">
+            <div class="bh-row bh-key" role="listitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+              Conservation-science backed
+            </div>
+            <div class="bh-row" role="listitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20v-9l8-5 8 5v9"/><path d="M9 20v-5h6v5"/></svg>
+              Family-run in Ashington
+            </div>
+            <div class="bh-row" role="listitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M15.5 7.5C15 6 13.7 5.4 12 5.4c-2 0-3.4 1-3.4 2.6 0 1.8 1.7 2.3 3.4 2.8s3.6 1 3.6 3c0 1.8-1.6 2.8-3.6 2.8-1.9 0-3.3-.7-3.8-2.3"/></svg>
+              Storage from <b>&pound;15/week</b>
+            </div>
+            <div class="bh-row" role="listitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L10 17l-5-5"/></svg>
+              Checkatrade verified
+            </div>
+          </div>
+        </div>
+
+        <!-- MOBILE: wrapping pill chips -->
+        <ul class="bh-chips" aria-label="Why trust this guidance">
+          <li class="bh-key">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+            Conservation-science backed
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20v-9l8-5 8 5v9"/><path d="M9 20v-5h6v5"/></svg>
+            Family-run in Ashington
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M15.5 7.5C15 6 13.7 5.4 12 5.4c-2 0-3.4 1-3.4 2.6 0 1.8 1.7 2.3 3.4 2.8s3.6 1 3.6 3c0 1.8-1.6 2.8-3.6 2.8-1.9 0-3.3-.7-3.8-2.3"/></svg>
+            Storage from &pound;15/week
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L10 17l-5-5"/></svg>
+            Checkatrade verified
+          </li>
+        </ul>
+      </div>
+
+      <!-- FIGURE COLUMN -->
+      <div class="bh-figcol">
+        <div class="bh-figwrap">
+          <div class="bh-slab" aria-hidden="true"></div>
+          <figure class="bh-fig">
+            <div class="bh-imgwrap">
+              <span class="bh-tick tl"></span><span class="bh-tick tr"></span>
+              <span class="bh-tick bl"></span><span class="bh-tick br"></span>
+              <span class="bh-phototab">West Sussex &middot; Est. operator</span>
+              <img src="/images/forklift-loading-storage-container-sussex.webp" width="762" height="726" loading="eager" fetchpriority="high" decoding="async"
+                alt="A Wolves Storage Sussex team member loading a wooden storage container with a CAT forklift at our Ashington warehouse in West Sussex">
+              <span class="bh-badge"><span class="bh-pulse"></span>Our alarmed Ashington warehouse</span>
+            </div>
+            <div class="bh-coin" aria-hidden="true"><img src="/images/wolves-storage-logo@480.webp" width="480" height="480" loading="lazy" decoding="async" alt=""></div>
+            <div class="bh-spectag" aria-hidden="true">
+              <span class="bh-tk">Climate-aware</span>
+              <span class="bh-tv">Dry &amp; secure<small>monitored 24/7</small></span>
+            </div>
+          </figure>
+        </div>
+        <div class="bh-folio">
+          <span>Secure container, managed &amp; self-storage &middot; Ashington, West Sussex</span>
+          <span class="bh-fline"></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>'''
+
+def blog_catcard(c):
+    pub=sum(1 for p in BLOG_POSTS if p["category"]==c["slug"] and p.get("published"))
+    cnt=(str(pub)+" guide"+("s" if pub!=1 else "")) if pub else "Coming soon"
+    icon='<span class="blg-caticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+CAT_ICONS.get(c["slug"],"")+'</svg></span>'
+    return ('<button type="button" class="blg-catcard" :class="catF===\''+c["slug"]+'\'&&\'is-on\'" @click="catF=(catF===\''+c["slug"]+'\'?\'all\':\''+c["slug"]+'\')">'
+            +icon+'<span><h3>'+c["short"]+'</h3><p>'+cnt+'</p></span></button>')
+
+def blog_allcard():
+    pub=sum(1 for p in BLOG_POSTS if p.get("published"))
+    cnt=str(pub)+" guide"+("s" if pub!=1 else "")+" &middot; all topics"
+    icon=('<span class="blg-caticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'
+          '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>'
+          '<rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>')
+    return ('<button type="button" class="blg-catcard blg-allcard" :class="catF===\'all\'&&\'is-on\'" @click="catF=\'all\'">'
+            +icon+'<span><h3>All categories</h3><p>'+cnt+'</p></span></button>')
+
+def blog_hub_page():
+    areachips="".join('<button type="button" class="blg-chip" :class="areaF===\''+a+'\'&&\'is-on\'" @click="areaF=(areaF===\''+a+'\'?\'all\':\''+a+'\')">'+a+'</button>' for a in BLOG_AREAS)
+    catcards=blog_allcard()+"".join(blog_catcard(c) for c in BLOG_CATEGORIES)
+    cards="".join(blog_card(p) for p in BLOG_POSTS)
+    _ng=sum(1 for p in BLOG_POSTS if p.get("published"))
+    hero=(BLGH_CSS+BH_SECTION).replace("__NG__",str(_ng)).replace("__GW__","guide" if _ng==1 else "guides")
+    intro=('<section class="bx relative bg-white w-full pt-9 lg:pt-14 pb-7 lg:pb-12 border-border">'+BLG_CSS+BLG_CSS2+BLG_HUB_CSS+'<div class="container"><div class="bx-inner">'
+      '<span class="bx-kick"><i></i>Why our guides are different</span>'
+      '<h2 class="bx-lead">Storage advice from people who <em>actually store things</em> &mdash; every day, in Ashington.</h2>'
+      '<p class="bx-body">Most storage advice online is generic, and almost all of it is written for drive-up self-storage. Ours is different: we run our own vans and our own alarmed warehouse in <a href="storage-ashington.html">Ashington, West Sussex</a>, so every guide is grounded in how belongings actually behave in storage &mdash; backed by real conservation science and years of packing, sealing and storing for local families and businesses.</p>'
+      '<div class="bx-bar">'
+      '<div class="bx-cell"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v8H3z"/><path d="M14 10h3.5l3.5 3.5V15h-7z"/><circle cx="7" cy="17" r="1.7"/><circle cx="17" cy="17" r="1.7"/></svg></span><span><b>Our own vans &amp; crews</b><small>We collect &amp; deliver ourselves</small></span></div>'
+      '<div class="bx-cell"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6z"/><path d="M9.5 12l2 2 3.5-3.5"/></svg></span><span><b>Alarmed Ashington warehouse</b><small>Dry, secure, managed storage</small></span></div>'
+      '<div class="bx-cell"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6l-5.2 8.1A2 2 0 0 0 6.5 20h11a2 2 0 0 0 1.7-2.9L14 9V3"/></svg></span><span><b>Real conservation science</b><small>Not generic, recycled advice</small></span></div>'
+      '</div>'
+      '<p class="bx-links">From just <b>&pound;15 a week</b> we collect from your door. <a href="how-it-works.html">How it works</a><span class="sep">&middot;</span><a href="pricing.html">Storage prices</a></p>'
+      '</div></div></section>')
+    interactive=('<section class="relative bg-lightgrey w-full pt-8 lg:pt-12 pb-10 lg:pb-16 border-border" x-data="{q:\'\',catF:\'all\',areaF:\'all\'}"><div class="container">'
+      '<div class="blg-searchwrap">'
+      '<p class="blg-searchtitle">What do you need to store safely?</p>'
+      '<p class="blg-searchsub">Search our West Sussex storage guides &mdash; damp, costs, packing, moving and more.</p>'
+      '<div class="blg-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>'
+      '<input type="search" placeholder="Try &ldquo;winter damp&rdquo; or &ldquo;what storage costs&rdquo;&hellip;" x-model="q" aria-label="Search the storage guides">'
+      '<button type="button" class="blg-clear" x-show="q!==\'\'" x-cloak @click="q=\'\'" aria-label="Clear search">&times;</button></div>'
+      '<div class="blg-suggest"><span class="lbl">Popular:</span>'
+      '<button type="button" class="blg-sug" @click="q=\'damp\'">Winter damp</button>'
+      '<button type="button" class="blg-sug" @click="q=\'cost\'">What it costs</button>'
+      '<button type="button" class="blg-sug" @click="q=\'managed\'">Managed vs self</button>'
+      '<button type="button" class="blg-sug" @click="q=\'packing\'">Packing tips</button></div>'
+      '</div>'
+      '<p class="blg-seclabel">Browse by topic</p><div class="blg-cats">'+catcards+'</div>'
+      '<div class="blg-areawrap"><p class="blg-seclabel">Browse by area</p><div class="blg-filters" style="margin-bottom:0"><button type="button" class="blg-chip" :class="areaF===\'all\'&&\'is-on\'" @click="areaF=\'all\'">All of West Sussex</button>'+areachips+'</div></div>'
+      '<div class="blg-resultbar" x-show="q!==\'\'||catF!==\'all\'||areaF!==\'all\'" x-cloak><span>Showing filtered guides</span><button type="button" @click="q=\'\';catF=\'all\';areaF=\'all\'">Clear all &amp; show everything</button></div>'
+      '<div class="blg-grid" id="blg-grid">'+cards+'</div>'
+      '</div></section>')
+    return dict(file="blog.html",slug="blog",nav="Blog",
+      title="Storage Guides & Advice | Wolves Storage Sussex",
+      meta="Expert West Sussex storage guides: furniture and damp, managed container vs self-storage, packing and moving tips. Family-run, from £15 a week.",
+      hero=IMG(HERO_WAREHOUSE[0]),sections=[hero,intro,interactive,cta_band("Need storage now, not advice?",IMG(HERO_WAREHOUSE[0]))])
+
+def blog_category_page(cat):
+    posts=[p for p in BLOG_POSTS if p["category"]==cat["slug"]]
+    cards="".join(blog_card(p) for p in posts) or '<p class="text-darkgrey">Guides in this category are coming soon.</p>'
+    hero=('<section class="relative w-full bg-darkgrey text-white overflow-hidden"><div class="container py-12 lg:py-16"><div class="max-w-3xl">'
+      '<a href="blog.html" class="text-beige text-sm font-semibold">&larr; All storage guides</a>'
+      '<h1 class="text-3xl lg:text-5xl font-bold leading-tight mt-2">'+cat["name"]+'</h1>'
+      '<p class="mt-3 text-lg xl:text-xl text-beige max-w-2xl">'+cat["desc"]+'</p></div></div></section>')
+    grid=('<section class="relative bg-lightgrey w-full pt-8 lg:pt-14 pb-10 lg:pb-16 border-border">'+BLG_CSS+BLG_CSS2+'<div class="container"><div class="blg-grid" x-data="{q:\'\',catF:\'all\',areaF:\'all\'}">'+cards+'</div></div></section>')
+    return dict(file=blog_cat_url(cat),slug="blogcat",nav=cat["short"],crumb_parent=("blog.html","Storage Guides"),noindex=len(posts)<3,
+      title=cat["name"]+" | Wolves Storage Sussex",
+      meta=html.unescape(cat["desc"])[:150],
+      hero=IMG(HERO_WAREHOUSE[0]),sections=[hero,grid])
+
+ART_CSS=('<style>'
+ '.art{--ink:#23282d;--slate:#46505a;--slate2:#5d6a75;--mute:#697783;--mute2:#828c96;--paper:#f9f8f6;--cream:#f3f1ec;--deep:#dad6c2;--accent:#fc9700}'
+ '.art-head{position:relative;background:radial-gradient(120% 100% at 82% -12%,#fff,rgba(255,255,255,0) 50%),linear-gradient(180deg,#fbfaf7,#f3f1ec);overflow:hidden}'
+ '.art-head::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(35,40,45,.045) 1px,transparent 1.6px);background-size:22px 22px;-webkit-mask-image:radial-gradient(120% 90% at 72% 0,#000 28%,transparent 78%);mask-image:radial-gradient(120% 90% at 72% 0,#000 28%,transparent 78%);pointer-events:none}'
+ '.art-head .container{position:relative;z-index:1}'
+ '.art-crumb{font-size:.8rem;color:#828c96;font-weight:600}.art-crumb a{color:#5d6a75;text-decoration:none}.art-crumb a:hover{color:#23282d}.art-crumb span{margin:0 .4rem;color:#c2c7cc}'
+ '.art-mast{max-width:50rem;margin:0 auto;text-align:center}'
+ '.art-cat{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.2rem;font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#46505a;background:#fff;border:1px solid rgba(105,119,131,.22);border-radius:999px;padding:.5rem .95rem;text-decoration:none;box-shadow:0 7px 18px -12px rgba(74,85,96,.6);transition:border-color .15s ease}'
+ '.art-cat:hover{border-color:#5d6a75}.art-cat i{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}'
+ '.art-h1{font-size:clamp(2rem,4.3vw,3.15rem);font-weight:800;line-height:1.1;letter-spacing:-.022em;color:#23282d;margin:1.1rem 0 0;text-wrap:balance}'
+ '.art-stand{font-size:clamp(1.05rem,1.55vw,1.24rem);line-height:1.55;color:#54606b;font-weight:450;margin:1.05rem auto 0;max-width:40rem}'
+ '.art-byline{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.55rem .7rem;margin:1.55rem 0 0;font-size:.9rem;color:#5a636c;font-weight:500}'
+ '.art-byline .who{display:inline-flex;align-items:center;gap:.6rem;font-weight:700;color:#23282d}'
+ '.art-seal{width:34px;height:34px;border-radius:50%;background:radial-gradient(120% 120% at 32% 26%,#fff,#e7e3d7);border:1px solid rgba(255,255,255,.9);box-shadow:0 6px 14px -8px rgba(35,40,45,.6);display:grid;place-items:center;flex:none}'
+ '.art-seal img{width:78%;height:78%;object-fit:contain;filter:grayscale(1) opacity(.85)}'
+ '.art-byline .sep{color:#c8ccd0}'
+ '.art-fig{max-width:62rem;margin:2.2rem auto 0}'
+ '.art-fig figure{margin:0;position:relative;border-radius:1.25rem;overflow:hidden;border:1px solid rgba(35,40,45,.16);box-shadow:0 34px 64px -34px rgba(38,38,38,.55)}'
+ '.art-fig img{display:block;width:100%;height:100%;object-fit:cover;aspect-ratio:16/9}'
+ '.art-fig figure::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}'
+ '.art-wrap{display:grid;grid-template-columns:1fr;gap:2.4rem;max-width:46rem;margin:0 auto}'
+ '@media(min-width:1040px){.art-wrap{grid-template-columns:minmax(0,1fr) 300px;gap:3.4rem;align-items:start;max-width:none}}'
+ '.art-main{min-width:0}'
+ '.art-endwrap{display:flex;flex-direction:column;align-items:stretch;gap:1.4rem;max-width:46rem;margin:0 auto}'
+ '.art-endwrap .blg-end,.art-endwrap .art-author{width:100%;max-width:none;margin:0}'
+ '.art-prose .blg-lead{font-size:1.26rem;line-height:1.6;color:#23282d;font-weight:600;padding-left:1.15rem;border-left:3px solid #5d6a75;margin-bottom:1.3rem}'
+ '.art-prose h2{position:relative;font-size:clamp(1.45rem,2.5vw,1.95rem);line-height:1.22;color:#23282d;font-weight:800;letter-spacing:-.015em;margin:2.5rem 0 .9rem;padding-top:1.5rem;border-top:1px solid rgba(105,119,131,.16);scroll-margin-top:184px}'
+ '.art-prose h2::before{content:"";position:absolute;top:-1px;left:0;width:50px;height:3px;border-radius:3px;background:linear-gradient(90deg,#5d6a75,#6f7d89)}'
+ '.art-prose .blg-callout{background:linear-gradient(180deg,#fff,#f6f3ec);border:1px solid rgba(105,119,131,.2);border-left:4px solid #5d6a75;box-shadow:0 16px 34px -28px rgba(74,85,96,.5)}'
+ # --- editorial graphic devices (engaging prose) ---
+ '.art-prose .blg-lead+p::first-letter{float:left;font-family:Barlow,sans-serif;font-size:3.1rem;line-height:.74;font-weight:800;color:#5d6a75;margin:.36rem .55rem 0 0}'
+ '.blg-mark{background:linear-gradient(transparent 56%,rgba(93,106,117,.22) 0);padding:0 .06em;font-weight:700;color:#23282d}'
+ # "things to know" key-fact strip
+ '.blg-keyrow{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin:2rem 0 1.4rem}'
+ '@media(max-width:680px){.blg-keyrow{grid-template-columns:1fr}}'
+ '.blg-keycard{position:relative;background:linear-gradient(180deg,#fff,#f9f8f6);border:1px solid rgba(105,119,131,.18);border-radius:14px;padding:1.05rem 1.1rem;box-shadow:0 14px 30px -26px rgba(74,85,96,.55)}'
+ '.blg-keycard .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(155deg,#6f7d89,#46505a);color:#fff;margin-bottom:.65rem}.blg-keycard .ic svg{width:18px;height:18px}'
+ '.blg-keycard b{display:block;font-size:1.02rem;font-weight:800;color:#23282d;letter-spacing:-.01em;margin-bottom:.25rem;line-height:1.1}'
+ '.blg-keycard span{display:block;font-size:.85rem;line-height:1.42;color:#5d6a75}'
+ '.blg-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem;margin:1.6rem 0}'
+ '@media(max-width:640px){.blg-flow{grid-template-columns:1fr 1fr}.blg-flow>.st:last-child:nth-child(odd){grid-column:1/-1}}'
+ '.blg-flow .st{background:linear-gradient(180deg,#fff,#f9f8f6);border:1px solid rgba(105,119,131,.16);border-radius:12px;padding:1rem .85rem .9rem;box-shadow:0 12px 26px -24px rgba(74,85,96,.55)}'
+ '.blg-flow .st .n{display:inline-grid;place-items:center;width:1.6rem;height:1.6rem;border-radius:8px;background:linear-gradient(155deg,#6f7d89,#46505a);color:#fff;font-weight:800;font-size:.8rem;margin-bottom:.55rem;box-shadow:0 6px 13px -7px rgba(70,80,90,.8)}'
+ '.blg-flow .st b{display:block;font-size:.92rem;font-weight:800;color:#23282d;letter-spacing:-.01em;margin-bottom:.2rem}'
+ '.blg-flow .st span{display:block;font-size:.82rem;line-height:1.38;color:#525d68}'
+ # pull-quote
+ '.blg-pull{position:relative;margin:2.1rem 0;padding:.35rem 0 .35rem 2.5rem;font-size:1.28rem;line-height:1.42;font-weight:600;color:#23282d}'
+ '.blg-pull::before{content:"\\201C";position:absolute;left:0;top:.3rem;font-size:3.4rem;line-height:.6;color:#c6ccd2;font-family:Georgia,\'Times New Roman\',serif}'
+ '.blg-pull cite{display:block;margin-top:.7rem;font-size:.74rem;font-weight:800;font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:#697783}'
+ '.art-side{display:flex;flex-direction:column;gap:1.15rem}'
+ '@media(min-width:1040px){.art-side{position:sticky;top:184px}}'
+ '@media(max-width:1039px){.art-toc{display:none}}'
+ ".art *{box-sizing:border-box}\n\n\n/* ============ CARD 1 \u2014 EDITORIAL INDEX ============ */\n.art-card{position:relative;background:linear-gradient(180deg,#ffffff,#fcfbf9);\n  border:1px solid rgba(105,119,131,.16);border-radius:18px;\n  padding:1.25rem 1.3rem 1.3rem;\n  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 18px 38px -30px rgba(74,85,96,.55)}\n/* header / eyebrow */\n.art-cardhd{display:flex;align-items:center;gap:.6rem;margin:0 0 .15rem}\n.art-cardhd .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;\n  background:linear-gradient(155deg,#6f7d89,#46505a);color:#fff;flex:none;\n  box-shadow:0 6px 14px -8px rgba(70,80,90,.8),0 0 0 1px rgba(255,255,255,.06) inset}\n.art-cardhd .ic svg{width:15px;height:15px;display:block}\n.art-cardhd .lab{display:flex;flex-direction:column;line-height:1;min-width:0}\n.art-cardhd h3{font-size:.7rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#46505a;margin:0}\n.art-cardhd .ct{margin-top:.28rem;font-size:.62rem;font-weight:700;letter-spacing:.05em;color:#9aa1a8;text-transform:uppercase}\n.art-cardhd .pct{margin-left:auto;text-align:right;line-height:1;flex:none}\n.art-cardhd .pct b{display:block;font-size:1.18rem;font-weight:800;color:#46505a;letter-spacing:-.01em;font-variant-numeric:tabular-nums}\n.art-cardhd .pct s{display:block;text-decoration:none;font-size:.52rem;font-weight:800;letter-spacing:.14em;color:#b3b9bf;text-transform:uppercase;margin-top:.16rem}\n/* progress meter \u2014 editorial hairline with segmented ticks + leading node */\n.art-prog{position:relative;height:5px;border-radius:4px;margin:.95rem 0 1.15rem;\n  background:rgba(105,119,131,.13);overflow:visible}\n.art-prog span{display:block;height:100%;width:0;border-radius:4px;position:relative;z-index:1;\n  background:linear-gradient(90deg,#6f7d89,#46505a);transition:width .12s linear}\n.art-prog span::after{content:\"\";position:absolute;right:-1px;top:50%;width:9px;height:9px;border-radius:50%;\n  transform:translateY(-50%);background:#46505a;z-index:3;\n  box-shadow:0 0 0 3px #fff,0 0 0 4px rgba(70,80,90,.35),0 4px 8px -2px rgba(35,40,45,.5)}\n/* segmented gauge ticks overlaid on the rail */\n.art-prog::after{content:\"\";position:absolute;inset:0;pointer-events:none;border-radius:4px;z-index:2;\n  background:repeating-linear-gradient(90deg,transparent 0,transparent calc(20% - 1.5px),rgba(255,255,255,.9) calc(20% - 1.5px),rgba(255,255,255,.9) 20%)}\n/* contents list */\n.art-toc ol{list-style:none;margin:0;padding:0;position:relative;counter-reset:toc}\n.art-toc ol::before{content:\"\";position:absolute;left:13px;top:12px;bottom:14px;width:1.5px;\n  background:rgba(105,119,131,.2);border-radius:2px}\n.art-toc .fill{position:absolute;left:13px;top:12px;width:1.5px;height:0;border-radius:2px;\n  background:linear-gradient(180deg,#6f7d89,#46505a);transition:height .25s ease;z-index:1}\n.art-toc li{counter-increment:toc;position:relative}\n.art-toc li+li{border-top:1px solid rgba(105,119,131,.09)}\n.art-toc a{display:block;position:relative;padding:.66rem .35rem .66rem 2.55rem;\n  font-size:.9rem;line-height:1.34;color:#5d6a75;font-weight:600;text-decoration:none;\n  letter-spacing:-.005em;border-radius:9px;transition:color .18s ease}\n/* numeral IS the rail node */\n.art-toc a::before{content:counter(toc,decimal-leading-zero);position:absolute;left:4px;top:.72rem;\n  width:20px;height:20px;border-radius:50%;display:grid;place-items:center;z-index:3;\n  font-size:.6rem;font-weight:800;color:#9aa1a8;font-variant-numeric:tabular-nums;letter-spacing:.01em;\n  background:#fff;border:1.5px solid rgba(105,119,131,.3);\n  box-shadow:0 0 0 3px #fff;transition:all .2s ease}\n.art-toc a:hover{color:#23282d}\n.art-toc a:hover::before{border-color:rgba(70,80,90,.55);color:#46505a}\n/* active */\n.art-toc li.is-active a{color:#23282d;font-weight:700}\n.art-toc li.is-active a::before{color:#fff;background:linear-gradient(155deg,#6f7d89,#46505a);\n  border-color:#46505a;box-shadow:0 0 0 3px #fff,0 0 0 6px rgba(93,106,117,.14),0 5px 10px -4px rgba(35,40,45,.65)}\n\n/* ============ CARD 2 \u2014 MEMBERSHIP CTA ============ */\n.art-ctacard{position:relative;overflow:hidden;color:#fff;border-radius:18px;\n  padding:1.4rem 1.35rem 1.3rem;\n  background:\n    radial-gradient(120% 90% at 85% -10%,rgba(111,125,137,.55),transparent 55%),\n    linear-gradient(158deg,#4a545f,#23282d 72%);\n  box-shadow:0 22px 42px -26px rgba(35,40,45,.9),0 0 0 1px rgba(255,255,255,.05) inset}\n.art-ctacard::before{content:\"\";position:absolute;inset:0;pointer-events:none;\n  background-image:radial-gradient(rgba(255,255,255,.045) .8px,transparent 1.1px);\n  background-size:16px 16px;opacity:.32}\n.art-ctacard .seal{position:absolute;right:-28px;bottom:-30px;width:132px;height:132px;opacity:.05;pointer-events:none;z-index:0}\n.art-ctacard .seal svg{width:100%;height:100%;display:block}\n.art-ctacard .seal img{width:100%;height:100%;object-fit:contain;filter:grayscale(1) brightness(2.6)}\n.art-ctacard::after{content:\"\";position:absolute;left:1.35rem;right:1.35rem;top:0;height:1px;\n  background:linear-gradient(90deg,transparent,rgba(255,255,255,.32),transparent)}\n.art-ctacard>*{position:relative;z-index:1}\n.art-cta-top{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:0 0 1rem}\n.art-ctacard .k{font-size:.64rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#cdd2d6}\n.art-cta-mem{font-size:.56rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#9aa3ab;\n  border:1px solid rgba(218,214,194,.22);border-radius:999px;padding:.24rem .5rem;white-space:nowrap}\n.art-ctacard .big{font-size:2.05rem;font-weight:800;margin:0 0 .3rem;line-height:.95;letter-spacing:-.02em;\n  display:flex;align-items:baseline;gap:.3rem}\n.art-ctacard .big i{font-style:normal;font-size:.95rem;font-weight:700;color:#aab1b8;letter-spacing:0}\n.art-ctacard .big em{font-style:normal;font-size:1.05rem;font-weight:600;color:#c9cdd1}\n.art-ctacard p{margin:0 0 1.15rem;font-size:.82rem;line-height:1.45;color:#c2c8cd;font-weight:500}\n/* flow */\n.art-flow{display:flex;align-items:stretch;gap:.3rem;margin:0 0 1.2rem;\n  padding:.7rem .2rem;border-top:1px solid rgba(218,214,194,.14);border-bottom:1px solid rgba(218,214,194,.14)}\n.art-flow .st{flex:1;display:flex;flex-direction:column;align-items:center;gap:.4rem;text-align:center}\n.art-flow .st i{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;\n  background:linear-gradient(155deg,rgba(255,255,255,.13),rgba(255,255,255,.04));\n  border:1px solid rgba(255,255,255,.1);color:#e7ebee}\n.art-flow .st i svg{width:16px;height:16px;display:block}\n.art-flow .st span{font-size:.56rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#aeb5bb}\n.art-flow .ar{display:flex;align-items:center;color:#737d86;flex:none;padding-bottom:1rem}\n.art-flow .ar svg{width:11px;height:11px;display:block}\n/* button */\n.art-ctabtn{display:flex;align-items:center;justify-content:center;gap:.45rem;\n  background:linear-gradient(90deg,#FC9700,#F6BB06);color:#23282d;font-weight:800;font-size:.92rem;\n  letter-spacing:-.01em;border-radius:12px;padding:.85rem 1rem;text-decoration:none;\n  box-shadow:0 12px 24px -12px rgba(252,151,0,.75),0 0 0 1px rgba(255,255,255,.18) inset;\n  transition:transform .15s ease}\n.art-ctabtn svg{width:14px;height:14px;display:block}\n.art-ctabtn:hover{transform:translateY(-1px)}\n.art-ctatrust{margin-top:.9rem;text-align:center;font-size:.7rem;font-weight:600;color:#bfc5cb;\n  line-height:1.5;letter-spacing:.005em}\n.art-ctatrust b{color:#fff;font-weight:800}\n.art-ctatrust .star{color:#F6BB06;font-size:.78rem;vertical-align:-.04em}\n.art-ctatrust .dot{color:#737d86;padding:0 .12rem}"
+ '.art-faqsec{position:relative;overflow:hidden}'
+ '.art-faqsec::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(35,40,45,.05) 1px,transparent 1.6px);background-size:22px 22px;-webkit-mask-image:radial-gradient(100% 78% at 50% 0,#000 28%,transparent 76%);mask-image:radial-gradient(100% 78% at 50% 0,#000 28%,transparent 76%);pointer-events:none}'
+ '.art-faqsec .container{position:relative;z-index:1}'
+ '.art-faq{max-width:48rem;margin:0 auto}'
+ '.art-faqhead{text-align:center;margin:0 0 1.7rem}'
+ '.art-faqhead .kick{display:inline-flex;align-items:center;gap:.55rem;font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#697783}'
+ '.art-faqhead .kick i{width:22px;height:2px;border-radius:2px;background:linear-gradient(90deg,#5d6a75,#6f7d89);display:block}'
+ '.art-faqhead h2{font-size:clamp(1.6rem,2.9vw,2.15rem);font-weight:800;color:#23282d;letter-spacing:-.018em;margin:.55rem 0 .4rem}'
+ '.art-faqhead p{font-size:1rem;color:#697783;margin:0}'
+ '.art-faq details{background:#fff;border:1px solid rgba(105,119,131,.18);border-radius:14px;padding:0 1.2rem;margin:0 0 .75rem;transition:box-shadow .2s ease,border-color .2s ease}'
+ '.art-faq details:hover{border-color:rgba(93,106,117,.42)}'
+ '.art-faq details[open]{border-color:#46505a;box-shadow:0 18px 38px -28px rgba(74,85,96,.6)}'
+ '.art-faq summary{display:flex;align-items:center;gap:.9rem;cursor:pointer;list-style:none;padding:1.05rem 0;color:#23282d}'
+ '.art-faq summary::-webkit-details-marker{display:none}'
+ '.art-faq .qn{flex:none;width:30px;height:30px;border-radius:9px;background:linear-gradient(155deg,#6f7d89,#46505a);color:#fff;font-weight:800;font-size:.92rem;display:grid;place-items:center;transition:background .2s ease,color .2s ease}'
+ '.art-faq .qt{flex:1;font-size:1.05rem;font-weight:700;line-height:1.35}'
+ '.art-faq .ar{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(105,119,131,.1);display:grid;place-items:center;color:#5d6a75;transition:transform .2s ease,background .2s ease,color .2s ease}'
+ '.art-faq .ar svg{width:17px;height:17px}'
+ '.art-faq details[open] .ar{transform:rotate(180deg);background:linear-gradient(135deg,#FC9700,#F6BB06);color:#23282d}'
+ '.art-faq details[open] .qn{background:linear-gradient(155deg,#FC9700,#F6BB06);color:#23282d}'
+ '.art-faq .ans{padding:0 0 1.2rem 2.4rem;font-size:1.02rem;line-height:1.65;color:#46505a}'
+ '@media(max-width:480px){.art-faq .ans{padding-left:0}}'
+ '.art-author{position:relative;overflow:hidden;max-width:46rem;margin:0 auto;background:linear-gradient(160deg,#fff 0%,#f3f1ec 100%);border:1.5px solid rgba(93,106,117,.42);border-radius:18px;padding:1.6rem 1.7rem;box-shadow:0 20px 44px -32px rgba(74,85,96,.6)}'
+ '.art-author::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(35,40,45,.045) 1px,transparent 1.5px);background-size:18px 18px;-webkit-mask-image:radial-gradient(120% 85% at 100% 0,#000 18%,transparent 70%);mask-image:radial-gradient(120% 85% at 100% 0,#000 18%,transparent 70%);pointer-events:none}'
+ '.art-author>*{position:relative;z-index:1}'
+ '.art-authtop{display:flex;gap:1.15rem;align-items:center}'
+ '.art-author .av{width:62px;height:62px;border-radius:50%;flex:none;background:radial-gradient(120% 120% at 32% 26%,#fff,#e7e3d7);border:1px solid rgba(255,255,255,.9);box-shadow:0 0 0 4px rgba(249,248,246,.7),0 10px 22px -10px rgba(35,40,45,.6);display:grid;place-items:center}'
+ '.art-author .av img{width:80%;height:80%;object-fit:contain;filter:grayscale(1) opacity(.85)}'
+ '.art-author .k{font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#828c96}'
+ '.art-author h3{font-size:1.18rem;font-weight:800;color:#23282d;margin:.22rem 0 .15rem;letter-spacing:-.01em}'
+ '.art-author .role{font-size:.86rem;font-weight:600;color:#525d68;margin:0}'
+ '.art-author p{font-size:.95rem;line-height:1.62;color:#54606b;margin:1.1rem 0 0}'
+ '.art-author a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(105,119,131,.5);text-underline-offset:2px}'
+ '.art-creds{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.2rem 0 0}'
+ '.art-creds span{display:inline-flex;align-items:center;gap:.42rem;font-size:.76rem;font-weight:700;color:#46505a;background:#fff;border:1px solid rgba(105,119,131,.2);border-radius:9px;padding:.42rem .72rem;box-shadow:0 5px 12px -10px rgba(74,85,96,.5)}'
+ '.art-creds svg{width:14px;height:14px;color:#5d6a75;flex:none}.art-creds .star{color:#F6BB06}'
+ '@media(max-width:560px){.art-author{padding:1.4rem 1.3rem}.art-authtop{gap:.9rem}}'
+ '</style>')
+
+def _blog_readtime(body):
+    return max(2, round(len(re.sub(r'<[^>]+>',' ',body).split())/200))
+
+def _blog_toc(body):
+    items=[]; seen={}
+    def repl(m):
+        raw=m.group(1)
+        txt=html.unescape(re.sub(r'<[^>]+>','',raw)).strip()
+        sid=re.sub(r'[^a-z0-9]+','-',txt.lower()).strip('-')[:60] or 'section'
+        if sid in seen: seen[sid]+=1; sid=sid+'-'+str(seen[sid])
+        else: seen[sid]=1
+        items.append((sid,txt))
+        return '<h2 id="'+sid+'">'+raw+'</h2>'
+    return re.sub(r'<h2>(.*?)</h2>', repl, body, flags=re.DOTALL), items
+
+def blog_post_page(p):
+    cat=CAT_BY_SLUG[p["category"]]
+    canon=BASE+blog_url(p)
+    body,toc=_blog_toc(p["body"])
+    rt=_blog_readtime(p["body"])
+    _dt=datetime.date.fromisoformat(p["date"]); datestr=str(_dt.day)+_dt.strftime(' %B %Y')
+    halt=p.get("hero_alt") or html.unescape(p["title"])
+    byline=('<div class="art-byline"><span class="who"><span class="art-seal"><img src="/images/wolves-storage-logo@480.webp" width="480" height="480" loading="lazy" decoding="async" alt=""></span>Wolves Storage Sussex</span>'
+      '<span class="sep">&middot;</span><span>Updated '+datestr+'</span><span class="sep">&middot;</span><span>'+str(rt)+' min read</span></div>')
+    masthead=('<section class="art art-head relative w-full pt-7 lg:pt-12 pb-9 lg:pb-12 border-border">'+ART_CSS+BLG_CSS+BLG_CSS2+'<div class="container">'
+      '<div class="art-mast"><a class="art-cat" href="'+blog_cat_url(cat)+'"><i></i>'+cat["name"]+'</a>'
+      '<h1 class="art-h1">'+p["title"]+'</h1><p class="art-stand">'+p["excerpt"]+'</p>'+byline+'</div>'
+      '<div class="art-fig"><figure><img src="'+p["hero"]+'" width="1600" height="900" loading="eager" fetchpriority="high" decoding="async" alt="'+halt+'"></figure></div>'
+      '</div></section>')
+    _ar='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'
+    toc_card=''
+    if toc:
+        lis="".join('<li><a href="#'+sid+'">'+txt+'</a></li>' for sid,txt in toc)
+        toc_card=('<div class="art-card art-toc"><div class="art-cardhd">'
+          '<span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="20" y2="18"/><circle cx="3.5" cy="6" r="1.1" fill="currentColor" stroke="none"/><circle cx="3.5" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="3.5" cy="18" r="1.1" fill="currentColor" stroke="none"/></svg></span>'
+          '<span class="lab"><h3>In this guide</h3><span class="ct">'+str(len(toc))+' sections</span></span>'
+          '<span class="pct"><b>0%</b><s>Read</s></span></div>'
+          '<div class="art-prog"><span></span></div>'
+          '<ol><span class="fill"></span>'+lis+'</ol></div>')
+    cta_card=('<div class="art-ctacard">'
+      '<span class="seal" aria-hidden="true"><img src="/images/wolves-storage-logo@480.webp" width="480" height="480" loading="lazy" decoding="async" alt=""></span>'
+      '<div class="art-cta-top"><span class="k">Door-to-door storage</span><span class="art-cta-mem">Managed</span></div>'
+      '<div class="big"><i>From</i> &pound;15 <em>/week</em></div>'
+      '<p>We collect, pack, seal and store &mdash; you don&rsquo;t lift a thing.</p>'
+      '<div class="art-flow">'
+      '<div class="st"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h13V6H3z"/><path d="M16 9h3l2 3v1h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg></i><span>Collect</span></div>'
+      '<div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 5 16 12 8 19"/></svg></div>'
+      '<div class="st"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l8-4 8 4v9H4z"/><path d="M4 9h16"/><path d="M10 18v-5h4v5"/></svg></i><span>Store</span></div>'
+      '<div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 5 16 12 8 19"/></svg></div>'
+      '<div class="st"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg></i><span>Redeliver</span></div>'
+      '</div>'
+      '<a class="art-ctabtn" href="contact.html">Book my collection<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"/><polyline points="12 6 19 12 12 18"/></svg></a>'
+      '<div class="art-ctatrust"><span class="star">&#9733;</span> <b>5.0</b> from 478 reviews <span class="dot">&middot;</span> Checkatrade verified</div></div>')
+    toc_js=('<script>(function(){var links=[].slice.call(document.querySelectorAll(".art-toc ol a"));if(!links.length)return;'
+      'var secs=links.map(function(a){return document.getElementById((a.getAttribute("href")||"").slice(1));});'
+      'var fill=document.querySelector(".art-toc .fill");var main=document.querySelector(".art-main");var prog=document.querySelector(".art-prog span");var pctEl=document.querySelector(".art-toc .pct b");'
+      'function upd(){var idx=0,i;for(i=0;i<secs.length;i++){if(secs[i]&&secs[i].getBoundingClientRect().top<=130){idx=i;}}'
+      'for(i=0;i<links.length;i++){links[i].parentNode.classList.toggle("is-active",i===idx);}'
+      'if(fill&&secs.length>1){fill.style.height=(idx/(secs.length-1)*100)+"%";}'
+      'if(main){var r=main.getBoundingClientRect();var t=r.height-window.innerHeight;var d=Math.min(Math.max(-r.top,0),t>0?t:1);var pct=t>0?d/t*100:0;if(prog){prog.style.width=pct+"%";}if(pctEl){pctEl.textContent=Math.round(pct)+"%";}}}'
+      'window.addEventListener("scroll",upd,{passive:true});window.addEventListener("resize",upd);upd();})();</script>')
+    END_CAP="<style>\n/* ===== END-OF-ARTICLE: READ MORE / BACK TO THE BLOG (final) ===== */\n.blg-end{\n  --ink:#23282d;--slate:#46505a;--slate2:#5d6a75;--mute:#697783;--mute2:#828c96;\n  --cream:#f9f8f6;--cream2:#f3f1ec;--cream3:#dad6c2;\n  position:relative;\n  margin:8px 0;\n  padding:36px 40px 34px;\n  border-radius:20px;\n  background:\n    radial-gradient(125% 150% at 100% -8%, #fffefb 0%, var(--cream) 44%, var(--cream2) 100%);\n  border:1px solid #ece7dd;\n  box-shadow:\n    0 1px 0 #fff inset,\n    0 22px 48px -30px rgba(35,40,45,.40),\n    0 3px 10px -6px rgba(35,40,45,.08);\n  overflow:hidden;\n  font-family:Barlow,sans-serif;\n  -webkit-font-smoothing:antialiased;\n}\n/* warm top accent \u2014 slate to sand, like a card edge */\n.blg-end::before{\n  content:\"\";position:absolute;left:0;top:0;right:0;height:4px;\n  background:linear-gradient(90deg,var(--slate) 0%,var(--slate2) 42%,var(--cream3) 100%);\n  opacity:.9;z-index:2;\n}\n/* embossed wolf/shield watermark, top-right */\n.blg-end-mark{\n  position:absolute;top:-30px;right:-24px;width:210px;height:210px;\n  color:var(--cream3);opacity:.46;pointer-events:none;z-index:0;\n}\n.blg-end-inner{position:relative;z-index:1;max-width:620px}\n\n.blg-end-kicker{\n  display:inline-flex;align-items:center;gap:9px;\n  font-size:11.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;\n  color:var(--mute);margin:0 0 15px;\n}\n.blg-end-kicker .dot{width:6px;height:6px;border-radius:50%;background:#FC9700;box-shadow:0 0 0 3px rgba(252,151,0,.14)}\n.blg-end-kicker .line{width:28px;height:1px;background:var(--cream3)}\n\n.blg-end-h{\n  margin:0 0 11px;color:var(--ink);\n  font-size:29px;line-height:1.15;font-weight:700;letter-spacing:-.014em;\n  max-width:24ch;\n}\n.blg-end-h em{font-style:italic;font-weight:500;color:var(--slate2)}\n.blg-end-sub{\n  margin:0 0 24px;color:var(--slate);\n  font-size:16px;line-height:1.6;max-width:58ch;font-weight:400;\n}\n.blg-end-sub .pen{font-style:italic;color:var(--slate2)}\n\n/* topic chips = a glance at the blog's breadth */\n.blg-end-chips{\n  display:flex;flex-wrap:wrap;gap:9px;margin:0 0 28px;padding:0;list-style:none;\n}\n.blg-end-chip{\n  display:inline-flex;align-items:center;gap:7px;\n  padding:7px 13px 7px 11px;border-radius:999px;\n  background:#fffdf9;border:1px solid #e9e4d9;\n  color:var(--slate);font-size:13px;font-weight:500;letter-spacing:.005em;white-space:nowrap;\n  box-shadow:0 1px 2px rgba(35,40,45,.04);\n}\n.blg-end-chip svg{width:13px;height:13px;color:var(--mute2);flex:none}\n\n/* action row */\n.blg-end-actions{\n  display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;\n  padding-top:24px;border-top:1px solid #ece7dd;\n}\n.blg-end-btn{\n  display:inline-flex;align-items:center;gap:11px;\n  padding:15px 26px;border-radius:12px;text-decoration:none;\n  background:linear-gradient(180deg,#323941 0%, var(--ink) 100%);\n  color:#fdfcfa;font-size:15.5px;font-weight:600;letter-spacing:.006em;\n  box-shadow:\n    0 1px 0 rgba(255,255,255,.08) inset,\n    0 12px 24px -12px rgba(35,40,45,.58),\n    0 2px 6px -2px rgba(35,40,45,.34);\n  border:1px solid #1b1f23;\n  transition:transform .18s ease, box-shadow .18s ease;\n}\n.blg-end-btn:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.1) inset,0 18px 32px -12px rgba(35,40,45,.62),0 3px 8px -2px rgba(35,40,45,.38)}\n.blg-end-btn .arw{display:inline-flex;transition:transform .18s ease}\n.blg-end-btn:hover .arw{transform:translateX(4px)}\n.blg-end-btn .ico{width:17px;height:17px;flex:none}\n.blg-end-btn .arw svg{width:17px;height:17px}\n\n.blg-end-sec{\n  display:inline-flex;align-items:center;gap:7px;text-decoration:none;\n  color:var(--slate2);font-size:14px;font-weight:600;\n  border-bottom:1px solid #d6cfbe;padding-bottom:2px;\n  transition:color .16s ease,border-color .16s ease;\n}\n.blg-end-sec:hover{color:var(--ink);border-color:var(--slate2)}\n.blg-end-sec svg{width:14px;height:14px;color:var(--mute2);flex:none}\n\n@media (max-width:540px){\n  .blg-end{padding:28px 22px 26px;border-radius:16px}\n  .blg-end-mark{width:160px;height:160px;top:-22px;right:-20px}\n  .blg-end-h{font-size:23px;max-width:none}\n  .blg-end-sub{font-size:15px;margin-bottom:20px}\n  .blg-end-chips{margin-bottom:22px}\n  .blg-end-actions{gap:16px}\n  .blg-end-btn{width:100%;justify-content:center;padding-left:20px;padding-right:20px}\n  .blg-end-btn .ico{display:none}\n  .blg-end-sec{width:100%;justify-content:center}\n}\n</style><aside class=\"blg-end\" aria-label=\"Read more of our storage guides\">\n  <svg class=\"blg-end-mark\" viewBox=\"0 0 100 100\" fill=\"none\" aria-hidden=\"true\">\n    <path d=\"M50 4 L88 18 V46 C88 72 71 88 50 96 C29 88 12 72 12 46 V18 Z\" fill=\"currentColor\"/>\n    <path d=\"M50 14 L78 25 V46 C78 66 65 79 50 86 C35 79 22 66 22 46 V25 Z\" fill=\"#fff\" opacity=\".55\"/>\n    <path d=\"M37 36 l6 8 -2 -10 7 6 7 -6 -2 10 6 -8 -4 11 c-1 5 -5 9 -10 12 -5-3 -9-7 -10-12 z\" fill=\"currentColor\" opacity=\".85\"/>\n  </svg>\n  <div class=\"blg-end-inner\">\n    <p class=\"blg-end-kicker\"><span class=\"dot\"></span> You've reached the end <span class=\"line\"></span></p>\n    <div class=\"blg-end-h\">Explore the Wolves Storage <em>blog</em></div>\n    <p class=\"blg-end-sub\">More <span class=\"pen\">first-hand guides</span> from our family-run team in Ashington, West Sussex \u2014 protecting your belongings, what storage really costs, smart packing and moving home without the stress.</p>\n\n    <ul class=\"blg-end-chips\">\n      <li class=\"blg-end-chip\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/></svg>Protecting belongings</li>\n      <li class=\"blg-end-chip\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 1v22\"/><path d=\"M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6\"/></svg>Storage costs</li>\n      <li class=\"blg-end-chip\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 9l9-6 9 6v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z\"/><path d=\"M3 9h18\"/></svg>Packing</li>\n      <li class=\"blg-end-chip\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12l9-9 9 9\"/><path d=\"M5 10v10h14V10\"/><path d=\"M9 20v-6h6v6\"/></svg>Moving home</li>\n      <li class=\"blg-end-chip\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 8l-4 4 4 4\"/><path d=\"M17 8l4 4-4 4\"/><path d=\"M3 12h18\"/></svg>Managed vs self-storage</li>\n    </ul>\n\n    <div class=\"blg-end-actions\">\n      <a class=\"blg-end-btn\" href=\"blog.html\">\n        <svg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 6h16\"/><path d=\"M4 12h16\"/><path d=\"M4 18h10\"/></svg>\n        Browse all storage guides\n        <span class=\"arw\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"M13 6l6 6-6 6\"/></svg></span>\n      </a>\n      <a class=\"blg-end-sec\" href=\"blog-protecting-belongings.html\">\n        <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/></svg>\n        More in Protecting Your Belongings\n      </a>\n    </div>\n  </div>\n</aside>"
+    _shd='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6z"/></svg>'
+    author_card=('<div class="art-author">'
+      '<div class="art-authtop">'
+      '<span class="av"><img src="/images/wolves-storage-logo@480.webp" width="480" height="480" loading="lazy" decoding="async" alt=""></span>'
+      '<div><span class="k">Written by</span><h3>The Wolves Storage Sussex team</h3>'
+      '<p class="role">Family-run managed storage &middot; Ashington, West Sussex</p></div></div>'
+      '<p>We pack, seal, collect and store thousands of items a year, so our guides come from first-hand experience on real collections across West Sussex &mdash; not recycled advice. See <a href="about.html">about us</a> or our <a href="https://www.checkatrade.com/trades/wolvesremovals" target="_blank" rel="noopener">Checkatrade reviews</a>.</p>'
+      '<div class="art-creds">'
+      '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Est. 2016</span>'
+      '<span>'+_shd+'LAPADA accredited</span>'
+      '<span><span class="star">&#9733;</span> 5.0 from 478 reviews</span>'
+      '<span>'+_shd+'Fully insured</span>'
+      '</div></div>')
+    body_sec=('<section class="art relative bg-white w-full pt-8 lg:pt-12 pb-7 lg:pb-12 border-border"><div class="container"><div class="art-wrap">'
+      '<div class="art-main"><div class="art-prose blg-prose">'+body+'</div></div>'
+      '<aside class="art-side">'+toc_card+cta_card+'</aside></div></div></section>'+toc_js)
+    faq_sec=faq(p["faqs"]) if p.get("faqs") else ''
+
+    relhtml=''
+    art={"@context":"https://schema.org","@type":"BlogPosting","headline":re.sub(r'&[a-z]+;','&',p["title"]),
+         "description":re.sub(r'&[a-z]+;','&',p["excerpt"]),"image":BASE+p["hero"].lstrip("/"),
+         "datePublished":p["date"],"dateModified":p["date"],"inLanguage":"en-GB",
+         "author":{"@type":"Organization","name":"Wolves Storage Sussex","url":BASE},
+         "publisher":{"@id":BASE+"#business"},"mainEntityOfPage":canon,"articleSection":re.sub(r'&[a-z]+;','&',cat["name"])}
+    tmpl_sec=('<section class="art relative bg-white w-full pt-2 pb-10 lg:pb-14 border-border">'
+      '<div class="container"><div class="art-endwrap">'+END_CAP.replace('href="blog-protecting-belongings.html"','href="'+blog_cat_url(cat)+'"').replace('More in Protecting Your Belongings','More in '+cat['name'])+author_card+'</div></div></section>')
+    secs=[masthead,body_sec,tmpl_sec]
+    if faq_sec: secs.append(faq_sec)
+    secs.append(cta_band("Store it without lifting a finger",IMG(HERO_WAREHOUSE[0])))
+    return dict(file=blog_url(p),slug="blogpost",nav=p["card"],crumb_parent=("blog.html","Storage Guides"),
+      title=p.get("seo_title") or (html.unescape(p["title"])[:57]),
+      meta=p.get("meta") or html.unescape(p["excerpt"])[:150],hero=p["hero"],
+      faqs=p.get("faqs"),extra_schema='<script type="application/ld+json">'+json.dumps(art,ensure_ascii=False)+'</script>',
+      sections=secs)
+
 def build():
     P=[]
     HOME_FAQS=[("How much does storage cost in West Sussex?","Managed storage starts from just &pound;15 per week with no deposit and no hidden fees, on flexible weekly and 4-week terms. Your free quote is confirmed within 24 hours."),
@@ -2516,17 +3969,17 @@ def build():
       '.loc-blob{display:none}'
       '.loc-wrap{position:relative;z-index:1;max-width:74rem;margin:0 auto;text-align:left}'
       '.loc-head{text-align:center;max-width:52rem;margin:0 auto}'
-      '.loc-ey{display:inline-flex;align-items:center;gap:.5rem;color:#FC9700;font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;margin-bottom:.65rem}'
-      '.loc-ey::before,.loc-ey::after{content:"";width:18px;height:1px;background:rgba(252,151,0,.55)}'
+      '.loc-ey{display:inline-flex;align-items:center;gap:.5rem;color:#F3F1EC;font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;margin-bottom:.65rem}'
+      '.loc-ey::before,.loc-ey::after{content:"";width:18px;height:1px;background:rgba(243,241,236,.5)}'
       '.loc-h2{color:#fff;font-weight:800;font-size:1.85rem;line-height:1.12;margin:0}'
       '@media(min-width:1024px){.loc-h2{font-size:2.25rem}}'
-      '.loc-rule{width:62px;height:3px;border-radius:3px;background:linear-gradient(90deg,#FC9700,#FC9700);margin:1.05rem auto 0}'
+      '.loc-rule{width:62px;height:3px;border-radius:3px;background:linear-gradient(90deg,#F3F1EC,#DAD6C2);margin:1.05rem auto 0}'
       '.loc-lead{font-size:1.08rem;line-height:1.65;color:#ece9df;max-width:46rem;margin:1.05rem auto 0;text-align:center}'
       '.loc-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem 0;margin:2.2rem auto 0;max-width:58rem;position:relative;overflow:hidden;background:linear-gradient(120deg,rgba(255,255,255,.10),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.16);border-radius:1.2rem;padding:1.3rem 1rem}'
       '.loc-stats::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,#FC9700,#FC9700,#FC9700)}'
       '@media(min-width:680px){.loc-stats{grid-template-columns:repeat(4,1fr);padding:1.4rem 1.3rem}}'
       '.loc-stat{position:relative;text-align:center}'
-      '.loc-stat-n{display:block;font-weight:800;font-size:1.7rem;line-height:1;color:#FC9700}'
+      '.loc-stat-n{display:block;font-weight:800;font-size:1.7rem;line-height:1;color:#fff}'
       '.loc-stat-l{display:block;margin-top:.35rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#e7e4d8}'
       '@media(min-width:680px){.loc-stat+.loc-stat::before{content:"";position:absolute;left:0;top:14%;bottom:14%;width:1px;background:rgba(255,255,255,.18)}}'
       # ---- interactive map layout ----
@@ -2601,7 +4054,8 @@ def build():
         leaflet=('<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
             'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>'
             '<style>'
-            '.lm-mapwrap .leaflet-container{font-family:inherit;background:#e7ecf0}'
+            '.lm-mapwrap .leaflet-container{font-family:inherit;background:#e8eef3}'
+            '.lm-mapwrap .leaflet-tile{filter:saturate(.62) brightness(1.06) hue-rotate(6deg)}'
             '.lm-mapwrap .leaflet-div-icon{background:transparent;border:none}'
             '.lm-mk{display:block;position:relative;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFB04D,#FC9700);border:2.5px solid #fff;box-shadow:0 0 0 1.5px rgba(110,60,0,.3),0 2px 6px rgba(0,0,0,.4);cursor:pointer;transition:transform .12s ease}'
             '.lm-mk:hover{transform:scale(1.22)}'
@@ -2620,7 +4074,7 @@ def build():
             '.lm-pop-btn:hover{filter:brightness(1.07)}'
             '.lm-tt.leaflet-tooltip{background:#1b232b;color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:7px;font-weight:700;font-size:.8rem;box-shadow:0 6px 16px -6px rgba(0,0,0,.6)}'
             '.lm-tt.leaflet-tooltip-top::before{border-top-color:#1b232b}'
-            '.lm-mapwrap .leaflet-bar a{background:#fff;color:#333;border-bottom-color:rgba(0,0,0,.12)}'
+            '.lm-mapwrap .leaflet-bar a{background:#fff;color:#333;border-bottom-color:rgba(0,0,0,.12);width:40px;height:40px;line-height:40px;font-size:20px}'
             '.lm-mapwrap .leaflet-bar a:hover{background:#f2f2f2}'
             '.lm-mapwrap .leaflet-control-attribution{background:rgba(255,255,255,.85);color:#555}'
             '.lm-mapwrap .leaflet-control-attribution a{color:#C77800}'
@@ -2690,27 +4144,27 @@ def build():
          '.cc-grid{display:grid;grid-template-columns:1fr;gap:2.2rem}'
          '@media(min-width:980px){.cc-grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:3.4rem;align-items:start}}'
          '@media(min-width:980px){.cc-aside{position:sticky;top:2rem}}'
-         '.cc-eyebrow{display:inline-flex;align-items:center;gap:.6rem;color:#FC9700;font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:.8rem}'
-         '.cc-eyebrow::before{content:"";width:28px;height:2px;background:#FC9700;display:inline-block}'
+         '.cc-eyebrow{display:inline-flex;align-items:center;gap:.6rem;color:#5d6a75;font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:.8rem}'
+         '.cc-eyebrow::before{content:"";width:28px;height:2px;background:#5d6a75;display:inline-block}'
          '.cc-h2{font-size:clamp(1.9rem,4.2vw,2.7rem);line-height:1.08;font-weight:800;color:#23282d;margin:1rem 0 0;letter-spacing:-.01em}'
-         '.cc-h2 em{font-style:normal;color:#FC9700}'
+         '.cc-h2 em{font-style:normal;color:#5d6a75}'
          '.cc-lead{margin-top:1.4rem;font-size:1.12rem;line-height:1.72;color:#404952}'
-         '.cc-lead::first-letter{float:left;font-size:3.6rem;line-height:.82;font-weight:800;color:#FC9700;margin:.3rem .6rem 0 0}'
-         '.cc-lead a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.55);text-underline-offset:3px}'
-         '.cc-lead a:hover{color:#FC9700}'
+         '.cc-lead::first-letter{float:left;font-size:3.6rem;line-height:.82;font-weight:800;color:#5d6a75;margin:.3rem .6rem 0 0}'
+         '.cc-lead a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(93,106,117,.55);text-underline-offset:3px}'
+         '.cc-lead a:hover{color:#5d6a75}'
          '.cc-cta{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.7rem;background:#FC9700;color:#fff;font-weight:800;font-size:.95rem;padding:.85rem 1.5rem;border-radius:.7rem;text-decoration:none;box-shadow:0 12px 26px -12px rgba(252,151,0,.7);transition:transform .15s ease,box-shadow .15s ease}'
          '.cc-cta svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s ease}'
          '.cc-cta:hover{transform:translateY(-2px);box-shadow:0 16px 32px -12px rgba(252,151,0,.8)}'
          '.cc-cta:hover svg{transform:translateX(3px)}'
          '.cc-trust{list-style:none;margin:1.7rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.55rem 1.1rem}'
          '.cc-trust li{display:inline-flex;align-items:center;gap:.45rem;font-size:.82rem;font-weight:700;color:#5a636c}'
-         '.cc-trust li::before{content:"";width:6px;height:6px;border-radius:50%;background:#FC9700;flex:none}'
+         '.cc-trust li::before{content:"";width:6px;height:6px;border-radius:50%;background:#5d6a75;flex:none}'
          '.cc-body p{font-size:1.02rem;line-height:1.78;color:#46505a;margin:0 0 1.15rem}'
          '.cc-body p:last-child{margin-bottom:0}'
          '@media(min-width:980px){.cc-body{border-left:1px solid rgba(35,40,45,.13);padding-left:3.4rem}}'
-         '.cc-body strong{color:#FC9700;font-weight:800;letter-spacing:.01em}'
-         '.cc-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.5);text-underline-offset:3px}'
-         '.cc-body a:hover{color:#FC9700}'
+         '.cc-body strong{color:#5d6a75;font-weight:800;letter-spacing:.01em}'
+         '.cc-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(93,106,117,.5);text-underline-offset:3px}'
+         '.cc-body a:hover{color:#5d6a75}'
          '@media(prefers-reduced-motion:reduce){.cc-cta,.cc-cta svg{transition:none}.cc-cta:hover{transform:none}}'
          '</style>'
          '<section class="cc-sec relative w-full pt-10 lg:pt-20 pb-10 lg:pb-20 border-border"><div class="container"><div class="cc-wrap"><div class="cc-grid">'
@@ -2768,37 +4222,37 @@ def build():
         """<style>
 .ab-section{background:#F7F5EF;color:#46505a;padding:4.5rem 1.25rem;line-height:1.65}
 .ab-wrap{max-width:1080px;margin:0 auto}
-.ab-eyebrow{display:inline-flex;align-items:center;gap:.85rem;font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#FC9700;margin:0 0 1.1rem}
-.ab-eyebrow::before{content:"";display:inline-block;width:28px;height:2px;background:#FC9700}
+.ab-eyebrow{display:inline-flex;align-items:center;gap:.85rem;font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#5d6a75;margin:0 0 1.1rem}
+.ab-eyebrow::before{content:"";display:inline-block;width:28px;height:2px;background:#5d6a75}
 .ab-h2{font-size:clamp(2rem,4.6vw,3.1rem);line-height:1.08;font-weight:800;color:#23282d;letter-spacing:-.01em;margin:0 0 1.6rem;max-width:20ch}
-.ab-h2 em{font-style:normal;color:#FC9700}
+.ab-h2 em{font-style:normal;color:#5d6a75}
 .ab-lead{font-size:clamp(1.12rem,1.9vw,1.32rem);line-height:1.6;color:#3a444d;max-width:62ch;margin:0 0 2.2rem}
-.ab-lead::first-letter{float:left;font-size:3.6rem;line-height:.78;font-weight:800;color:#FC9700;padding:.3rem .6rem 0 0}
+.ab-lead::first-letter{float:left;font-size:3.6rem;line-height:.78;font-weight:800;color:#5d6a75;padding:.3rem .6rem 0 0}
 .ab-feature{display:grid;grid-template-columns:1fr;gap:1.9rem;padding:2.4rem 0 0;border-top:1px solid rgba(35,40,45,.13)}
 .ab-figure{margin:0}
 .ab-figure img{display:block;width:100%;height:auto;border-radius:6px;box-shadow:0 18px 40px -22px rgba(35,40,45,.45)}
 .ab-cap{display:block;margin-top:.7rem;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:#7d8790;font-weight:600}
-.ab-kicker{display:block;font-size:.78rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#FC9700;margin-bottom:.7rem}
+.ab-kicker{display:block;font-size:.78rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#5d6a75;margin-bottom:.7rem}
 .ab-h3{font-size:clamp(1.35rem,2.4vw,1.85rem);line-height:1.15;font-weight:800;color:#23282d;letter-spacing:-.01em;margin:0 0 .9rem}
 .ab-body{margin:0;max-width:60ch;color:#46505a}
-.ab-body strong{color:#FC9700;font-weight:700}
-.ab-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(252,151,0,.5);text-underline-offset:3px;transition:color .15s}
-.ab-body a:hover{color:#FC9700}
+.ab-body strong{color:#5d6a75;font-weight:700}
+.ab-body a{color:#23282d;font-weight:700;text-decoration:underline;text-decoration-color:rgba(93,106,117,.5);text-underline-offset:3px;transition:color .15s}
+.ab-body a:hover{color:#5d6a75}
 .ab-cta{display:inline-flex;align-items:center;gap:.55rem;margin-top:1.6rem;background:#FC9700;color:#fff;font-weight:700;font-size:1rem;letter-spacing:.01em;padding:.85rem 1.7rem;border-radius:7px;text-decoration:none;box-shadow:0 12px 24px -12px rgba(252,151,0,.7);transition:transform .15s,box-shadow .15s}
 .ab-cta svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
 .ab-cta:hover{transform:translateY(-2px);box-shadow:0 16px 30px -12px rgba(252,151,0,.8)}
 .ab-cta:hover svg{transform:translateX(3px)}
 .ab-trust{list-style:none;margin:1.5rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.55rem 1.15rem}
 .ab-trust li{display:inline-flex;align-items:center;gap:.45rem;font-size:.82rem;font-weight:700;color:#5a636c}
-.ab-trust li::before{content:"";width:6px;height:6px;border-radius:50%;background:#FC9700;flex:none}
+.ab-trust li::before{content:"";width:6px;height:6px;border-radius:50%;background:#5d6a75;flex:none}
 .ab-stats{display:flex;flex-wrap:wrap;border-top:1px solid rgba(35,40,45,.13);border-bottom:1px solid rgba(35,40,45,.13);margin:3.5rem 0;padding:0}
 .ab-stat{flex:1 1 0;min-width:160px;padding:1.7rem 1.5rem;border-left:1px solid rgba(35,40,45,.13)}
 .ab-stat:first-child{border-left:0}
-.ab-stat b{display:block;font-size:clamp(1.7rem,3.2vw,2.4rem);font-weight:800;color:#FC9700;line-height:1;letter-spacing:-.01em}
+.ab-stat b{display:block;font-size:clamp(1.7rem,3.2vw,2.4rem);font-weight:800;color:#5d6a75;line-height:1;letter-spacing:-.01em}
 .ab-stat span{display:block;margin-top:.5rem;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:#7d8790;font-weight:600}
 .ab-topics{margin-top:1rem}
 .ab-topic{display:grid;grid-template-columns:1fr;gap:1.6rem;padding:2.9rem 0;border-top:1px solid rgba(35,40,45,.13)}
-.ab-num{display:block;font-size:clamp(3.4rem,7vw,5.4rem);font-weight:800;line-height:.8;color:rgba(252,151,0,.2);letter-spacing:-.02em;margin-bottom:.6rem}
+.ab-num{display:block;font-size:clamp(3.4rem,7vw,5.4rem);font-weight:800;line-height:.8;color:rgba(93,106,117,.28);letter-spacing:-.02em;margin-bottom:.6rem}
 .ab-end{text-align:center;padding:3rem 0 0;border-top:1px solid rgba(35,40,45,.13);margin-top:1rem}
 .ab-end .ab-cta{margin-top:0}
 @media(max-width:620px){
@@ -2965,6 +4419,13 @@ def build():
     # P0 content assets
     P.append(size_guide_page())
     P.append(furniture_page())
+    P.append(blog_hub_page())
+    for _c in BLOG_CATEGORIES:
+        if any(_p["category"]==_c["slug"] and _p.get("published") for _p in BLOG_POSTS):
+            P.append(blog_category_page(_c))
+    for _p in BLOG_POSTS:
+        if _p.get("published"):
+            P.append(blog_post_page(_p))
     # LOCATION SILO — per-town pages
     for t in TOWNS:
         P.append(town(t))
@@ -2988,7 +4449,7 @@ def build():
         f'<div class="flex flex-wrap gap-3 justify-center">{btn("Back to Home","/","px-8 lg:px-10")}{btn("Contact Us","contact.html","px-8 lg:px-10")}</div>')]))
 
     for d in P:
-        if d["slug"] not in ("404","legal") and d["file"]!="contact.html":
+        if d["slug"] not in ("404","legal","blog","blogcat","blogpost") and d["file"]!="contact.html":
             d["sections"].insert(1, TRUSTINDEX_SECTION)
         if d["file"] in WHYUS:
             d["sections"].insert(2, WHYUS[d["file"]])
@@ -3009,12 +4470,12 @@ def build():
     # sitemap.xml (all indexable pages)
     sm='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     for d in P:
-        if d["file"]=="404.html": continue
+        if d["file"]=="404.html" or d.get("noindex"): continue
         if d["file"]=="index.html": pr="1.0"
         elif d["slug"]=="legal": pr="0.3"
         elif d["slug"] in ("town","guide","furniture"): pr="0.8"
         else: pr="0.7"
-        sm+=f'  <url><loc>{BASE}{d["file"]}</loc><lastmod>{LASTMOD}</lastmod><changefreq>weekly</changefreq><priority>{pr}</priority></url>\n'
+        sm+=f'  <url><loc>{BASE}{"" if d["file"]=="index.html" else d["file"]}</loc><lastmod>{LASTMOD}</lastmod><changefreq>weekly</changefreq><priority>{pr}</priority></url>\n'
     sm+='</urlset>\n'
     open(os.path.join(SITE,"sitemap.xml"),"w",encoding="utf-8").write(sm)
     print(f"  sitemap.xml  {sum(1 for d in P if d['file']!='404.html')} urls")

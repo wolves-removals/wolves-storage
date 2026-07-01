@@ -163,7 +163,9 @@ for name, s in F.items():
         warns["R14 tel link"].append((name,"phone shown but no tel: link"))
     # R17 noindex
     ni = "noindex" in s
-    allowed = is404 or name in ("home.html","quote.html")
+    # blog category HUB pages are intentionally noindex when thin (<3 posts) — per SEO audit (kills thin/cannibalising stubs); auto-index once a category reaches 3+ posts
+    BLOGCAT_NOINDEX_OK = {"blog-protecting-belongings.html","blog-costs-pricing.html","blog-managed-vs-self.html","blog-moving-home.html","blog-packing.html","blog-downsizing.html","blog-business.html","blog-local-guides.html"}
+    allowed = is404 or name in ("home.html","quote.html") or name in BLOGCAT_NOINDEX_OK
     if ni and not allowed: issues["R17 noindex"].append((name,"noindex on indexable page"))
     if (not ni) and is404: issues["R17 noindex"].append((name,"404 NOT noindex"))
     # R12 word floor

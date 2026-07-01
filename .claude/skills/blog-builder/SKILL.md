@@ -16,6 +16,14 @@ One pattern serves blue links, featured snippets, and AI Overviews. Out-EXPERT c
 
 ---
 
+## ⚠️ QUALITY IS A RANKING FACTOR — and the de-rank risk is SITEWIDE (read first; user mandate 2026-06-30)
+A weak blog post is **NOT neutral — it can de-rank the WHOLE site**. This governs every build decision:
+- **Google's helpfulness/quality assessment is SITE-LEVEL.** Unhelpful, low-effort or unoriginal content *anywhere* on the domain can suppress rankings across the whole site (the Helpful Content signal folded into the 2022→2026 core system; "site reputation"). One thin or rehashed post can drag down pages that were ranking fine. This is the de-rank mechanism to fear.
+- **Click-satisfaction (NavBoost/Glue) compounds it.** Poor content → pogo-sticking, short dwell, no return clicks → the click model demotes the page *and* feeds the sitewide quality read. Genuinely useful content earns the long-click / return-visit that lifts rankings (see [[seo-2026-deep-mechanics]]).
+- **Panda/duplicate demotion + 2026 rater guidelines.** Templated/duplicated/thin content triggers site-quality demotion; "paraphrased"/rehash is rated **Lowest**; "scaled content abuse" is a policy violation. "Longer than rivals" is dead — **padding ("gump") is a liability, not a plus**; cut every sentence that isn't genuinely useful.
+- **Information gain is the moat** ([[blog-advanced-craft]]): unique first-hand experience + domain science + our own data — content found NOWHERE on page 1. That is what out-ranks and earns AI citations.
+- **OPERATIONAL CONSEQUENCE — the hard gate:** NEVER publish a post that isn't genuinely excellent AND better than everything currently ranking for its query. If it can't pass the originality gate (§1) and out-expert page-1, **DO NOT PUBLISH IT** — a mediocre post actively risks the site. **Fewer outstanding posts beat many mediocre ones.** Every post must beat the competition or it doesn't ship.
+
 ## 0. Before anything: read the SERP (the gate)
 Run the target query in an incognito Google set to the service area FIRST.
 - **Local pack (map 3-pack) showing?** → an article CANNOT win this. It needs the GBP + a
@@ -27,6 +35,12 @@ Run the target query in an incognito Google set to the service area FIRST.
 - **One URL per dominant intent.** Informational → blog. Commercial/local → service page. Never both.
 
 ## 1. Originality hard gate (do not publish without passing)
+**STANDING USER RULE (2026-06-30): every blog post must be UNIQUE and CONTENT-SPECIFIC — never
+duplicated copy between posts, never generic "AI-jumble". Each post is genuinely written for its
+exact topic.** No two posts may share paragraphs/sentences (run the deep-audit shingle check across
+blog pages — pairwise similarity must stay low); no boilerplate filler; every post earns its place
+with real, specific, topic-true content. A post that reads interchangeably with another = reject and rewrite.
+
 Name ≥1 element in the draft — a stat, an original photo, a process detail, a tested result, a
 named first-hand story — that appears NOWHERE on page 1 of Google for this query.
 If you can't, the post is a rehash. Get the missing element first. Sources of original gain you own:
@@ -35,6 +49,13 @@ If you can't, the post is a rehash. Get the missing element first. Sources of or
 - Original photos/diagrams of the real collect-pack-seal-redeliver operation
 - Real customer-call objections
 "Longer than rivals" is dead — rehash is rated Lowest by Google's 2026 rater guidelines.
+
+## 1b. UK localisation (HARD RULE — user, 2026-06-30)
+Wolves Storage Sussex is a **UK** business (Ashington, West Sussex). **Reference the UK, always:**
+- **UK English spelling** everywhere (colour, organise, favour, metre, neighbour, programme, tyre…) — never US spelling.
+- **UK context**: £/GBP (never $), UK place names disambiguated ("Ashington, West Sussex"), UK seasons/weather, UK law (bailment vs licence-to-occupy, UK consumer rights), UK market/insurance norms.
+- **Cite UK authorities, not US/Canadian.** Prefer **The National Archives** (environmental management of archival material — RH/temp/mould/ventilation; cdn.nationalarchives.gov.uk), **BSI / British Standards** (PD 5454 is superseded by **BS 4971:2017** + BS EN 16893:2018 — name the current one), **Historic England**, **gov.uk**, **Self Storage Association UK (SSA UK)**, **ONS**, **FCA**, **Which?**, **Icon**, **British Library**. REPLACE non-UK sources (e.g. the Canadian Conservation Institute used in early drafts) with UK equivalents; if a non-UK body is genuinely the only authority, prefer a UK equivalent or clearly contextualise. Verify every external citation URL resolves — never invent a deep URL.
+See memory: `blog-uk-and-standards-rule`.
 
 ## 2. The ONE writing pattern (every key section)
 ```
@@ -50,6 +71,18 @@ If you can't, the post is a rehash. Get the missing element first. Sources of or
   cells ≤3 words, MUST be a real `<table>` (CSS/div tables are not lifted).
 - AI-citation levers (Princeton GEO): cite reputable sources (+115%), add statistics (+37–41%),
   add quotations (+28–32%). NEVER keyword-stuff (−10%, the only tactic that lowers AI visibility). Never invent stats.
+
+## 2b. VISUAL RHYTHM — break up the text, never a wall (user mandate 2026-06-30)
+The `furniture-storage-sussex-winter` post is the TEMPLATE; every future post inherits its rhythm. Text-on-text-on-text is low quality — it kills scannability and dwell (the NavBoost satisfaction signal that lifts rankings) and reads as low-effort to raters. **RULE: no more than ~2 consecutive paragraphs without a VISUAL ANCHOR.** Rotate the toolkit so the page never feels samey, and make each device REINFORCE the point (not decoration):
+- a real `<table>` (comparison / risk / spec — also featured-snippet eligible)
+- a "things to know" stat-card strip (`.blg-keyrow`)
+- a pull-quote (`.blg-pull`) — a memorable line or first-hand quotation (quotations also lift AI citation)
+- a callout box (`.blg-callout`) — first-hand "from our collections"
+- a graphic / illustrated checklist (`.blg-prose ul` badge markers)
+- an ORIGINAL photo, diagram or illustration of the real operation
+- a process strip (collect → store → redeliver) for any sequence
+- inline highlighted key terms (`.blg-mark`) + a drop cap to open
+A section that is two grey paragraphs and nothing else = REFORMAT it: turn a contrast into a 2-col table, a sequence into steps, a key number into a stat card, a memorable line into a pull-quote. Scannable + visually varied = higher perceived quality, longer dwell, more snippet/AI surfaces. (This does NOT license padding — break up the SAME content visually; never add gump.)
 
 ## 3. Entity / topical-authority rules
 - One URL = one entity, named consistently ("managed container storage" — don't drift to "lock-up"/"unit" mid-page).
@@ -94,8 +127,13 @@ HONESTY GUARDRAIL: position the warehouse as clean/dry/ventilated/managed (avoid
   the service-page template; AUTO-ADD every new page to `sitemap.xml` AND root `llms.txt`. Never change the site
   without asking the user first.
 - **Also apply the `seo` skill** — every blog page must pass the full SEO bible. Run its bundled
-  `.claude/skills/seo/seo_scan.py` + `bug_scan.py` after build (target: 0 hard issues). **R12 blog word
-  floor = 2000 words** — extend the scanner's `tier()` with a blog tier when the first blog page is built.
+  `.claude/skills/seo/seo_scan.py` + `bug_scan.py` after build (target: 0 hard issues). **NO fixed blog
+  word count (user, 2026-06-30): length follows SUBSTANCE.** Cover the query comprehensively enough to be the
+  best, most complete answer on page 1 (information gain) — and not one padded word more. Word count is NOT a
+  ranking factor; padding to a number is rated Lowest and risks the sitewide quality demotion. The guardrail
+  against thin posts is "out-cover + out-expert page 1", never a floor. A focused query may need ~1,000 tight
+  words; a true cornerstone may run longer because the substance demands it. (This drops the old 2,000-word
+  blog floor; service/location pages keep their own SEO-bible word floors — blog posts do not.)
 
 ## 7. Anti-patterns — never ship these (seen in competitor blogs)
 - Thin <700-word generic listicles ("5 things", "10 reasons").
@@ -116,7 +154,7 @@ HONESTY GUARDRAIL: position the warehouse as clean/dry/ventilated/managed (avoid
 - [ ] End-of-post trust-wrapped CTA + a "next stage" link (§4)
 - [ ] Domain-science facts cited from storage-science.md where relevant; honesty guardrail respected (§5)
 - [ ] Scoped `.blg-` styling; Article+BreadcrumbList+LocalBusiness schema; FAQ text (§6)
-- [ ] SEO rules PASS; word floor met; auto-added to sitemap.xml + llms.txt (§6)
+- [ ] SEO rules PASS; comprehensive for the query (information gain, no padding — no fixed word floor); auto-added to sitemap.xml + llms.txt (§6)
 - [ ] No anti-patterns (§7); real cited sources only
 - [ ] Build runs clean; verified rendered output
 ```

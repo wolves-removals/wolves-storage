@@ -1,4 +1,12 @@
 User-agent: *
 Allow: /
+Disallow: /partials/
+Disallow: /.claude/
+Disallow: /functions/
+Disallow: /build-site.py
+Disallow: /build-storage-pages.py
+Disallow: /BUILD-RULES.md
+Disallow: /EMAIL-SETUP.md
+Disallow: /*.json$
 
 Sitemap: https://www.sussexstoragecompany.co.uk/sitemap.xml
