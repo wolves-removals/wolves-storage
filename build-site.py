@@ -3,6 +3,7 @@
 # compiled site.min.css + Alpine + their exact component markup), with our
 # own storage wording. Only uses class strings confirmed present in their CSS.
 import json, os, html, datetime, re
+from html import unescape as _unesc
 SITE = os.path.dirname(os.path.abspath(__file__))
 LASTMOD = datetime.date.today().isoformat()
 BASE = "https://www.sussexstoragecompany.co.uk/"
@@ -1240,6 +1241,78 @@ def town_local(t, data):
             '<h2 class="leading-tight text-black">'+h2+'</h2>'
             '<div class="mt-5 text-darkgrey text-lg">'+body+'</div></div></div></section>')
 
+RG_CSS  = open(os.path.join(SITE,"partials","related-guides.css"),encoding="utf-8").read()
+RG_SHELL= open(os.path.join(SITE,"partials","related-guides-shell.html"),encoding="utf-8").read()
+RG_CARD = open(os.path.join(SITE,"partials","related-guides-card.html"),encoding="utf-8").read()
+
+def related_card(p, idx):
+    cat=CAT_BY_SLUG[p["category"]]
+    return (RG_CARD.replace("%%URL%%",blog_url(p))
+                .replace("%%IMG%%",p["hero"])
+                .replace("%%ALT%%",p.get("hero_alt",p["title"]))
+                .replace("%%TAG%%",cat["short"])
+                .replace("%%TITLE%%",p["card"])
+                .replace("%%EXCERPT%%",p["excerpt"])
+                .replace("%%INDEX%%",str(idx).zfill(2)))
+
+def guides_panel(heading, intro, posts):
+    cards="".join(related_card(p,i+1) for i,p in enumerate(posts) if p)
+    return RG_CSS + RG_SHELL.replace("%%HEADING%%",heading).replace("%%INTRO%%",intro).replace("%%CARDS%%",cards)
+
+def related_guides(t):
+    tn=t["town"]
+    lead=next((p for p in BLOG_POSTS if p["slug"]=="managed-vs-self-storage"), None)
+    pub=[p for p in BLOG_POSTS if p.get("published") and p["slug"]!="managed-vs-self-storage"]
+    base=sum(ord(c) for c in t["slug"]); n=len(pub); picks=[]
+    if n:
+        a=base%n; b=(base*7+3)%n
+        if b==a: b=(a+1)%n
+        picks=[pub[a]]+([pub[b]] if n>1 else [])
+    ordered=[c for c in ([lead]+picks) if c]
+    return guides_panel("Storage Guides for "+tn,
+        "Thinking about self storage in "+tn+"? Start here &mdash; how managed storage really works, what it costs, and how we protect your things while they&rsquo;re in our care.",
+        ordered)
+
+# SEO relevance map — each money/service page links ONLY to its most topically-relevant guides (tile 01 = lead).
+GUIDE_MAP = {
+  "storage-solutions.html":  ("Managed Storage Guides &amp; Advice","The reading our West Sussex storage customers find most useful &mdash; how managed storage works, what it costs, and how we keep your belongings safe.",["managed-vs-self-storage","storage-cost-west-sussex","furniture-storage-sussex-winter"]),
+  "long-term-storage.html":  ("Long-Term Storage Guides","Storing for months or years? These guides cover protecting your belongings over time, the real cost, and how managed storage compares.",["furniture-storage-sussex-winter","storage-cost-west-sussex","managed-vs-self-storage"]),
+  "short-term-storage.html": ("Short-Term &amp; Moving Storage Guides","Between homes, mid-renovation or waiting on a completion date? These guides help you store the easy way.",["moving-storage-checklist-west-sussex","storage-during-renovation","managed-vs-self-storage"]),
+  "business-storage.html":   ("Business Storage Guides","Practical reading for storing stock, archives and equipment &mdash; what you can store, and why collected storage saves your team time.",["business-storage-west-sussex","what-cant-you-store-uk","managed-vs-self-storage"]),
+  "furniture-storage.html":  ("Furniture Storage Guides","How to pack, protect and store furniture the right way &mdash; so it comes back exactly as it left.",["how-to-pack-furniture-storage","furniture-storage-sussex-winter","managed-vs-self-storage"]),
+  "storage-size-guide.html": ("Sizing &amp; Cost Guides","Work out how much space you need and what it costs &mdash; plus how to pack so you use every inch of the container.",["storage-cost-west-sussex","how-to-pack-furniture-storage","managed-vs-self-storage"]),
+  "pricing.html":            ("Storage Cost Guides","What storage really costs in West Sussex &mdash; and how collected storage compares once the van, fuel and time are added up.",["storage-cost-west-sussex","managed-vs-self-storage","storage-downsizing-probate"]),
+  "how-it-works.html":       ("Managed Storage Guides","New to managed storage? These guides walk through how it compares, how to pack, and what you can &mdash; and can&rsquo;t &mdash; store.",["managed-vs-self-storage","how-to-pack-furniture-storage","what-cant-you-store-uk"]),
+}
+
+def service_guides(fn):
+    by={p["slug"]:p for p in BLOG_POSTS}
+    h,intro,slugs=GUIDE_MAP[fn]
+    posts=[by[s] for s in slugs if s in by]
+    return guides_panel(h,intro,posts)
+
+def town_meta(t):
+    # Strong, unique meta per town: differentiator + trust + honest price + CTA, tuned to ~140-150 chars.
+    # Auto-applies to every town (existing + future). A custom JSON meta already in the 140-155 band is kept.
+    vl=lambda s: len(re.sub(r'&[a-z]+;|&#\d+;','.',s))
+    cust=t.get("meta","")
+    if 140<=vl(cust)<=155: return cust
+    town=t["town"]
+    pc=re.split(r'&ndash;|&amp;|,|–',TOWN_INFO.get(t["slug"],{}).get("pc",""))[0].strip()
+    core="Managed container storage in "+town+((" ("+pc+")") if pc else "")+" from &pound;15/week"
+    tails=[
+        " &mdash; we collect, pack, seal &amp; store your belongings, fully insured. No unit to visit; free quote.",
+        " &mdash; we collect, pack &amp; store your belongings, fully insured. No unit to visit; free quote.",
+        " &mdash; we collect, pack &amp; store your belongings, fully insured. Free 24-hour quote.",
+        " &mdash; we collect, pack &amp; store, fully insured. No unit to visit; free quote.",
+        " &mdash; we collect, pack &amp; store, fully insured. Free 24-hour quote.",
+        " &mdash; we collect &amp; store your things, fully insured. Free quote.",
+        " &mdash; we collect &amp; store, fully insured. Free quote.",
+    ]
+    # pick the tail whose total length lands closest to the ideal 143 chars (never over 150)
+    cands=[core+tl for tl in tails if vl(core+tl)<=145] or [core+tails[-1]]
+    return min(cands, key=lambda m: abs(vl(m)-143))
+
 def town(t):
     h1="Storage in "+t["town"]+", "+t.get("region","West Sussex")
     ai=area_imgs(t); th=town_hero(t)
@@ -1259,14 +1332,14 @@ def town(t):
     if t.get("extra"): secs.append(t["extra"])
     elif expand: secs.append(town_situations(t))
     areas = town_areas(t) if expand else town_nearby(t)
-    secs+=[process(),town_map(t),areas,faq(fq),cta_band(t["cta"],IMG("gallery-warehouse-b.webp"))]
+    secs+=[process(),town_map(t),areas,related_guides(t),faq(fq),cta_band(t["cta"],IMG("gallery-warehouse-b.webp"))]
     pc1=re.split(r'&ndash;|&amp;|,|–',TOWN_INFO.get(t["slug"],{}).get("pc",""))[0].strip()
     ttitle=f'Storage in {t["town"]}'+(f' ({pc1})' if pc1 else '')+' | From &pound;15/wk, We Collect'
     gd={}
     if t.get("lat") and t.get("lng"):
         gd=dict(geo_pos=f'{t["lat"]};{t["lng"]}', geo_place=f'{t["town"]}, {t.get("region","West Sussex")}')
     return dict(file=t["slug"]+".html",slug="town",nav="Storage in "+t["town"],
-        title=ttitle,meta=t["meta"],hero=th[0],faqs=fq,
+        title=ttitle,meta=town_meta(t),hero=th[0],faqs=fq,
         crumb_parent=("areas-we-cover.html","Areas We Cover"),extra_schema=town_service_schema(t),
         sections=secs,**gd)
 
@@ -1591,7 +1664,7 @@ def size_guide_page():
     inner1=('<p class="text-lg xl:text-xl font-medium mt-2 max-w-3xl mx-auto">Not sure how much storage you need? Use this quick guide to estimate how many containers your home or business will fill &mdash; then get an exact figure on your free quote.</p>'+size_cards())
     return dict(file="storage-size-guide.html",slug="guide",nav="Storage Size Guide",
       title="How Much Storage Do I Need? | Wolves Storage Sussex",
-      meta="How much storage do you need? Our West Sussex size guide shows what fits in a 250 cu ft container, room by room. From £15/week, no deposit.",
+      meta="How much storage do you need? Our free West Sussex storage size guide — we measure & quote, so you only pay for what you use. From £15/week.",
       hero=IMG(HERO_WAREHOUSE[0]),faqs=faqs,
       crumb_parent=("how-it-works.html","How It Works"),
       sections=[
@@ -1773,7 +1846,7 @@ def reviews_page():
         "review":[{"@type":"Review","author":{"@type":"Person","name":n},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5","worstRating":"1"},"reviewBody":html.unescape(r)} for n,r in REVIEWS]},ensure_ascii=False)+'</script>')
     return dict(file="reviews.html",slug="reviews",nav="Reviews",
         title="Reviews | 5.0 Stars from 478 | Wolves Storage Sussex",
-        meta="Read Wolves Storage Sussex reviews — rated 5.0 from 478 verified reviews on Google, Checkatrade & Facebook. Family-run & fully insured.",
+        meta="Why West Sussex rates us 5.0 from 478 reviews — LAPADA-accredited, fully insured storage from £15/week, collected from your door. Free quote.",
         hero=IMG(HERO_ANTIQUE[0]),extra_schema=rs,
         sections=[
           hero(IMG(HERO_ANTIQUE[0]),HERO_ANTIQUE[1],"Our Storage Customers Rate Us 5.0",
@@ -1792,7 +1865,7 @@ def reviews_page():
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">Trusted right across West Sussex</h3>'
            '<p>From <a href="storage-horsham.html">Horsham</a> and <a href="storage-crawley.html">Crawley</a> to the <a href="storage-worthing.html">Worthing</a> and <a href="storage-chichester.html">Chichester</a> coast, families and businesses across the county have chosen us for storage they don&rsquo;t have to worry about. Wherever you are, you can expect the same standard of care that earned those five-star reviews &mdash; see every <a href="areas-we-cover.html">area we cover</a>.</p>'
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">See for yourself, then store with confidence</h3>'
-           '<p>The best way to judge a storage company is by what its customers say once the job is done. Browse the reviews on this page, take a look inside our facility in the <a href="gallery.html">gallery</a>, or read more <a href="about.html">about our family business</a> and exactly <a href="how-it-works.html">how managed storage works</a>. When you&rsquo;re ready, <a href="contact.html">get a free quote</a> &mdash; and we&rsquo;ll do everything we can to earn a five-star review of our own.</p>'
+           '<p>The best way to judge a storage company is by what its customers say once the job is done. Browse the reviews on this page, take a look inside our facility in the <a href="gallery.html">gallery</a>, or read more <a href="about.html">about our family business</a> and exactly <a href="how-it-works.html">how managed storage works</a>, or check our honest <a href="pricing.html">storage prices from &pound;15 a week</a>. When you&rsquo;re ready, <a href="contact.html">get a free quote</a> &mdash; and we&rsquo;ll do everything we can to earn a five-star review of our own.</p>'
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">New to storage? You&rsquo;re in good hands</h3>'
            '<p>If you&rsquo;ve never used storage before, the reviews are the best place to start &mdash; they&rsquo;re written by people who were once in exactly your position, unsure how much space they&rsquo;d need or how the whole process worked. Time and again they mention how easy we made it: a clear quote up front, a team that did the heavy lifting, and belongings that came back exactly as they left. Many of those customers found us through a friend&rsquo;s or estate agent&rsquo;s recommendation, and a good number have stored with us more than once. We&rsquo;d love the chance to add you to them.</p>'
            '</div></div></div></section>'),
@@ -3246,7 +3319,7 @@ def build():
     # HOME
     P.append(dict(file="index.html",slug="home",nav="Home",
       title="Secure Storage in West Sussex | Wolves Storage Sussex",
-      meta="Secure managed storage in West Sussex from £15/week. We pack, collect, store & redeliver. LAPADA accredited, fully insured, 24/7 CCTV.",
+      meta="Managed storage across West Sussex from £15/week — we collect, pack & store your belongings, fully insured. No unit to visit. Rated 5.0 from 478.",
       hero=IMG(HERO_WAREHOUSE[0]),extra_schema=VIDEO_SCHEMA,faqs=HOME_FAQS,
       sections=[
         hero(IMG(HERO_WAREHOUSE[0]),HERO_WAREHOUSE[1],"Secure Storage in West Sussex",
@@ -3346,7 +3419,7 @@ def build():
            ("family","LAPADA-Accredited Family Team","Trusted to store whole homes, furniture and antiques long-term &mdash; family-run since 2016 and rated 5.0 from 478 reviews.")]))
     P.append(service("short-term-storage.html","shortterm","Short-Term Storage",
       "Short-Term Storage West Sussex | Wolves Storage Sussex",
-      "Flexible short-term storage in West Sussex from £15/week. No deposit, weekly terms, fast collection — perfect for moves & chain delays.",
+      "Short-term storage in West Sussex from £15/week — ideal for moves, chain delays & renovations. We collect & redeliver, fully insured. Free quote.",
       IMG(HERO_LOADING[0]),HERO_LOADING[1],"Short-Term Storage in West Sussex",
       "Bridging a move, a broken chain or a quick renovation? Flexible weekly short-term storage with no deposit &mdash; we collect, store and bring it all back when you&rsquo;re ready.",
       ["Flexible weekly terms, no deposit","Fast collection &mdash; often within days","We pack, store and redeliver","Fully insured &amp; 24/7 CCTV"],
@@ -3371,7 +3444,7 @@ def build():
            ("family","Local, Family-Run","A West Sussex family team that fits around your timescale, rated 5.0 from 478 reviews.")]))
     P.append(service("business-storage.html","business","Business Storage",
       "Business Storage West Sussex | Wolves Storage Sussex",
-      "Secure business storage in West Sussex from £15/week — stock, archives & equipment. Fully insured, 24/7 CCTV, collection & redelivery.",
+      "Business storage in West Sussex from £15/week — we collect stock, archives & equipment, fully insured. No unit to visit. Free 24-hour quote.",
       IMG(HERO_PACKING[0]),HERO_PACKING[1],"Business Storage in West Sussex",
       "Free up your office or premises. We collect, store and redeliver stock, archives and equipment &mdash; fully insured and flexible, so you only pay for the space you need.",
       ["Scale up or down &mdash; no long lease","Stock, archives, equipment &amp; documents","Fully insured &amp; 24/7 CCTV","We collect and redeliver to you"],
@@ -4130,7 +4203,7 @@ def build():
           for i,(slug,tn,pc,tag) in enumerate([x for _,items in area_groups for x in items])]},ensure_ascii=False)+'</script>')
     P.append(dict(file="areas-we-cover.html",slug="areas",nav="Areas We Cover",
       title="Storage Across West Sussex | Wolves Storage Sussex",
-      meta="Managed storage across West Sussex — Ashington, Storrington, Pulborough, Horsham, Worthing & more. We collect & redeliver from £15/week.",
+      meta="Managed storage across West Sussex — 26 towns from Horsham to Chichester. We collect & redeliver from £15/week, fully insured. Find your town.",
       hero=IMG(HERO_AERIAL[0]),extra_schema=area_itemlist,
       sections=[
         hero(IMG(HERO_AERIAL[0]),HERO_AERIAL[1],"Storage Across West Sussex",
@@ -4211,13 +4284,13 @@ def build():
     # ABOUT
     P.append(dict(file="about.html",slug="about",nav="About",
       title="About Wolves Storage Sussex | West Sussex Storage",
-      meta="Family-run, LAPADA-accredited storage business in Ashington, West Sussex with 10+ years' experience. Fully insured, 24/7 CCTV.",
+      meta="Wolves Storage Sussex: family-run, LAPADA-accredited managed storage in Ashington, West Sussex. Fully insured, rated 5.0 from 478 reviews.",
       hero=IMG(HERO_VAN_COLLECT[0]),faqs=[("Are you insured and accredited?","Yes &mdash; fully insured, LAPADA accredited and Checkatrade members."),("How long have you been going?","Over 10 years serving West Sussex as a family-run business.")],
       sections=[
         hero(IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"A Trusted Name in West Sussex Storage",
           "Wolves Storage Sussex is part of the family-run Wolves Removals business, serving West Sussex for over a decade from our base in Ashington.",
           ["Family-run, 10+ years&rsquo; experience","LAPADA accredited &amp; Checkatrade","Fully insured, 24/7 CCTV","Trusted by Sussex families &amp; businesses"],big=False),
-        split("bg-white","Our Story",["What began as a local removals business grew into trusted, fully managed storage &mdash; built on the same family values of care, honesty and genuine local service.","Today we look after the belongings of hundreds of West Sussex families and businesses, from a few boxes to entire homes."],IMG("gallery-loading.webp"),"Wolves team loading a storage container"),
+        split("bg-white","Our Story",["What began as a local removals business grew into trusted, fully managed storage &mdash; built on the same family values of care, honesty and genuine local service.","Today we look after the belongings of hundreds of West Sussex families and businesses, from a few boxes to entire homes &mdash; all on honest, flexible <a href=\"pricing.html\">weekly storage pricing</a> from just &pound;15 a week."],IMG("gallery-loading.webp"),"Wolves team loading a storage container"),
         split("bg-lightgrey","Why You Can Trust Us",["LAPADA accreditation means we&rsquo;re trusted to pack, store and handle high-value items. Add full insurance, 24/7 CCTV and an alarmed facility, and your belongings are in safe hands.","We&rsquo;re trusted by local estate agents and rated 5.0 from hundreds of reviews."],IMG("gallery-clipboard.webp"),"Wolves Removals and Storage branded clipboard",reverse=True),
         """<style>
 .ab-section{background:#F7F5EF;color:#46505a;padding:4.5rem 1.25rem;line-height:1.65}
@@ -4400,7 +4473,7 @@ def build():
     # CONTACT
     P.append(dict(file="contact.html",slug="contact",nav="Contact",
       title="Contact Wolves Storage Sussex | Free Storage Quote",
-      meta="Contact Wolves Storage Sussex for a free storage quote within 24 hours. Call 01903 893731 / 07789 390421 or email.",
+      meta="Contact Wolves Storage Sussex for a free, no-obligation storage quote within 24 hours. Managed storage from £15/week — call or message us.",
       hero=IMG(HERO_VAN_COLLECT[0]),
       sections=[
         hero(IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"Get a Free Storage Quote",
@@ -4448,6 +4521,34 @@ def build():
       sections=[centered("bg-white","Page Not Found","Sorry, we couldn&rsquo;t find that page. Let&rsquo;s get you back to storing safely in West Sussex.",
         f'<div class="flex flex-wrap gap-3 justify-center">{btn("Back to Home","/","px-8 lg:px-10")}{btn("Contact Us","contact.html","px-8 lg:px-10")}</div>')]))
 
+    # R20 — make repeated content-section H2s unique per page (qualify with the town/service subject).
+    def uniquify_section_h2s(d):
+        secs=d.get("sections")
+        if not secs: return
+        slug=d.get("slug",""); nav=(d.get("nav") or "").strip()
+        if slug=="town":
+            twn=nav[len("Storage in "):].strip() if nav.startswith("Storage in ") else nav
+            reps={
+                "Our Step-by-Step Storage Process": f"How Storage Works in {twn}",
+                "Frequently Asked Questions": f"{twn} Storage: Your Questions Answered",
+                "See Our Sussex Storage in Action": f"Storage in {twn} &mdash; See It in Action",
+                "Local Storage Across Sussex": f"Storage Near {twn} &mdash; Towns We Cover",
+                "Store it without lifting a finger": f"Store in {twn} Without Lifting a Finger",
+            }
+        else:
+            tok="West Sussex" if nav in ("Home","") else nav
+            reps={
+                "Our Step-by-Step Storage Process": f"Our Step-by-Step Storage Process &mdash; {tok}",
+                "Frequently Asked Questions": f"Frequently Asked Questions &mdash; {tok}",
+                "See Our Sussex Storage in Action": f"See Our Storage in Action &mdash; {tok}",
+                "Local Storage Across Sussex": ("Local Storage Across West Sussex" if slug=="home" else f"Local Storage Across West Sussex &mdash; {tok}"),
+                "Store it without lifting a finger": f"Store Without Lifting a Finger &mdash; {tok}",
+            }
+        for i,sec in enumerate(secs):
+            if not isinstance(sec,str): continue
+            for g,r in reps.items():
+                if g!=r: sec=sec.replace(">"+g+"</h2>", ">"+r+"</h2>")
+            secs[i]=sec
     for d in P:
         if d["slug"] not in ("404","legal","blog","blogcat","blogpost") and d["file"]!="contact.html":
             d["sections"].insert(1, TRUSTINDEX_SECTION)
@@ -4455,10 +4556,13 @@ def build():
             d["sections"].insert(2, WHYUS[d["file"]])
         if d["file"] in ("pricing.html","storage-size-guide.html"):
             d["sections"].insert(1, CALC_SECTION)
+        if d["file"] in GUIDE_MAP:
+            d["sections"].insert(len(d["sections"])-1, service_guides(d["file"]))
         if d["file"] in CONTAINER_HTML:
             d["sections"].insert(len(d["sections"])-1, CONTAINER_HTML[d["file"]])
         if d["file"] in SILO_PAGES:
             d["sections"].insert(len(d["sections"])-1, all_towns_strip())
+        uniquify_section_h2s(d)
     for d in P:
         html=page(d)
         if d["file"]=="404.html":
@@ -4492,16 +4596,16 @@ def build():
     for d in P:
         if d["file"] in ("index.html","404.html"): continue
         buckets[llms_cat(d)].append(d)
-    llms=("# Wolves Storage Sussex\n\n> "+home["meta"]+"\n\n"
+    llms=("# Wolves Storage Sussex\n\n> "+_unesc(home["meta"])+"\n\n"
           "Family-run, fully managed containerised storage across West Sussex, based in Ashington (Doryln House, London Road, Pulborough RH20 3JT). "
           "We pack, collect, seal and store your belongings in an alarmed, fully insured indoor warehouse, then redeliver — no self-storage unit to drive to. "
           "Trading since 2016. LAPADA accredited, Checkatrade-verified, 5.0/5 from 478 reviews. From £15/week, no deposit. Phone 01903 893731.\n\n"
-          f"- [Home]({BASE}): {home['meta']}\n\n")
+          f"- [Home]({BASE}): {_unesc(home['meta'])}\n\n")
     for c in CATS:
         if not buckets[c]: continue
         llms+=f"## {c}\n"
         for d in buckets[c]:
-            llms+=f"- [{d['nav']}]({BASE}{d['file']}): {d['meta']}\n"
+            llms+=f"- [{_unesc(d['nav'])}]({BASE}{d['file']}): {_unesc(d['meta'])}\n"
         llms+="\n"
     open(os.path.join(SITE,"llms.txt"),"w",encoding="utf-8").write(llms)
     print(f"  llms.txt     {sum(len(v) for v in buckets.values())+1} pages indexed")

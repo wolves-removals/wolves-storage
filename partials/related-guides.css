@@ -1,0 +1,28 @@
+<style>
+/* ===== RELATED STORAGE GUIDES — native sibling of the .uspx "Difference" panel ===== */
+.rg-uspx{position:relative;overflow:hidden;background:linear-gradient(120deg,#6f7d89 0%,#697783 45%,#5d6a75 100%)}
+.rg-uspx::before{content:"";position:absolute;inset:0;background:radial-gradient(110% 120% at 85% -10%,rgba(252,151,0,.20),rgba(252,151,0,0) 55%);pointer-events:none}
+.rg-uspx::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#FC9700,#F6BB06,#FC9700)}
+.rg-head{position:relative;z-index:1;text-align:center;margin-bottom:2.4rem}
+.rg-eyebrow{display:inline-block;color:#F3F1EC;font-weight:700;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.7rem}
+.rg-head h2{color:#fff;margin:0}
+.rg-lead{color:rgba(255,255,255,.82);font-size:1.05rem;font-weight:500;max-width:46rem;margin:.7rem auto 0}
+.rg-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr;gap:1.1rem}
+@media(min-width:768px){.rg-grid{grid-template-columns:repeat(3,1fr);gap:1.4rem}}
+.rg-card{position:relative;display:flex;flex-direction:column;overflow:hidden;border-radius:1.25rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 18px 40px -24px rgba(0,0,0,.5);text-decoration:none;transition:transform .35s cubic-bezier(.2,.7,.3,1),background .35s ease,border-color .35s ease,box-shadow .35s ease}
+.rg-card:hover{transform:translateY(-7px);background:rgba(255,255,255,.11);border-color:rgba(252,151,0,.5);box-shadow:0 32px 62px -26px rgba(0,0,0,.6)}
+.rg-card:focus-visible{outline:3px solid #FC9700;outline-offset:3px}
+.rg-media{position:relative;display:block;overflow:hidden;aspect-ratio:16/10;background:#5d6a75;border-bottom:3px solid #FC9700}
+.rg-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+.rg-card:hover .rg-media img{transform:scale(1.06)}
+.rg-body{position:relative;z-index:1;display:flex;flex-direction:column;flex:1;padding:1.3rem 1.4rem 1.45rem}
+.rg-num{position:absolute;top:.55rem;right:1.05rem;z-index:0;font-weight:800;font-size:2.6rem;line-height:1;color:rgba(255,255,255,.10);letter-spacing:-.02em;pointer-events:none}
+.rg-cat{position:relative;z-index:1;color:#FC9700;font-weight:700;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;margin:0 0 .5rem}
+.rg-title{position:relative;z-index:1;color:#fff;font-weight:800;font-size:1.08rem;line-height:1.22;text-transform:uppercase;margin:0 0 .55rem}
+.rg-ex{position:relative;z-index:1;color:rgba(255,255,255,.8);font-size:.93rem;line-height:1.55;margin:0 0 1.15rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.rg-more{position:relative;z-index:1;display:inline-flex;align-items:center;gap:.5rem;margin-top:auto;color:#FC9700;font-weight:700;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;transition:gap .28s ease}
+.rg-more svg{width:.95rem;height:.95rem;transition:transform .28s ease}
+.rg-card:hover .rg-more{gap:.75rem}
+.rg-card:hover .rg-more svg{transform:translateX(3px)}
+@media (prefers-reduced-motion:reduce){.rg-card,.rg-media img,.rg-more,.rg-more svg{transition:none}.rg-card:hover{transform:none}.rg-card:hover .rg-media img{transform:none}}
+</style>
