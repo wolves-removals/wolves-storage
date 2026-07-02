@@ -1,3 +1,379 @@
+// ============================================================================
+//  ADD TO THE TOP of functions/api/contact.js — import + PDF helpers.
+//  Place the import as the FIRST line of the file (before the existing
+//  `const OWNER_TO = ...`). contact.js is already an ESM module (it uses
+//  `export async function onRequestPost`), so a top-level import is valid.
+//  StandardFonts only => no @pdf-lib/fontkit, no custom TTF => bundle stays
+//  ~250KB gzip (< Pages Free 1MB cap). DO NOT add fontkit or a custom font.
+// ============================================================================
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+
+// ---- brand palette as pdf-lib rgb() (0..1) --------------------------------
+// Named PC to avoid colliding with the existing `C` string-hex palette.
+const PC = {
+  orange: rgb(0.98824, 0.59216, 0),        // #FC9700
+  gold:   rgb(0.96471, 0.73333, 0.02353),  // #F6BB06
+  grey:   rgb(0.41176, 0.46667, 0.51373),  // #697783
+  ink:    rgb(0.14902, 0.14902, 0.14902),  // #262626
+  beige:  rgb(0.90980, 0.90196, 0.85490),  // #E8E6DA
+  light:  rgb(0.97647, 0.97255, 0.96471),  // #F9F8F6
+  border: rgb(0.90588, 0.90588, 0.90588),  // #E7E7E7
+  white:  rgb(1, 1, 1),
+  greyLt: rgb(0.90, 0.92, 0.94),
+};
+
+// ---- WinAnsi-safe text: StandardFonts throw on un-encodable glyphs ---------
+function pdfSafe(v) {
+  let s = (typeof v === "string" ? v : v == null ? "" : String(v));
+  const map = {
+    "≈": "approx ", "×": "x", "–": "-", "—": "-",
+    "•": "-", "·": "-", "‘": "'", "’": "'",
+    "“": '"', "”": '"', "…": "...", "→": "->",
+    "★": "*", "☆": "*", "✓": "y", " ": " ",
+  };
+  s = s.replace(/[≈×–—•·‘’“”…→★☆✓ ]/g,
+                m => map[m]);
+  // drop anything outside Latin-1 and any control chars (keep \n for splitting).
+  // This range EXCLUDES 0x80-0x9F (WinAnsi-unsafe C1 controls) by construction.
+  return s.replace(/[^\x20-\x7E\xA1-\xFF\n]/g, "");
+}
+
+// ---- Uint8Array -> base64 (no Node Buffer; chunked for safety) ------------
+function bytesToBase64(bytes) {
+  let bin = "";
+  const CH = 0x8000;
+  for (let i = 0; i < bytes.length; i += CH) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+  }
+  return btoa(bin);
+}
+
+// ---- normalise the estimate JSON (object or string) -----------------------
+function getEstimate(raw) {
+  let e = raw;
+  if (typeof e === "string") { try { e = JSON.parse(e); } catch { e = null; } }
+  if (!e || typeof e !== "object") e = {};
+  if (!Array.isArray(e.inventory)) e.inventory = [];
+  return e;
+}
+
+// ===========================================================================
+//  generatePdf(data) -> Promise<Uint8Array>
+//  data: { first,last,email,phone, addr1,addr2,town,postcode,
+//          enquiry, collect, estimate (object|JSON string), message, submitted }
+// ===========================================================================
+async function generatePdf(data) {
+  const PAGE = { w: 595.28, h: 841.89 };
+  const M = 44;                       // side margin
+  const CW = PAGE.w - M * 2;          // content width (507.28)
+  const HEADER_H = 118, FOOTER_H = 46;
+  const TOP_Y = PAGE.h - HEADER_H - 26;
+  const BOT_Y = FOOTER_H + 26;
+
+  const pdf = await PDFDocument.create();
+  pdf.setTitle("Storage Enquiry - Wolves Storage Sussex");
+  pdf.setAuthor("Wolves Storage Sussex");
+  pdf.setProducer("Wolves Storage Sussex enquiry system");
+  pdf.setCreator("sussexstoragecompany.co.uk");
+
+  const F = {
+    reg:  await pdf.embedFont(StandardFonts.Helvetica),
+    bold: await pdf.embedFont(StandardFonts.HelveticaBold),
+    ital: await pdf.embedFont(StandardFonts.HelveticaOblique),
+  };
+
+  // logo — runtime fetch + embedPng, never fatal
+  let logo = null;
+  try {
+    const r = await fetch("https://www.sussexstoragecompany.co.uk/images/email-logo.png");
+    if (r.ok) logo = await pdf.embedPng(await r.arrayBuffer());
+  } catch { /* keep going without the logo */ }
+
+  // ---- shared cursor state --------------------------------------------------
+  let page, y;
+
+  const draw = (str, x, yy, o = {}) =>
+    page.drawText(pdfSafe(str), {
+      x, y: yy, size: o.size || 10, font: o.font || F.reg, color: o.color || PC.ink,
+    });
+
+  const textW = (str, font, size) => font.widthOfTextAtSize(pdfSafe(str), size);
+
+  function wrap(str, font, size, maxW) {
+    const words = pdfSafe(str).split(/\s+/).filter(Boolean);
+    const lines = [];
+    let line = "";
+    for (let w of words) {
+      // hard-break a single word wider than the column
+      while (font.widthOfTextAtSize(w, size) > maxW && w.length > 1) {
+        let cut = w.length;
+        while (cut > 1 && font.widthOfTextAtSize(w.slice(0, cut), size) > maxW) cut--;
+        if (line) { lines.push(line); line = ""; }
+        lines.push(w.slice(0, cut));
+        w = w.slice(cut);
+      }
+      const t = line ? line + " " + w : w;
+      if (line && font.widthOfTextAtSize(t, size) > maxW) { lines.push(line); line = w; }
+      else line = t;
+    }
+    if (line) lines.push(line);
+    return lines.length ? lines : [""];
+  }
+
+  function drawHeader(pg) {
+    pg.drawRectangle({ x: 0, y: PAGE.h - HEADER_H, width: PAGE.w, height: HEADER_H, color: PC.orange });
+    pg.drawRectangle({ x: 0, y: PAGE.h - HEADER_H - 4, width: PAGE.w, height: 4, color: PC.gold });
+    // logo chip (white for contrast)
+    const chipW = 150, chipH = 66;
+    const cx = M, cy = PAGE.h - HEADER_H / 2 - chipH / 2;
+    if (logo) {
+      pg.drawRectangle({ x: cx, y: cy, width: chipW, height: chipH, color: PC.white });
+      const s = logo.scaleToFit(chipW - 22, chipH - 18);
+      pg.drawImage(logo, { x: cx + (chipW - s.width) / 2, y: cy + (chipH - s.height) / 2, width: s.width, height: s.height });
+    } else {
+      pg.drawText("WOLVES STORAGE SUSSEX", { x: cx, y: PAGE.h - HEADER_H / 2 - 6, size: 15, font: F.bold, color: PC.white });
+    }
+    // NAP block, right-aligned white
+    const rx = PAGE.w - M;
+    const rows = [
+      { t: "Wolves Storage Sussex", f: F.bold, s: 13 },
+      { t: "Doryln House, London Road, Ashington", f: F.reg, s: 9 },
+      { t: "Pulborough, West Sussex RH20 3JT", f: F.reg, s: 9 },
+      { t: "01903 893731  -  info@sussexstoragecompany.co.uk", f: F.reg, s: 9 },
+    ];
+    let ly = PAGE.h - 40;
+    for (const r of rows) {
+      pg.drawText(pdfSafe(r.t), { x: rx - textW(r.t, r.f, r.s), y: ly, size: r.s, font: r.f, color: PC.white });
+      ly -= r.s + 4;
+    }
+  }
+
+  function drawFooter(pg) {
+    pg.drawRectangle({ x: 0, y: 0, width: PAGE.w, height: FOOTER_H, color: PC.grey });
+    pg.drawRectangle({ x: 0, y: FOOTER_H, width: PAGE.w, height: 3, color: PC.orange });
+    pg.drawText(pdfSafe("Wolves Storage Sussex  -  part of the Wolves Removals family"),
+      { x: M, y: FOOTER_H - 16, size: 9, font: F.bold, color: PC.white });
+    pg.drawText(pdfSafe("01903 893731   -   info@sussexstoragecompany.co.uk   -   sussexstoragecompany.co.uk"),
+      { x: M, y: FOOTER_H - 28, size: 8, font: F.reg, color: PC.greyLt });
+    pg.drawText(pdfSafe("LAPADA accredited  -  Checkatrade  -  Fully insured"),
+      { x: M, y: FOOTER_H - 39, size: 8, font: F.reg, color: PC.greyLt });
+  }
+
+  function newPage() {
+    page = pdf.addPage([PAGE.w, PAGE.h]);
+    drawHeader(page);
+    drawFooter(page);
+    y = TOP_Y;
+  }
+  const ensure = (h) => { if (y - h < BOT_Y) newPage(); };
+
+  function sectionTitle(label) {
+    ensure(34);
+    y -= 8;
+    draw(String(label).toUpperCase(), M, y, { font: F.bold, size: 11, color: PC.grey });
+    y -= 6;
+    page.drawRectangle({ x: M, y: y, width: CW, height: 2, color: PC.gold });
+    y -= 16;
+  }
+
+  function kvRow(label, value) {
+    const labelW = 120, valX = M + labelW, valMaxW = CW - labelW;
+    const src = Array.isArray(value) ? value : [value];
+    let lines = [];
+    src.forEach(v => wrap((v === "" || v == null) ? "" : String(v), F.reg, 11, valMaxW).forEach(l => lines.push(l)));
+    if (!lines.length || (lines.length === 1 && !lines[0])) lines = ["-"];
+    const rowH = lines.length * 15 + 10;
+    ensure(rowH + 4);
+    const top = y;
+    draw(label, M, top - 12, { font: F.bold, size: 10, color: PC.grey });
+    let ly = top - 12;
+    for (const l of lines) { draw(l, valX, ly, { font: F.reg, size: 11, color: PC.ink }); ly -= 15; }
+    const b = top - rowH;
+    page.drawLine({ start: { x: M, y: b }, end: { x: M + CW, y: b }, thickness: 0.75, color: PC.border });
+    y = b - 6;
+  }
+
+  function estimatePanel(est) {
+    const pods = Math.ceil(Number(est.pods) || 0);
+    const cuft = Number(est.cuft) || 0, cbm = Number(est.cbm) || 0;
+    const rows = [];
+    const container = pods
+      ? "approx " + pods + " container" + (pods === 1 ? "" : "s") +
+        (cuft ? "   ~" + cuft + " cu ft" : "") + (cbm ? "  /  " + cbm + " cu m" : "")
+      : "";
+    if (container)     rows.push(["Container size", container]);
+    if (est.moveIn)    rows.push(["Move-in date", String(est.moveIn)]);
+    if (est.moveOut)   rows.push(["Move-out date", String(est.moveOut)]);
+    if (est.duration)  rows.push(["Duration", String(est.duration)]);
+    if (est.cover)     rows.push(["Cover level", String(est.cover)]);
+
+    const hasStats = pods > 0 || !!est.estCost;
+    if (!hasStats && !rows.length) return;
+
+    const padX = 16;
+    const topPad = 12, statH = hasStats ? 48 : 0;
+    const gap = rows.length ? 8 : 0;
+    const rowsH = rows.length * 18, botPad = 12;
+    const panelH = topPad + statH + gap + rowsH + botPad;
+
+    ensure(panelH + 8);
+    const top = y, bottom = top - panelH;
+
+    page.drawRectangle({ x: M, y: bottom, width: CW, height: panelH, color: PC.light, borderColor: PC.border, borderWidth: 1 });
+    page.drawRectangle({ x: M, y: top - 4, width: CW, height: 4, color: PC.orange });
+
+    if (hasStats) {
+      if (pods > 0) {
+        draw(String(pods), M + padX, top - topPad - 30, { font: F.bold, size: 28, color: PC.orange });
+        draw("CONTAINERS", M + padX, top - topPad - 44, { font: F.bold, size: 8, color: PC.grey });
+      }
+      if (est.estCost) {
+        const cx = M + CW / 2;
+        draw(String(est.estCost), cx, top - topPad - 26, { font: F.bold, size: 18, color: PC.ink });
+        draw("ESTIMATED COST", cx, top - topPad - 44, { font: F.bold, size: 8, color: PC.grey });
+      }
+    }
+
+    let ry = top - topPad - statH - gap;
+    if (rows.length && hasStats) {
+      page.drawLine({ start: { x: M + padX, y: ry + 4 }, end: { x: M + CW - padX, y: ry + 4 }, thickness: 0.75, color: PC.border });
+    }
+    for (const [k, v] of rows) {
+      draw(k, M + padX, ry - 12, { font: F.bold, size: 9, color: PC.grey });
+      draw(v, M + padX + 120, ry - 12, { font: F.reg, size: 10, color: PC.ink });
+      ry -= 18;
+    }
+    y = bottom - 12;
+  }
+
+  function inventoryTable(inv) {
+    if (!inv.length) return;
+    const count = inv.reduce((a, i) => a + (parseInt(i.qty, 10) || 0), 0);
+    sectionTitle("Inventory (" + count + " item" + (count === 1 ? "" : "s") + ")");
+
+    const qtyW = 46, catW = 140, itemW = CW - qtyW - catW;
+    const header = () => {
+      ensure(24);
+      const top = y;
+      page.drawRectangle({ x: M, y: top - 20, width: CW, height: 20, color: PC.beige });
+      draw("ITEM", M + 10, top - 14, { font: F.bold, size: 9, color: PC.grey });
+      draw("CATEGORY", M + itemW + 8, top - 14, { font: F.bold, size: 9, color: PC.grey });
+      draw("QTY", M + CW - 10 - textW("QTY", F.bold, 9), top - 14, { font: F.bold, size: 9, color: PC.grey });
+      y = top - 20;
+    };
+    header();
+
+    let zebra = 0;
+    for (const it of inv) {
+      const nameLines = wrap(String(it.name || "-"), F.reg, 10, itemW - 18);
+      const catLines = wrap(String(it.cat || "-"), F.reg, 9, catW - 12);
+      const n = Math.max(nameLines.length, catLines.length, 1);
+      const rowH = n * 13 + 8;
+      if (y - rowH < BOT_Y) { newPage(); header(); zebra = 0; }
+      const top = y;
+      if (zebra % 2 === 1) page.drawRectangle({ x: M, y: top - rowH, width: CW, height: rowH, color: PC.light });
+      let ny = top - 12;
+      for (const l of nameLines) { draw(l, M + 10, ny, { font: F.reg, size: 10, color: PC.ink }); ny -= 13; }
+      let cyy = top - 12;
+      for (const l of catLines) { draw(l, M + itemW + 8, cyy, { font: F.reg, size: 9, color: PC.grey }); cyy -= 13; }
+      const qty = String(parseInt(it.qty, 10) || it.qty || 1);
+      draw(qty, M + CW - 10 - textW(qty, F.bold, 10), top - 12, { font: F.bold, size: 10, color: PC.orange });
+      page.drawLine({ start: { x: M, y: top - rowH }, end: { x: M + CW, y: top - rowH }, thickness: 0.5, color: PC.border });
+      y = top - rowH;
+      zebra++;
+    }
+    y -= 6;
+  }
+
+  function messageBlock(msg) {
+    if (!msg) return;
+    sectionTitle("Message");
+    const padX = 14, innerW = CW - padX * 2, perLine = 15;
+    let lines = [];
+    String(msg).split(/\r?\n/).forEach(p => {
+      if (!p.trim()) lines.push("");
+      else wrap(p, F.reg, 11, innerW).forEach(l => lines.push(l));
+    });
+    let idx = 0;
+    while (idx < lines.length) {
+      ensure(perLine + 26);
+      const avail = y - BOT_Y;
+      const fit = Math.max(1, Math.floor((avail - 20) / perLine));
+      const chunk = lines.slice(idx, idx + fit);
+      const boxH = chunk.length * perLine + 16;
+      const top = y;
+      page.drawRectangle({ x: M, y: top - boxH, width: CW, height: boxH, color: PC.light, borderColor: PC.border, borderWidth: 1 });
+      page.drawRectangle({ x: M, y: top - boxH, width: 3, height: boxH, color: PC.orange });
+      let ly = top - 16;
+      for (const l of chunk) { draw(l, M + padX, ly, { font: F.reg, size: 11, color: PC.ink }); ly -= perLine; }
+      y = top - boxH - 10;
+      idx += chunk.length;
+      if (idx < lines.length) newPage();
+    }
+  }
+
+  // ---- normalise inputs -----------------------------------------------------
+  const first = pdfSafe(data.first), last = pdfSafe(data.last);
+  const fullName = (first + " " + last).trim() || "-";
+  const est = getEstimate(data.estimate != null ? data.estimate : data.inventory);
+  const collectTxt = data.collect === "Yes" ? "Yes - collect from the address below"
+                   : data.collect === "No"  ? "No - customer will drop off"
+                   : (data.collect || "-");
+  const addrLines = [data.addr1, data.addr2, [data.town, data.postcode].filter(Boolean).join(" ")]
+    .map(x => pdfSafe(x)).filter(Boolean);
+  if (!addrLines.length) addrLines.push("-");
+
+  // stable reference from a tiny hash of email + timestamp + name
+  const seed = pdfSafe((data.email || "") + (data.submitted || "") + fullName);
+  let h = 0; for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const ref = "WSS-" + h.toString(36).toUpperCase().padStart(6, "0").slice(0, 6);
+
+  const estHasAny = !!(Math.ceil(Number(est.pods) || 0) || Number(est.cuft) ||
+    est.moveIn || est.moveOut || est.duration || est.estCost || est.cover);
+
+  // ---- build ---------------------------------------------------------------
+  newPage();
+
+  // title block (page 1)
+  draw("New Storage Enquiry", M, y - 20, { font: F.bold, size: 24, color: PC.ink });
+  y -= 32;
+  draw("Reference " + ref, M, y - 10, { font: F.bold, size: 10, color: PC.orange });
+  if (data.submitted) {
+    const t = "Submitted " + pdfSafe(data.submitted);
+    draw(t, M + CW - textW(t, F.reg, 9), y - 10, { font: F.reg, size: 9, color: PC.grey });
+  }
+  y -= 20;
+  page.drawRectangle({ x: M, y: y, width: CW, height: 2, color: PC.gold });
+  y -= 14;
+
+  sectionTitle("Enquiry details");
+  kvRow("Name", fullName);
+  kvRow("Email", data.email || "");
+  kvRow("Phone", data.phone || "");
+  kvRow("Storing", data.enquiry || "");
+  kvRow("Collection", collectTxt);
+  kvRow("Address", addrLines);
+
+  if (estHasAny) {
+    sectionTitle("Storage estimate");
+    draw("From the online size calculator", M, y - 9, { font: F.ital, size: 9, color: PC.grey });
+    y -= 16;
+    estimatePanel(est);
+  }
+
+  inventoryTable(est.inventory);
+  messageBlock(data.message || "");
+
+  // stamp "Page X of N" once total is known
+  const pages = pdf.getPages(), N = pages.length;
+  pages.forEach((pg, i) => {
+    const t = "Page " + (i + 1) + " of " + N;
+    pg.drawText(t, { x: PAGE.w - M - F.reg.widthOfTextAtSize(t, 8), y: 14, size: 8, font: F.reg, color: PC.white });
+  });
+
+  return await pdf.save();   // Uint8Array
+}
+
 // Cloudflare Pages Function — handles POST /api/contact
 // Sends two branded emails via Resend: an owner notification (to the inbox)
 // and a separate customer confirmation. Requires env var RESEND_API_KEY.
@@ -51,12 +427,30 @@ export async function onRequestPost({ request, env }) {
   const to   = clean(env.CONTACT_TO)   || OWNER_TO;
   const from = clean(env.CONTACT_FROM) || FROM;
 
+  let attachments;
+  try {
+    const bytes = await generatePdf({
+      first, last, email, phone,
+      addr1: clean(data.addr1), addr2: clean(data.addr2),
+      town: clean(data.town), postcode: clean(data.postcode),
+      enquiry, collect, estimate: inventory,
+      message, submitted,
+    });
+    const safeName = (last || first || "customer").replace(/[^A-Za-z0-9]/g, "") || "customer";
+    attachments = [{
+      filename: `storage-enquiry-${safeName}.pdf`,
+      content: bytesToBase64(bytes),
+      content_type: "application/pdf",
+    }];
+  } catch { attachments = undefined; }
+
   const owner = await sendEmail(env.RESEND_API_KEY, {
     from,
     to: [to],
     reply_to: email,
     subject: `New storage enquiry — ${first} ${last}`.trim(),
     html: ownerEmail({ first, last, email, phone, enquiry, message, page, collect, addr, inventory, submitted }),
+    ...(attachments ? { attachments } : {}),
   });
 
   // customer confirmation (different email) — best-effort; don't fail the whole request if it bounces

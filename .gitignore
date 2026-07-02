@@ -6,3 +6,4 @@ dist/
 # Local-only tooling & skills — never publish to the (public) remote
 .claude/
 seo/
+node_modules/
