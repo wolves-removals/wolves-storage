@@ -195,6 +195,16 @@ A11Y_CSS=('<style>'
   '.wss-chip{display:inline-flex;align-items:center;gap:.45rem;background:#F9F8F6;border:1px solid #E7E7E7;border-radius:999px;padding:.4rem .5rem .4rem .85rem;font-size:.9rem;color:#262626;font-weight:500}'
   '.wss-chip b{display:inline-flex;align-items:center;justify-content:center;min-width:1.5rem;height:1.5rem;padding:0 .35rem;border-radius:999px;background:#FC9700;color:#fff;font-size:.78rem;font-weight:800}'
   '.wss-inv-foot{padding:.85rem 1.25rem;border-top:1px solid #E7E7E7;background:#F9F8F6;font-size:.9rem;color:#697783;font-weight:600}'
+  '.map-facade{position:relative;display:block;width:100%;overflow:hidden;background:#E8E6DA;line-height:0}'
+  '.map-facade-btn{position:relative;width:100%;height:100%;border:0;cursor:pointer;background:linear-gradient(135deg,#ECE9DD,#E1DED0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.55rem;color:#3a4249;font:600 .92rem/1.2 Barlow,system-ui,sans-serif;padding:1rem}'
+  '.map-facade-btn:hover{background:linear-gradient(135deg,#E8E6DA,#d8d5c6)}'
+  '.map-facade-btn:focus-visible{outline:2px solid #FC9700;outline-offset:-4px}'
+  '.map-facade-pin{display:inline-flex;width:40px;height:40px;border-radius:50%;background:#FC9700;color:#fff;align-items:center;justify-content:center;box-shadow:0 5px 14px -4px rgba(252,151,0,.65)}'
+  '.map-facade-pin svg{width:21px;height:21px}'
+  '.map-facade-tag{font-size:.7rem;font-weight:700;color:#697783;text-transform:uppercase;letter-spacing:.07em}'
+  '.map-facade>iframe{display:block;width:100%;height:100%;border:0}'
+  '.cov-map .map-facade{height:340px}'
+  '@media(min-width:1024px){.cov-map .map-facade{height:380px}}'
   '</style>')
 def split(bg, h2, paras, img, alt, reverse=False):
     body = "".join(f'<p>{p}</p>' for p in paras)
@@ -629,7 +639,14 @@ INV_JS = ('<script>(function(){function esc(s){var e=document.createElement("spa
  '}catch(e){}}'
  'if(document.readyState!=="loading")run();else document.addEventListener("DOMContentLoaded",run);'
  '})();</script>')
-SCRIPTS = '<script defer src="/js/alpine.min.js"></script><script defer src="/js/process-carousel.js?v=3"></script>'+FORM_JS+PREFILL_JS+INV_JS
+# Google Maps click-to-load facade: no google.com request/cookies until the user clicks "Load map".
+MAP_JS = ('<script>(function(){function load(btn){var src=btn.getAttribute("data-src");if(!src)return;'
+ 'var wrap=btn.closest(".map-facade");if(!wrap)return;var ifr=document.createElement("iframe");ifr.src=src;'
+ 'ifr.title=btn.getAttribute("data-title")||"Map";ifr.loading="lazy";ifr.setAttribute("referrerpolicy","no-referrer-when-downgrade");'
+ 'ifr.style.cssText="display:block;width:100%;height:100%;border:0";wrap.innerHTML="";wrap.appendChild(ifr);wrap.classList.add("is-loaded");}'
+ 'document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".map-facade-btn");if(b){e.preventDefault();load(b);}});'
+ '})();</script>')
+SCRIPTS = '<script defer src="/js/alpine.min.js"></script><script defer src="/js/process-carousel.js?v=3"></script>'+FORM_JS+PREFILL_JS+INV_JS+MAP_JS
 
 TRUSTED_BY = '<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="text-center mb-10"><h2 class="relative leading-tight text-black">We&rsquo;re Trusted By</h2></div><div class="flex justify-center mb-10 lg:mb-12"><a href="https://lapada.org/dealers/wolves-removals/" target="_blank" rel="noopener" aria-label="Wolves Storage Sussex is LAPADA accredited" class="inline-block hover:opacity-80 transition-opacity"><img src="/images/photos/lapada-approved-service-provider.webp" alt="LAPADA Approved Service Provider, Association of Art &amp; Antiques Dealers" width="520" height="493" loading="lazy" decoding="async" class="h-32 sm:h-40 lg:h-44 w-auto"></a></div><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 items-center gap-2"><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/fine-and-country-recommend-wolves.webp" alt="Fine &amp; Country estate agents recommend Wolves Storage Sussex" width="500" height="250" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/justin-lloyd-estate-agents-recommend.webp" alt="Justin Lloyd estate agents recommend Wolves Storage Sussex" width="210" height="80" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/mansell-mctaggart-estate-agents-partner.webp" alt="Mansell McTaggart estate agents recommend Wolves Storage Sussex" width="179" height="81" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/leaders-estate-agents-recommend.webp" alt="Leaders estate agents recommend Wolves Storage Sussex" width="251" height="81" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/alex-harvey-estate-agents-recommend.webp" alt="Alex Harvey estate agents recommend Wolves Storage Sussex" width="400" height="200" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/at-home-estate-lettings-recommend.webp" alt="At Home estate agents recommend Wolves Storage Sussex" width="389" height="108" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div></div></div></section>'
 
@@ -826,6 +843,14 @@ WHYUS_CONTENT = {
 }
 WHYUS = {f: whyus(*v) for f,v in WHYUS_CONTENT.items()}
 
+MAP_PIN = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+           '<path d="M20 10c0 5.5-8 12-8 12s-8-6.5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.6"/></svg>')
+def map_facade(src, label, style="", cls=""):
+    st = (' style="'+style+'"') if style else ""
+    cl = (' '+cls) if cls else ""
+    return ('<div class="map-facade'+cl+'"'+st+'><button type="button" class="map-facade-btn" data-src="'+src+'" data-title="Map of '+label+'" aria-label="Load map of '+label+'">'
+            '<span class="map-facade-pin">'+MAP_PIN+'</span><span>Load map</span><span class="map-facade-tag">Google Maps</span></button></div>')
+
 # ---------------- LOCATION SILO: per-town landing pages ----------------
 ADDR_LD = {"@type":"PostalAddress","streetAddress":"Doryln House, London Road, Ashington","addressLocality":"Pulborough","addressRegion":"West Sussex","postalCode":"RH20 3JT","addressCountry":"GB"}
 
@@ -907,7 +932,7 @@ def town_map(t):
             '<div class="cov-bar"><span class="cov-pin"><span class="cov-pinico" aria-hidden="true">'+COV_PIN+'</span>'
             '<span class="cov-pintxt">'+town+' &amp; surrounding postcodes</span></span>'
             '<span class="cov-live"><span class="cov-dot" aria-hidden="true"></span>Service area</span></div>'
-            '<div class="cov-map"><iframe title="Map of '+town+', '+reg+' storage area" src="https://www.google.com/maps?q='+q+'&amp;z=12&amp;ie=UTF8&amp;iwloc=&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>'
+            '<div class="cov-map">'+map_facade("https://www.google.com/maps?q="+q+"&amp;z=12&amp;ie=UTF8&amp;iwloc=&amp;output=embed","Storage in "+town)+
             '<div class="cov-float" aria-hidden="true"><span class="cov-floatico">'+COV_NAV+'</span>'
             '<span><span class="cov-floatnum">'+fnum+'</span><span class="cov-floatsub">'+fsub+'</span></span></div></div>'
             '<div class="cov-foot">'+COV_TRUCK+'<span class="cov-foot-lab">Also serving:</span>'
@@ -4566,7 +4591,7 @@ def build():
          f'<li class="flex items-center gap-3">{SVG_PHONE}<a class="hover:text-orange" href="tel:+447789390421">{PHONE2}</a></li>'
          f'<li class="flex items-center gap-3">{SVG_MAIL}<a class="hover:text-orange" href="mailto:{EMAIL}">{EMAIL}</a></li></ul>'
          '<p class="mt-4 text-sm text-darkgrey">Office hours: Mon&ndash;Fri 8:30am&ndash;6pm &middot; Sat 9am&ndash;4pm</p></div>'
-         '<div class="col-span-12 lg:col-span-7"><iframe title="Wolves Storage Sussex location" src="https://www.google.com/maps?q=RH20%203JT&t=&z=13&ie=UTF8&iwloc=&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="block w-full rounded-xl shadow-custom" style="border:0;height:380px"></iframe></div></div></div></section>'),
+         '<div class="col-span-12 lg:col-span-7">'+map_facade("https://www.google.com/maps?q=RH20%203JT&t=&z=13&ie=UTF8&iwloc=&output=embed","Wolves Storage Sussex","height:380px","rounded-xl shadow-custom")+'</div></div></div></section>'),
       ]))
     # P0 content assets
     P.append(size_guide_page())
