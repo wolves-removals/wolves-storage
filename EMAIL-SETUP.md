@@ -25,9 +25,11 @@ Both are branded (Wolves Storage Sussex colours + logo).
 ### 3. Add the key to Cloudflare Pages
 - Cloudflare dashboard → your Pages project → **Settings → Environment variables**.
 - Add **`RESEND_API_KEY`** = the `re_…` value, for **Production** (and Preview if you want).
-- **Redeploy** (Deployments → Retry deployment) so the variable takes effect.
+- **(Optional, like wolves-removals) `CONTACT_TO`** = the inbox that should receive enquiry notifications (e.g. `info@sussexstoragecompany.co.uk` or your own Gmail). If unset, defaults to `info@sussexstoragecompany.co.uk`.
+- **(Optional) `CONTACT_FROM`** = the verified sender, e.g. `Wolves Storage Sussex <enquiries@sussexstoragecompany.co.uk>`. If unset, uses that default (its domain must be Resend-verified).
+- **Redeploy** (Deployments → Retry deployment) so the variables take effect.
 
-That's it — submissions now email you and auto-reply to the customer.
+That's it — submissions now email you and auto-reply to the customer. (Tip: if you already run Resend for wolves-removals, you can reuse the same `RESEND_API_KEY`; just verify `sussexstoragecompany.co.uk` as a domain in the same Resend account.)
 
 ## Test
 Submit the form on the live site. You should receive the owner email at

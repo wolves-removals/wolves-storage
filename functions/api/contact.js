@@ -40,9 +40,14 @@ export async function onRequestPost({ request, env }) {
     return json({ ok:false, error:"Email is not configured yet." }, 500);
   }
 
+  // Optional env overrides (like wolves-removals) — set CONTACT_TO / CONTACT_FROM in
+  // Cloudflare to route notifications to any inbox / change the sender, without editing code.
+  const to   = clean(env.CONTACT_TO)   || OWNER_TO;
+  const from = clean(env.CONTACT_FROM) || FROM;
+
   const owner = await sendEmail(env.RESEND_API_KEY, {
-    from: FROM,
-    to: [OWNER_TO],
+    from,
+    to: [to],
     reply_to: email,
     subject: `New storage enquiry — ${first} ${last}`.trim(),
     html: ownerEmail({ first, last, email, phone, enquiry, message, page }),
@@ -50,9 +55,9 @@ export async function onRequestPost({ request, env }) {
 
   // customer confirmation (different email) — best-effort; don't fail the whole request if it bounces
   await sendEmail(env.RESEND_API_KEY, {
-    from: FROM,
+    from,
     to: [email],
-    reply_to: OWNER_TO,
+    reply_to: to,
     subject: "Thanks for contacting Wolves Storage Sussex",
     html: customerEmail({ first, enquiry, message }),
   });
