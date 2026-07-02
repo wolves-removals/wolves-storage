@@ -15,7 +15,7 @@ Both are branded (Wolves Storage Sussex colours + logo).
 - Add the DNS records Resend gives you (SPF, DKIM, DMARC) to that domain.
 - Wait for it to show **Verified**.
 
-> The "from" address is `enquiries@sussexstoragecompany.co.uk` (set at the top of
+> The "from" address is `info@sussexstoragecompany.co.uk` (set at the top of
 > `functions/api/contact.js`). Change `FROM` / `OWNER_TO` there if you want different addresses.
 > The from-domain **must** be the verified one.
 
@@ -26,7 +26,7 @@ Both are branded (Wolves Storage Sussex colours + logo).
 - Cloudflare dashboard → your Pages project → **Settings → Environment variables**.
 - Add **`RESEND_API_KEY`** = the `re_…` value, for **Production** (and Preview if you want).
 - **(Optional, like wolves-removals) `CONTACT_TO`** = the inbox that should receive enquiry notifications (e.g. `info@sussexstoragecompany.co.uk` or your own Gmail). If unset, defaults to `info@sussexstoragecompany.co.uk`.
-- **(Optional) `CONTACT_FROM`** = the verified sender, e.g. `Wolves Storage Sussex <enquiries@sussexstoragecompany.co.uk>`. If unset, uses that default (its domain must be Resend-verified).
+- **(Optional) `CONTACT_FROM`** = the verified sender, e.g. `Wolves Storage Sussex <info@sussexstoragecompany.co.uk>`. If unset, uses that default (its domain must be Resend-verified).
 - **Redeploy** (Deployments → Retry deployment) so the variables take effect.
 
 That's it — submissions now email you and auto-reply to the customer. (Tip: if you already run Resend for wolves-removals, you can reuse the same `RESEND_API_KEY`; just verify `sussexstoragecompany.co.uk` as a domain in the same Resend account.)

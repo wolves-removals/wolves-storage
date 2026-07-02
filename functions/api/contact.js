@@ -7,7 +7,7 @@
 //   2. Cloudflare Pages → Settings → Environment variables → add RESEND_API_KEY.
 
 const OWNER_TO = "info@sussexstoragecompany.co.uk";                       // where enquiries land
-const FROM     = "Wolves Storage Sussex <enquiries@sussexstoragecompany.co.uk>"; // verified Resend domain
+const FROM     = "Wolves Storage Sussex <info@sussexstoragecompany.co.uk>"; // verified Resend domain
 const SITE     = "https://www.sussexstoragecompany.co.uk";
 const LOGO     = SITE + "/images/email-logo.png";
 const PHONE    = "01903 893731";
