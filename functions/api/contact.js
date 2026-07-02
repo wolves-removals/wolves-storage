@@ -210,7 +210,7 @@ export async function onRequestPost({ request, env }) {
     to: [email],
     reply_to: to,
     subject: "Thanks for contacting Wolves Storage Sussex",
-    html: customerEmail({ first, enquiry, message, collect, addr }),
+    html: customerEmail({ first, enquiry, message, collect, addr, inventory }),
   });
 
   if (!owner.ok) return json({ ok:false, error:"Could not send your message. Please call us." }, 502);
@@ -316,18 +316,53 @@ ${submitted ? `<p style="margin:0;font-size:12px;color:${C.grey};">Submitted ${e
   return shell(inner);
 }
 
-function customerEmail({ first, enquiry, message, collect, addr }){
+function customerEmail({ first, enquiry, message, collect, addr, inventory }){
+  const steps = [
+    ["1","We review your enquiry","Our family team looks over your details straight away."],
+    ["2","You get your free quote","A clear, no-obligation quote &mdash; within 24 hours."],
+    ["3","We arrange it around you","Collection from your door or drop-off &mdash; whatever suits you."],
+  ].map(function(s){ return `
+<tr>
+<td width="48" valign="top" style="padding:0 14px 16px 0;">
+<table role="presentation" cellpadding="0" cellspacing="0"><tr><td width="34" height="34" align="center" valign="middle" style="width:34px;height:34px;background:${C.grey};border-radius:17px;color:#ffffff;font-size:15px;font-weight:bold;font-family:Arial,Helvetica,sans-serif;">${s[0]}</td></tr></table>
+</td>
+<td valign="top" style="padding:0 0 16px 0;">
+<div style="font-size:15px;font-weight:bold;color:${C.ink};">${s[1]}</div>
+<div style="font-size:14px;color:${C.grey};line-height:1.5;">${s[2]}</div>
+</td>
+</tr>`; }).join("");
+
+  const recap = (enquiry || (collect === "Yes" && addr) || message || inventory);
+
   const inner = `
-<h1 style="margin:0 0 14px;font-size:22px;color:${C.ink};">Thanks, ${esc(first)} — we&rsquo;ve got your enquiry</h1>
-<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:${C.ink};">Thanks for getting in touch with <strong>Wolves Storage Sussex</strong>. A member of our friendly, family-run team will get back to you shortly &mdash; and we&rsquo;ll send your free, no-obligation quote within 24 hours.</p>
-${(enquiry || message || collect === "Yes") ? `<p style="margin:0 0 8px;font-size:13px;color:${C.grey};font-weight:bold;">What you sent us</p>
-<div style="background:${C.light};border:1px solid ${C.border};border-radius:10px;padding:16px;font-size:15px;line-height:1.6;color:${C.ink};">
-${enquiry ? `<strong>Storing:</strong> ${esc(enquiry)}<br>` : ""}${(collect === "Yes" && addr) ? `<strong>Collection from:</strong> ${esc(addr)}<br>` : ""}${message ? nl2br(message) : ""}
-</div>` : ""}
-<p style="margin:22px 0;font-size:15px;line-height:1.6;color:${C.ink};">Need us sooner? Give us a call &mdash; we&rsquo;re happy to help.</p>
-<table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:${C.orange};border-radius:999px;">
-<a href="tel:+441903893731" style="display:inline-block;padding:13px 28px;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;letter-spacing:.3px;">Call ${PHONE}</a>
+<h1 style="margin:0 0 6px;font-size:23px;color:${C.ink};">Thanks, ${esc(first)} &mdash; we&rsquo;ve got your enquiry</h1>
+<p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:${C.ink};">Thanks for choosing <strong>Wolves Storage Sussex</strong> &mdash; our friendly, family-run team. Here&rsquo;s exactly what happens next.</p>
+
+<div style="background:${C.light};border:1px solid ${C.border};border-radius:12px;padding:20px 22px 6px;margin:0 0 24px;">
+<p style="margin:0 0 16px;font-size:12px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;color:${C.grey};">What happens next</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${steps}</table>
+</div>
+
+${recap ? `<p style="margin:0 0 8px;font-size:12px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;color:${C.grey};">Your enquiry</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+${row("Storing", esc(enquiry))}
+${(collect === "Yes" && addr) ? row("Collection", esc(addr)) : ""}
+</table>
+${estimateBlock(inventory)}
+${message ? `<p style="margin:16px 0 6px;font-size:13px;color:${C.grey};font-weight:bold;">Your message</p>
+<div style="background:${C.light};border:1px solid ${C.border};border-radius:10px;padding:14px 16px;font-size:15px;line-height:1.6;color:${C.ink};">${nl2br(message)}</div>` : ""}` : ""}
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;"><tr><td style="background:${C.grey};border-radius:10px;padding:16px 18px;text-align:center;">
+<div style="color:#FFD54A;font-size:16px;letter-spacing:2px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<div style="color:#ffffff;font-size:15px;font-weight:bold;margin-top:4px;">Rated 5.0 from 616 reviews</div>
+<div style="color:${C.beige};font-size:12px;margin-top:5px;line-height:1.6;">LAPADA accredited &middot; Checkatrade verified &middot; Fully insured &middot; From &pound;15/week</div>
 </td></tr></table>
+
+<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:${C.ink};">Need us sooner, or want to add anything? Just reply to this email &mdash; or give us a call.</p>
+<table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:${C.orange};border-radius:999px;">
+<a href="tel:+441903893731" style="display:inline-block;padding:13px 30px;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;letter-spacing:.3px;">Call ${PHONE}</a>
+</td></tr></table>
+
 <p style="margin:26px 0 0;font-size:15px;color:${C.ink};">Speak soon,<br><strong>The Wolves Storage Sussex team</strong></p>`;
   return shell(inner);
 }
