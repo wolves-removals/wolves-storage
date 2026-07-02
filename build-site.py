@@ -562,7 +562,7 @@ ORG = json.dumps({"@context":"https://schema.org","@type":["SelfStorage","Moving
   "geo":{"@type":"GeoCoordinates","latitude":"50.9270","longitude":"-0.4470"},
   "areaServed":[{"@type":"City","name":a} for a in AREA_SERVED],
   "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:30","closes":"18:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Saturday"],"opens":"09:00","closes":"16:00"}],
-  "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"478","bestRating":"5"},
+  "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"616","bestRating":"5"},
   "sameAs":SOCIALS_URLS+TRUST_URLS},ensure_ascii=False)
 
 def head(d):
@@ -860,7 +860,7 @@ def town_service_schema(t):
         "name":"Storage in "+t["town"],
         "provider":{"@type":["SelfStorage","MovingCompany"],"name":"Wolves Storage Sussex","telephone":"+441903893731","url":BASE,
             "image":BASE+"images/wolves-storage-logo@480.webp","address":ADDR_LD,
-            "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"478","bestRating":"5"}},
+            "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"616","bestRating":"5"}},
         "areaServed":{"@type":"Place","name":t["town"] if "Sussex" in t["town"] else t["town"]+", "+t.get("region","West Sussex"),"geo":{"@type":"GeoCoordinates","latitude":t["lat"],"longitude":t["lng"]}},
         "url":BASE+t["slug"]+".html",
         "offers":{"@type":"Offer","price":"15","priceCurrency":"GBP","priceSpecification":{"@type":"UnitPriceSpecification","price":"15","priceCurrency":"GBP","referenceQuantity":{"@type":"QuantitativeValue","value":"1","unitText":"WEEK"}}}
@@ -947,7 +947,7 @@ TSTAT_ICONS={
  "tag":'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 12 4.8H4.5v7.5l8.6 8.6a1.6 1.6 0 0 0 2.3 0l5.2-5.2a1.6 1.6 0 0 0 0-2.3z"/><circle cx="8" cy="8" r="1.4"/></svg>',
  "shield":'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 5.7V11c0 4.6 3 7.8 7 9.3 4-1.5 7-4.7 7-9.3V5.7z"/><path d="M9 11.8l2 2 4-4"/></svg>',
 }
-TSTAT_DATA=[("star","5.0","478 verified reviews"),("home","Since 2016","Family-run &amp; local"),
+TSTAT_DATA=[("star","5.0","616 verified reviews"),("home","Since 2016","Family-run &amp; local"),
             ("tag","&pound;15","per week, no deposit"),("shield","100%","Insured &amp; alarmed")]
 TSTAT_CSS=('<style>'
   '.tstats{position:relative;overflow:hidden;background:linear-gradient(120deg,#6f7d89 0%,#697783 45%,#5d6a75 100%)}'
@@ -1205,7 +1205,7 @@ def town_pricing(t, heading=None, lead=None, eyebrow=None, quote=None, fits=None
            '<span class="tp-amount"><span class="tp-pound">&pound;</span><span class="tp-num">15</span><span class="tp-per">/week</span></span>'
            '<p class="tp-sub">No deposit &middot; collection &amp; redelivery quoted upfront</p>'
            +btn(quote,"contact.html","px-8")+
-           '<div class="tp-trust"><span class="tp-chip"><span class="st">&#9733;</span> 5.0 from 478 reviews</span>'
+           '<div class="tp-trust"><span class="tp-chip"><span class="st">&#9733;</span> 5.0 from 616 reviews</span>'
            '<span class="tp-chip">Fully insured</span></div></div>')
     detail=('<div class="tp-detail">'
             '<div><h3 class="tp-h">What&rsquo;s included</h3><ul class="tp-list">'+lis(inc)+'</ul></div>'
@@ -1272,7 +1272,7 @@ def service_schema(file,nav):
         "description":"Fully managed "+nav.lower()+" across West Sussex from Wolves Storage Sussex &mdash; collected from your door, sealed into your own wooden container, securely stored and redelivered.",
         "provider":{"@type":["SelfStorage","MovingCompany"],"name":"Wolves Storage Sussex","telephone":"+441903893731","url":BASE,
             "image":BASE+"images/wolves-storage-logo@480.webp","address":ADDR_LD,
-            "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"478","bestRating":"5"}},
+            "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"616","bestRating":"5"}},
         "areaServed":{"@type":"AdministrativeArea","name":"West Sussex"},
         "url":BASE+file,
         "offers":{"@type":"Offer","price":"15","priceCurrency":"GBP","priceSpecification":{"@type":"UnitPriceSpecification","price":"15","priceCurrency":"GBP","referenceQuantity":{"@type":"QuantitativeValue","value":"1","unitText":"WEEK"}}}
@@ -1514,7 +1514,7 @@ TOWNS = [
   img2="hero-team-loading.webp",img2_alt="Wolves Storage Sussex team packing a container for an Ashington customer",
   s2_h2="Why Ashington Stores With Wolves",
   s2=["As a family-run business based in the village since 2016, we&rsquo;re your genuine local storer &mdash; not a faceless national chain. Being on the doorstep keeps collection fast, redelivery quick (just 24 hours&rsquo; notice) and our whole service personal.",
-      "We&rsquo;re LAPADA accredited, Checkatrade-verified and fully insured, rated 5.0 from 478 reviews and trusted by estate agents along the A24 corridor. Your belongings stay clean, dry and secure with neighbours who genuinely care."],
+      "We&rsquo;re LAPADA accredited, Checkatrade-verified and fully insured, rated 5.0 from 616 reviews and trusted by estate agents along the A24 corridor. Your belongings stay clean, dry and secure with neighbours who genuinely care."],
   img3="hero-containers-van.webp",img3_alt="Sealed storage containers at the Wolves Storage Sussex Ashington warehouse",
   s3_h2="Storage for Every Ashington Need",
   s3=["From a few boxes during a house sale to the entire contents of a home between completion dates, we handle <a href=\"short-term-storage.html\">short-term</a> and <a href=\"long-term-storage.html\">long-term</a> storage, plus <a href=\"business-storage.html\">business storage</a> for local traders and offices and dedicated <a href=\"furniture-storage.html\">furniture storage</a>.",
@@ -1538,7 +1538,7 @@ TOWNS = [
   img2="gallery-loading.webp",img2_alt="Wolves Storage Sussex loading a container for a Washington customer",
   s2_h2="Why Washington Chooses Wolves",
   s2=["You won&rsquo;t find a closer, more genuinely local storer. We&rsquo;ve served the villages around Chanctonbury since 2016 as a family-run team, so your belongings stay minutes away rather than in some distant industrial unit.",
-      "Fully insured, 24/7 CCTV, LAPADA accredited and Checkatrade-verified, rated 5.0 from 478 reviews. Compare our honest <a href=\"pricing.html\">prices</a> or browse <a href=\"storage-solutions.html\">storage solutions</a>."],
+      "Fully insured, 24/7 CCTV, LAPADA accredited and Checkatrade-verified, rated 5.0 from 616 reviews. Compare our honest <a href=\"pricing.html\">prices</a> or browse <a href=\"storage-solutions.html\">storage solutions</a>."],
   img3="hero-forklift.webp",img3_alt="Forklift stacking storage containers near Washington, West Sussex",
   s3_h2="Storage to Suit Any Washington Move",
   s3=["Choose <a href=\"short-term-storage.html\">short-term storage</a> to bridge a move, <a href=\"long-term-storage.html\">long-term storage</a> for a renovation or time abroad, or <a href=\"furniture-storage.html\">furniture storage</a> while you redecorate.",
@@ -1562,7 +1562,7 @@ TOWNS = [
   img2="hero-team-loading.webp",img2_alt="Wolves Storage Sussex team wrapping furniture for a Storrington home",
   s2_h2="Why Storrington Trusts Wolves",
   s2=["Being a genuinely local, family-run team matters: your belongings stay minutes away, our service is personal, and we know the lanes around Sullington and Thakeham well. We&rsquo;ve served the area since 2016.",
-      "LAPADA accredited, Checkatrade-verified, fully insured and rated 5.0 from 478 reviews &mdash; the same care a national chain simply can&rsquo;t match. Explore our <a href=\"storage-solutions.html\">storage solutions</a>."],
+      "LAPADA accredited, Checkatrade-verified, fully insured and rated 5.0 from 616 reviews &mdash; the same care a national chain simply can&rsquo;t match. Explore our <a href=\"storage-solutions.html\">storage solutions</a>."],
   img3="hero-packed-container.webp",img3_alt="A sealed container packed with a Storrington customer's furniture",
   s3_h2="Storage for Homes &amp; Businesses in Storrington",
   s3=["From <a href=\"short-term-storage.html\">short-term</a> space during a move to <a href=\"long-term-storage.html\">long-term</a> storage and <a href=\"business-storage.html\">business storage</a> for village traders, we tailor it to you &mdash; plus dedicated <a href=\"furniture-storage.html\">furniture storage</a>.",
@@ -1586,7 +1586,7 @@ TOWNS = [
   img2="gallery-loading.webp",img2_alt="Loading a storage container for a Pulborough customer",
   s2_h2="Your Local Pulborough Storage Team",
   s2=["Because we&rsquo;re practically neighbours, you get a level of local care the national operators can&rsquo;t: fast collection, quick redelivery and a family team that has served the area since 2016.",
-      "Fully insured, LAPADA accredited and Checkatrade-verified, rated 5.0 from 478 reviews. Whatever you&rsquo;re storing, browse our <a href=\"storage-solutions.html\">storage solutions</a>."],
+      "Fully insured, LAPADA accredited and Checkatrade-verified, rated 5.0 from 616 reviews. Whatever you&rsquo;re storing, browse our <a href=\"storage-solutions.html\">storage solutions</a>."],
   img3="hero-containers-van.webp",img3_alt="Sealed storage containers ready for a Pulborough collection",
   s3_h2="Storage for Every Pulborough Need",
   s3=["Use <a href=\"short-term-storage.html\">short-term storage</a> between completion dates, <a href=\"long-term-storage.html\">long-term storage</a> for an extended stay, <a href=\"business-storage.html\">business storage</a> for stock, or <a href=\"furniture-storage.html\">furniture storage</a> during a renovation.",
@@ -1610,7 +1610,7 @@ TOWNS = [
   img2="hero-team-loading.webp",img2_alt="Wolves Storage Sussex team packing belongings for a Henfield customer",
   s2_h2="The Local Choice for Henfield Storage",
   s2=["You don&rsquo;t have to settle for a big self-storage warehouse: as a family-run team since 2016, we offer Henfield a friendlier, fully managed alternative where we do the packing, lifting and driving for you.",
-      "LAPADA accredited, Checkatrade-verified, fully insured and rated 5.0 from 478 reviews. Curious how managed storage compares? Browse our <a href=\"storage-solutions.html\">storage solutions</a> and <a href=\"pricing.html\">prices</a>."],
+      "LAPADA accredited, Checkatrade-verified, fully insured and rated 5.0 from 616 reviews. Curious how managed storage compares? Browse our <a href=\"storage-solutions.html\">storage solutions</a> and <a href=\"pricing.html\">prices</a>."],
   img3="gallery-warehouse-a.webp",img3_alt="Secure indoor container storage warehouse serving Henfield",
   s3_h2="Storage for Homes &amp; Businesses in Henfield",
   s3=["Whether it&rsquo;s <a href=\"short-term-storage.html\">short-term storage</a> for a move, <a href=\"long-term-storage.html\">long-term storage</a>, <a href=\"furniture-storage.html\">furniture storage</a> during a renovation or <a href=\"business-storage.html\">business storage</a> for a local trader, we tailor it to you.",
@@ -1634,7 +1634,7 @@ TOWNS = [
   img2="gallery-forklift-b.webp",img2_alt="Forklift moving storage containers for a Steyning customer",
   s2_h2="Why Steyning Stores With Wolves",
   s2=["Storing close to home matters in a town like Steyning, and we&rsquo;ve looked after local families and businesses since 2016 as a genuinely local, family-run team &mdash; not a distant chain.",
-      "Fully insured, LAPADA accredited, Checkatrade-verified and rated 5.0 from 478 reviews. Explore our <a href=\"storage-solutions.html\">storage solutions</a> to find the right fit."],
+      "Fully insured, LAPADA accredited, Checkatrade-verified and rated 5.0 from 616 reviews. Explore our <a href=\"storage-solutions.html\">storage solutions</a> to find the right fit."],
   img3="hero-team-loading.webp",img3_alt="Wolves Storage Sussex team loading a container in Steyning",
   s3_h2="Flexible Storage for Steyning",
   s3=["From <a href=\"short-term-storage.html\">short-term storage</a> during a chain delay to <a href=\"long-term-storage.html\">long-term</a> options, <a href=\"furniture-storage.html\">furniture storage</a> and <a href=\"business-storage.html\">business storage</a>, we shape it around you.",
@@ -1658,7 +1658,7 @@ TOWNS = [
   img2="hero-containers-van.webp",img2_alt="Storage containers and van serving Billingshurst, West Sussex",
   s2_h2="Why Billingshurst Chooses Wolves",
   s2=["As a family-run business serving the area since 2016, we keep things personal and local &mdash; your belongings stay nearby and your collection is handled by a team that knows the RH14 lanes.",
-      "Fully insured, LAPADA accredited, Checkatrade-verified and rated 5.0 from 478 reviews. Find the right option in our <a href=\"storage-solutions.html\">storage solutions</a>."],
+      "Fully insured, LAPADA accredited, Checkatrade-verified and rated 5.0 from 616 reviews. Find the right option in our <a href=\"storage-solutions.html\">storage solutions</a>."],
   img3="gallery-loading.webp",img3_alt="Loading belongings into a container for a Billingshurst customer",
   s3_h2="Storage for Homes &amp; Businesses in Billingshurst",
   s3=["Whether you need <a href=\"short-term-storage.html\">short-term storage</a> during a move, <a href=\"long-term-storage.html\">long-term storage</a>, <a href=\"furniture-storage.html\">furniture storage</a> or <a href=\"business-storage.html\">business storage</a> for stock and archives, we tailor it to you.",
@@ -1682,7 +1682,7 @@ TOWNS = [
   img2="hero-team-loading.webp",img2_alt="Wolves Storage Sussex team packing a container for a Horsham home",
   s2_h2="Why Horsham Stores With Wolves",
   s2=["With so many storage options around Horsham, the difference is service: we&rsquo;re a family-run team that has looked after Sussex homes since 2016, doing the packing, lifting and driving so you don&rsquo;t have to.",
-      "Fully insured, LAPADA accredited, Checkatrade-verified and rated 5.0 from 478 reviews &mdash; and we&rsquo;re trusted by Horsham estate agents. Prefer self-storage? See why our <a href=\"storage-solutions.html\">managed containers</a> are cleaner and more secure."],
+      "Fully insured, LAPADA accredited, Checkatrade-verified and rated 5.0 from 616 reviews &mdash; and we&rsquo;re trusted by Horsham estate agents. Prefer self-storage? See why our <a href=\"storage-solutions.html\">managed containers</a> are cleaner and more secure."],
   img3="hero-containers-van.webp",img3_alt="Sealed storage containers ready for a Horsham collection",
   s3_h2="Storage for Every Horsham Move",
   s3=["From <a href=\"short-term-storage.html\">short-term storage</a> between houses to <a href=\"long-term-storage.html\">long-term</a> options, <a href=\"furniture-storage.html\">furniture storage</a> during a renovation and <a href=\"business-storage.html\">business storage</a> for the town&rsquo;s many offices and retailers, we tailor everything to you.",
@@ -1708,7 +1708,7 @@ TOWNS = [
   img2="gallery-loading.webp",img2_alt="Wolves Storage Sussex loading a container for a Worthing customer",
   s2_h2="Why Worthing Chooses Wolves",
   s2=["Worthing&rsquo;s mix of downsizers, families and students makes managed storage especially handy &mdash; no van, no driving, no lifting. We&rsquo;ve served the Sussex coast since 2016 as a family-run team.",
-      "Fully insured, LAPADA accredited, Checkatrade-verified and rated 5.0 from 478 reviews. Storing furniture? See our dedicated <a href=\"furniture-storage.html\">furniture storage</a>."],
+      "Fully insured, LAPADA accredited, Checkatrade-verified and rated 5.0 from 616 reviews. Storing furniture? See our dedicated <a href=\"furniture-storage.html\">furniture storage</a>."],
   img3="hero-packed-container.webp",img3_alt="A sealed container packed with a Worthing customer's belongings",
   s3_h2="Storage for Every Worthing Need",
   s3=["Whether it&rsquo;s <a href=\"short-term-storage.html\">short-term storage</a> during a move, <a href=\"long-term-storage.html\">long-term storage</a> while downsizing, <a href=\"business-storage.html\">business storage</a> for seafront traders or student storage over summer, we shape it around you.",
@@ -1833,7 +1833,7 @@ def furniture_page():
            "As a LAPADA-accredited team we also handle fine and antique furniture with specialist care. Not sure how much space you need? Try our <a href=\"storage-size-guide.html\">size guide</a>."],
           IMG("wrapping-framed-picture-furni-soft.webp"),"A Wolves Storage Sussex packer wrapping a framed picture in Furni-soft padding before storage",reverse=True),
         svc_situations("When Furniture Storage Helps","Whatever&rsquo;s behind your move, our fully managed furniture storage is built for it &mdash; wrapped, sealed and fully insured, from just &pound;15 a week.",[("home","Between homes","Store a sofa or a whole houseful between moves &mdash; blanket-wrapped, sealed and brought back when you&rsquo;re in."),("wrench","Renovating &amp; redecorating","Protect furniture from dust and damage while the work&rsquo;s done, then have it all returned."),("box","Downsizing","Keep the pieces you&rsquo;re not ready to part with, safely stored until you decide."),("sofa","Antiques &amp; fine pieces","LAPADA-accredited care for antique, fragile and high-value furniture &mdash; wrapped and handled properly.")]),
-        svc_whychoose("Furniture Storage",[("shield","Blanket-Wrapped &amp; Sealed","Every piece is wrapped and padded, then sealed into your own container in a dry, alarmed warehouse &mdash; no scuffs, no damp."),("family","LAPADA-Accredited Care","Trusted to handle fine, antique and fragile furniture &mdash; a family team rated 5.0 from 478 reviews."),("truck","We Collect &amp; Redeliver","We bring the materials, do all the lifting and wrapping, and redeliver on 24 hours&rsquo; notice."),("tag","From &pound;15/week, No Deposit","Store a single sofa or a whole home &mdash; pay only for the container space you use, with no hidden fees.")]),
+        svc_whychoose("Furniture Storage",[("shield","Blanket-Wrapped &amp; Sealed","Every piece is wrapped and padded, then sealed into your own container in a dry, alarmed warehouse &mdash; no scuffs, no damp."),("family","LAPADA-Accredited Care","Trusted to handle fine, antique and fragile furniture &mdash; a family team rated 5.0 from 616 reviews."),("truck","We Collect &amp; Redeliver","We bring the materials, do all the lifting and wrapping, and redeliver on 24 hours&rsquo; notice."),("tag","From &pound;15/week, No Deposit","Store a single sofa or a whole home &mdash; pay only for the container space you use, with no hidden fees.")]),
         process(),
         gallery([(IMG("wrapping-chair-protective-blanket-container.webp"),"A Wolves Storage Sussex packer wrapping a chair in a protective blanket for container storage","Wrapped ready for storage"),
                  (IMG("taping-furni-guard-around-furniture-lounge.webp"),"A Wolves Storage Sussex packer taping Furni-guard protection around furniture","Padded &amp; protected"),
@@ -1949,23 +1949,23 @@ def reviews_page():
         "@id":BASE+"#business",
         "review":[{"@type":"Review","author":{"@type":"Person","name":n},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5","worstRating":"1"},"reviewBody":html.unescape(r)} for n,r in REVIEWS]},ensure_ascii=False)+'</script>')
     return dict(file="reviews.html",slug="reviews",nav="Reviews",
-        title="Reviews | 5.0 Stars from 478 | Wolves Storage Sussex",
-        meta="Why West Sussex rates us 5.0 from 478 reviews — LAPADA-accredited, fully insured storage from £15/week, collected from your door. Free quote.",
+        title="Reviews | 5.0 Stars from 616 | Wolves Storage Sussex",
+        meta="Why West Sussex rates us 5.0 from 616 reviews — LAPADA-accredited, fully insured storage from £15/week, collected from your door. Free quote.",
         hero=IMG(HERO_ANTIQUE[0]),extra_schema=rs,
         sections=[
           hero(IMG(HERO_ANTIQUE[0]),HERO_ANTIQUE[1],"Our Storage Customers Rate Us 5.0",
             "Don&rsquo;t just take our word for it &mdash; here&rsquo;s what West Sussex families and businesses say about storing with our family team.",
-            ["5.0 stars from 478 reviews","Verified on Google, Checkatrade &amp; Facebook","LAPADA accredited &amp; fully insured","Trusted by West Sussex estate agents"],big=False),
+            ["5.0 stars from 616 reviews","Verified on Google, Checkatrade &amp; Facebook","LAPADA accredited &amp; fully insured","Trusted by West Sussex estate agents"],big=False),
           centered("bg-white","What Our Customers Say","Genuine, verified reviews from the families and businesses we&rsquo;ve helped across West Sussex.",review_cards()),
           ('<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="max-w-4xl mx-auto">'
-           '<span class="block text-orange font-bold uppercase tracking-wider text-sm mb-2">5.0 from 478 reviews</span>'
+           '<span class="block text-orange font-bold uppercase tracking-wider text-sm mb-2">5.0 from 616 reviews</span>'
            '<h2 class="leading-tight text-black">A Reputation Built on Word of Mouth</h2>'
            '<div class="mt-5 text-darkgrey text-lg">'
            '<p>Storage is a business built entirely on trust &mdash; you&rsquo;re handing over the things that matter most and trusting someone to look after them properly. That&rsquo;s why we&rsquo;re proud that so much of our work comes from personal recommendations and repeat customers, and why we&rsquo;ve earned a 5.0-star rating across hundreds of verified reviews on Google, Checkatrade and Facebook. Every one of those reviews comes from a real West Sussex household or business we&rsquo;ve actually helped store, move or downsize.</p>'
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">What customers tell us matters most</h3>'
            '<p>Read through our feedback and the same themes come up again and again: belongings returned in exactly the condition they left in, a friendly team that turns up when they say they will, clear and honest pricing with no surprises, and the reassurance of dealing with the same people from the first quote to the final redelivery. Because we&rsquo;re a small, family-run team rather than a faceless national chain, those details don&rsquo;t slip through the cracks.</p>'
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">Independently verified, not cherry-picked</h3>'
-           '<p>Our reviews are collected and verified through <a href="https://www.trustindex.io/reviews/www.wolves-removals.co.uk" target="_blank" rel="noopener">Trustindex</a>, which gathers genuine, spam-checked feedback from multiple platforms in one place &mdash; 478 five-star reviews in total, of which our verified Google reviews are shown below &mdash; so what you see is the real picture, not a hand-picked selection. We&rsquo;re also LAPADA-accredited, Checkatrade-verified and fully insured, and we&rsquo;re recommended by respected estate agents across the region.</p>'
+           '<p>Our reviews are collected and verified through <a href="https://www.trustindex.io/reviews/www.wolves-removals.co.uk" target="_blank" rel="noopener">Trustindex</a>, which gathers genuine, spam-checked feedback from multiple platforms in one place &mdash; 616 five-star reviews in total, of which our verified Google reviews are shown below &mdash; so what you see is the real picture, not a hand-picked selection. We&rsquo;re also LAPADA-accredited, Checkatrade-verified and fully insured, and we&rsquo;re recommended by respected estate agents across the region.</p>'
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">Trusted right across West Sussex</h3>'
            '<p>From <a href="storage-horsham.html">Horsham</a> and <a href="storage-crawley.html">Crawley</a> to the <a href="storage-worthing.html">Worthing</a> and <a href="storage-chichester.html">Chichester</a> coast, families and businesses across the county have chosen us for storage they don&rsquo;t have to worry about. Wherever you are, you can expect the same standard of care that earned those five-star reviews &mdash; see every <a href="areas-we-cover.html">area we cover</a>.</p>'
            '<h3 class="text-black font-bold text-xl mt-7 mb-2">See for yourself, then store with confidence</h3>'
@@ -3369,7 +3369,7 @@ def blog_post_page(p):
       '<div class="st"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg></i><span>Redeliver</span></div>'
       '</div>'
       '<a class="art-ctabtn" href="contact.html">Book my collection<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="18" y2="12"/><polyline points="12 6 19 12 12 18"/></svg></a>'
-      '<div class="art-ctatrust"><span class="star">&#9733;</span> <b>5.0</b> from 478 reviews <span class="dot">&middot;</span> Checkatrade verified</div></div>')
+      '<div class="art-ctatrust"><span class="star">&#9733;</span> <b>5.0</b> from 616 reviews <span class="dot">&middot;</span> Checkatrade verified</div></div>')
     toc_js=('<script>(function(){var links=[].slice.call(document.querySelectorAll(".art-toc ol a"));if(!links.length)return;'
       'var secs=links.map(function(a){return document.getElementById((a.getAttribute("href")||"").slice(1));});'
       'var fill=document.querySelector(".art-toc .fill");var main=document.querySelector(".art-main");var prog=document.querySelector(".art-prog span");var pctEl=document.querySelector(".art-toc .pct b");'
@@ -3389,7 +3389,7 @@ def blog_post_page(p):
       '<div class="art-creds">'
       '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Est. 2016</span>'
       '<span>'+_shd+'LAPADA accredited</span>'
-      '<span><span class="star">&#9733;</span> 5.0 from 478 reviews</span>'
+      '<span><span class="star">&#9733;</span> 5.0 from 616 reviews</span>'
       '<span>'+_shd+'Fully insured</span>'
       '</div></div>')
     body_sec=('<section class="art relative bg-white w-full pt-8 lg:pt-12 pb-7 lg:pb-12 border-border"><div class="container"><div class="art-wrap">'
@@ -3423,7 +3423,7 @@ def build():
     # HOME
     P.append(dict(file="index.html",slug="home",nav="Home",
       title="Secure Storage in West Sussex | Wolves Storage Sussex",
-      meta="Managed storage across West Sussex from £15/week — we collect, pack & store your belongings, fully insured. No unit to visit. Rated 5.0 from 478.",
+      meta="Managed storage across West Sussex from £15/week — we collect, pack & store your belongings, fully insured. No unit to visit. Rated 5.0 from 616.",
       hero=IMG(HERO_WAREHOUSE[0]),extra_schema=VIDEO_SCHEMA,faqs=HOME_FAQS,
       sections=[
         hero(IMG(HERO_WAREHOUSE[0]),HERO_WAREHOUSE[1],"Secure Storage in West Sussex",
@@ -3495,7 +3495,7 @@ def build():
       why=[("shield","Sealed, Not Shelved","Your own private wooden container, sealed and logged in our alarmed, 24/7 CCTV warehouse &mdash; never loose on open shelving."),
            ("truck","Fully Managed, Door to Door","We bring the materials, pack, collect and redeliver &mdash; you never hire a van or lift a box."),
            ("tag","From &pound;15/week, No Deposit","Pay only for the container space you use, on flexible weekly and 4-week terms with no hidden fees."),
-           ("family","Family-Run &amp; LAPADA Accredited","A local West Sussex family team, Checkatrade-verified and rated 5.0 from 478 reviews.")]))
+           ("family","Family-Run &amp; LAPADA Accredited","A local West Sussex family team, Checkatrade-verified and rated 5.0 from 616 reviews.")]))
     P.append(service("long-term-storage.html","longterm","Long-Term Storage",
       "Long-Term Storage West Sussex | Wolves Storage Sussex",
       "Affordable long-term storage in West Sussex from £15/week. Fully insured, 24/7 CCTV, no deposit — ideal for emigrating, renovations & downsizing.",
@@ -3503,7 +3503,7 @@ def build():
       "Storing for months or years? Our containerised long-term storage keeps your belongings clean, dry and secure &mdash; with better value the longer you stay.",
       ["Better value the longer you store","Clean, dry, sealed containers","Fully insured &amp; 24/7 CCTV","No deposit, simple rolling terms"],
       ("Who Long-Term Storage Suits",["Perfect for working abroad, major renovations, downsizing or settling an estate. Your belongings stay sealed, clean and insured for as long as you need.","Store with total peace of mind and access whenever you need it &mdash; we redeliver the moment you&rsquo;re ready.","Because each container is sealed and logged on collection, your belongings aren&rsquo;t handled again until they come home &mdash; cleaner and far safer over months or years than a drive-up unit you keep visiting yourself."]),
-      ("Clean, Dry & Secure for the Long Haul",["Everything is wrapped and sealed in its own wooden container inside our dry, alarmed indoor facility, so it stays protected for the long term.","The longer you store, the better the value &mdash; ask about long-term rates on your free quote.","We&rsquo;re LAPADA accredited and Checkatrade-verified, rated 5.0 from 478 reviews, with full insurance and 24/7 CCTV throughout &mdash; so your belongings are in genuinely trusted hands for the long haul. See exactly <a href=\"how-it-works.html\">how it works</a>."]),
+      ("Clean, Dry & Secure for the Long Haul",["Everything is wrapped and sealed in its own wooden container inside our dry, alarmed indoor facility, so it stays protected for the long term.","The longer you store, the better the value &mdash; ask about long-term rates on your free quote.","We&rsquo;re LAPADA accredited and Checkatrade-verified, rated 5.0 from 616 reviews, with full insurance and 24/7 CCTV throughout &mdash; so your belongings are in genuinely trusted hands for the long haul. See exactly <a href=\"how-it-works.html\">how it works</a>."]),
       [("How much does long-term storage cost?","From &pound;15 per week with no deposit, and the longer you store the better the value &mdash; ask about long-term rates on your free quote."),
        ("Will my belongings stay in good condition?","Yes &mdash; sealed wooden containers in a dry, alarmed indoor facility keep everything clean and protected for years."),
        ("Can I access items during storage?","Absolutely &mdash; give us 24 hours&rsquo; notice and we&rsquo;ll redeliver what you need, then store the rest."),
@@ -3520,7 +3520,7 @@ def build():
       why=[("tag","Better Value the Longer You Stay","Long stays cost less per week &mdash; ask about our long-term rates. Always no deposit and no hidden fees, however many months or years you store."),
            ("shield","Sealed &amp; Protected for Years","Your own wooden container is sealed and logged, then kept in a dry, alarmed, 24/7 CCTV warehouse &mdash; built to protect furniture and boxes for the long haul."),
            ("truck","Access Without the Hassle","Need something back mid-storage? Give us 24 hours&rsquo; notice and we redeliver it to your door, then keep the rest safe and sealed."),
-           ("family","LAPADA-Accredited Family Team","Trusted to store whole homes, furniture and antiques long-term &mdash; family-run since 2016 and rated 5.0 from 478 reviews.")]))
+           ("family","LAPADA-Accredited Family Team","Trusted to store whole homes, furniture and antiques long-term &mdash; family-run since 2016 and rated 5.0 from 616 reviews.")]))
     P.append(service("short-term-storage.html","shortterm","Short-Term Storage",
       "Short-Term Storage West Sussex | Wolves Storage Sussex",
       "Short-term storage in West Sussex from £15/week — ideal for moves, chain delays & renovations. We collect & redeliver, fully insured. Free quote.",
@@ -3545,7 +3545,7 @@ def build():
       why=[("truck","Fast Collection","Often within a few days &mdash; we bring the materials, pack and collect, with no van for you to hire."),
            ("tag","Pay by the Week","Flexible weekly terms with no deposit &mdash; only pay for the time and the space you actually use."),
            ("shield","Sealed &amp; Insured, Even Short-Term","Your container is sealed and fully insured in our alarmed, 24/7 CCTV warehouse, even for a few weeks."),
-           ("family","Local, Family-Run","A West Sussex family team that fits around your timescale, rated 5.0 from 478 reviews.")]))
+           ("family","Local, Family-Run","A West Sussex family team that fits around your timescale, rated 5.0 from 616 reviews.")]))
     P.append(service("business-storage.html","business","Business Storage",
       "Business Storage West Sussex | Wolves Storage Sussex",
       "Business storage in West Sussex from £15/week — we collect stock, archives & equipment, fully insured. No unit to visit. Free 24-hour quote.",
@@ -3570,7 +3570,7 @@ def build():
       why=[("truck","Collected From Your Premises","We collect from and redeliver to your business, saving your team time and the cost of van hire."),
            ("tag","Scale Up or Down &mdash; From &pound;15/week","Add or remove containers as your business changes; no long lease, no deposit, pay for what you use."),
            ("shield","Logged, Alarmed &amp; Insured","Every container is logged and sealed in an alarmed, 24/7 CCTV warehouse, fully insured throughout."),
-           ("family","Family-Run &amp; Trusted","A West Sussex family team trusted by local businesses, Checkatrade-verified and rated 5.0 from 478 reviews.")]))
+           ("family","Family-Run &amp; Trusted","A West Sussex family team trusted by local businesses, Checkatrade-verified and rated 5.0 from 616 reviews.")]))
     # HOW IT WORKS
     P.append(dict(file="how-it-works.html",slug="how",nav="How It Works",
       title="How Our Managed Storage Works | Wolves Storage Sussex",
@@ -4388,7 +4388,7 @@ def build():
     # ABOUT
     P.append(dict(file="about.html",slug="about",nav="About",
       title="About Wolves Storage Sussex | West Sussex Storage",
-      meta="Wolves Storage Sussex: family-run, LAPADA-accredited managed storage in Ashington, West Sussex. Fully insured, rated 5.0 from 478 reviews.",
+      meta="Wolves Storage Sussex: family-run, LAPADA-accredited managed storage in Ashington, West Sussex. Fully insured, rated 5.0 from 616 reviews.",
       hero=IMG(HERO_VAN_COLLECT[0]),faqs=[("Are you insured and accredited?","Yes &mdash; fully insured, LAPADA accredited and Checkatrade members."),("How long have you been going?","Over 10 years serving West Sussex as a family-run business.")],
       sections=[
         hero(IMG(HERO_VAN_COLLECT[0]),HERO_VAN_COLLECT[1],"A Trusted Name in West Sussex Storage",
@@ -4512,7 +4512,7 @@ def build():
     <div class="ab-stats">
       <div class="ab-stat"><b>&pound;15</b><span>per week, no deposit</span></div>
       <div class="ab-stat"><b>250 cu ft</b><span>per private container</span></div>
-      <div class="ab-stat"><b>5.0&#9733;</b><span>from 478 reviews</span></div>
+      <div class="ab-stat"><b>5.0&#9733;</b><span>from 616 reviews</span></div>
       <div class="ab-stat"><b>24/7</b><span>CCTV &amp; fully insured</span></div>
     </div>
 
@@ -4704,7 +4704,7 @@ def build():
     llms=("# Wolves Storage Sussex\n\n> "+_unesc(home["meta"])+"\n\n"
           "Family-run, fully managed containerised storage across West Sussex, based in Ashington (Doryln House, London Road, Pulborough RH20 3JT). "
           "We pack, collect, seal and store your belongings in an alarmed, fully insured indoor warehouse, then redeliver — no self-storage unit to drive to. "
-          "Trading since 2016. LAPADA accredited, Checkatrade-verified, 5.0/5 from 478 reviews. From £15/week, no deposit. Phone 01903 893731.\n\n"
+          "Trading since 2016. LAPADA accredited, Checkatrade-verified, 5.0/5 from 616 reviews. From £15/week, no deposit. Phone 01903 893731.\n\n"
           f"- [Home]({BASE}): {_unesc(home['meta'])}\n\n")
     for c in CATS:
         if not buckets[c]: continue

@@ -106,7 +106,7 @@ function shell(inner){
 <strong style="color:${C.ink};">Wolves Storage Sussex</strong> &middot; part of the Wolves Removals family<br>
 Doryln House, London Road, Ashington, Pulborough, West Sussex RH20 3JT<br>
 ${PHONE} &middot; ${OWNER_TO}<br>
-LAPADA accredited &middot; Checkatrade &middot; Fully insured &middot; 5.0&#9733; from 478 reviews
+LAPADA accredited &middot; Checkatrade &middot; Fully insured &middot; 5.0&#9733; from 616 reviews
 </td></tr>
 </table>
 </td></tr></table></body></html>`;
