@@ -32,7 +32,6 @@ export async function onRequestPost({ request, env }) {
   const collect = clean(data.collect_goods);
   const addr = [clean(data.addr1), clean(data.addr2), clean(data.town), clean(data.postcode)].filter(Boolean).join(", ");
   const inventory = clean(data.inventory);
-  const consent = clean(data.consent) ? "Yes" : "";
   let submitted = "";
   try { submitted = new Date().toLocaleString("en-GB", { timeZone:"Europe/London", day:"2-digit", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" }); }
   catch { try { submitted = new Date().toISOString(); } catch {} }
@@ -57,7 +56,7 @@ export async function onRequestPost({ request, env }) {
     to: [to],
     reply_to: email,
     subject: `New storage enquiry — ${first} ${last}`.trim(),
-    html: ownerEmail({ first, last, email, phone, enquiry, message, page, collect, addr, inventory, consent, submitted }),
+    html: ownerEmail({ first, last, email, phone, enquiry, message, page, collect, addr, inventory, submitted }),
   });
 
   // customer confirmation (different email) — best-effort; don't fail the whole request if it bounces
@@ -152,7 +151,7 @@ function estimateBlock(estimateJson){
 ${items}</div>`;
 }
 
-function ownerEmail({ first, last, email, phone, enquiry, message, page, collect, addr, inventory, consent, submitted }){
+function ownerEmail({ first, last, email, phone, enquiry, message, page, collect, addr, inventory, submitted }){
   const collection = collect === "Yes"
     ? (addr ? esc(addr) : "Yes &mdash; collection requested (no address given)")
     : "No &mdash; customer will drop off / no collection needed";
@@ -165,7 +164,6 @@ ${row("Email", `<a href="mailto:${esc(email)}" style="color:${C.orange};text-dec
 ${row("Phone", phone ? `<a href="tel:${esc(phone)}" style="color:${C.orange};text-decoration:none;">${esc(phone)}</a>` : "")}
 ${row("Storing", esc(enquiry))}
 ${row("Collection", collection)}
-${row("Consent", consent === "Yes" ? "&#10003; Agreed to the privacy policy" : "")}
 </table>
 ${estimateBlock(inventory)}
 ${message ? `<p style="margin:22px 0 6px;font-size:13px;color:${C.grey};font-weight:bold;">Message</p>
