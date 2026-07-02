@@ -427,7 +427,7 @@ export async function onRequestPost({ request, env }) {
   const to   = clean(env.CONTACT_TO)   || OWNER_TO;
   const from = clean(env.CONTACT_FROM) || FROM;
 
-  let attachments;
+  let attachments, pdfStatus = "skip";
   try {
     const bytes = await generatePdf({
       first, last, email, phone,
@@ -442,7 +442,8 @@ export async function onRequestPost({ request, env }) {
       content: bytesToBase64(bytes),
       content_type: "application/pdf",
     }];
-  } catch { attachments = undefined; }
+    pdfStatus = "ok:" + bytes.length;
+  } catch (e) { attachments = undefined; pdfStatus = "err:" + (e && e.message ? e.message : String(e)); }
 
   const owner = await sendEmail(env.RESEND_API_KEY, {
     from,
@@ -463,7 +464,7 @@ export async function onRequestPost({ request, env }) {
   });
 
   if (!owner.ok) return json({ ok:false, error:"Could not send your message. Please call us." }, 502);
-  return json({ ok:true });
+  return json({ ok:true, v:"pdf-diag-1", pdfStatus });
 }
 
 // ---------- helpers ----------
