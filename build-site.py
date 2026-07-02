@@ -550,7 +550,27 @@ def head(d):
         '<link rel="preload" href="/fonts/Barlow-Regular.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/Barlow-Semibold.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/Barlow-Bold.woff2" as="font" type="font/woff2" crossorigin>\n'
         f'<link rel="stylesheet" href="{CSSV}">'+A11Y_CSS+f'\n<script type="application/ld+json">{ORG}</script>\n{crumb}\n{faqjson}\n{d.get("extra_schema","")}\n</head>')
 
-SCRIPTS = '<script defer src="/js/alpine.min.js"></script><script defer src="/js/process-carousel.js?v=3"></script>'+FORM_JS
+# Pre-fill the contact form from the size-calculator handoff (?service=&details=), so the
+# customer's estimate flows into the enquiry (and into the email you receive) instead of being lost.
+PREFILL_JS = ('<script>(function(){function run(){try{'
+ 'var p=new URLSearchParams(location.search);var details=p.get("details");var service=p.get("service");'
+ 'if(!details&&!service)return;'
+ 'var msg=document.querySelector(".enquiry-form textarea[name=message]");'
+ 'var form=msg&&msg.closest?msg.closest(".enquiry-form"):document.querySelector(".enquiry-form");'
+ 'if(!form)return;'
+ 'if(msg&&!msg.value.trim()&&details){msg.value="My storage estimate: "+details;}'
+ 'if(details&&!form.querySelector("input[name=enquiry]:checked")){'
+ 'var want=/ongoing|month/i.test(details)?"Long-term":(/day|week/i.test(details)?"Short-term":null);'
+ 'if(want){var chips=form.querySelectorAll("input[name=enquiry]");for(var i=0;i<chips.length;i++){if(chips[i].value===want){chips[i].checked=true;break;}}}}'
+ 'var fields=form.querySelector("[data-form-fields]");'
+ 'if(fields&&fields.parentNode){var n=document.createElement("div");n.setAttribute("role","status");'
+ 'n.style.cssText="margin:0 0 1rem;padding:.85rem 1.1rem;border-radius:.75rem;background:#eef7f0;border:1px solid #cfe8d6;color:#1f5130;font-weight:600;font-size:.95rem";'
+ 'n.textContent="We\\u2019ve pulled in your storage estimate \\u2014 just add your contact details below.";'
+ 'fields.parentNode.insertBefore(n,fields);}'
+ '}catch(e){}}'
+ 'if(document.readyState!=="loading")run();else document.addEventListener("DOMContentLoaded",run);'
+ '})();</script>')
+SCRIPTS = '<script defer src="/js/alpine.min.js"></script><script defer src="/js/process-carousel.js?v=3"></script>'+FORM_JS+PREFILL_JS
 
 TRUSTED_BY = '<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="text-center mb-10"><h2 class="relative leading-tight text-black">We&rsquo;re Trusted By</h2></div><div class="flex justify-center mb-10 lg:mb-12"><a href="https://lapada.org/dealers/wolves-removals/" target="_blank" rel="noopener" aria-label="Wolves Storage Sussex is LAPADA accredited" class="inline-block hover:opacity-80 transition-opacity"><img src="/images/photos/lapada-approved-service-provider.webp" alt="LAPADA Approved Service Provider, Association of Art &amp; Antiques Dealers" width="520" height="493" loading="lazy" decoding="async" class="h-32 sm:h-40 lg:h-44 w-auto"></a></div><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 items-center gap-2"><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/fine-and-country-recommend-wolves.webp" alt="Fine &amp; Country estate agents recommend Wolves Storage Sussex" width="500" height="250" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/justin-lloyd-estate-agents-recommend.webp" alt="Justin Lloyd estate agents recommend Wolves Storage Sussex" width="210" height="80" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/mansell-mctaggart-estate-agents-partner.webp" alt="Mansell McTaggart estate agents recommend Wolves Storage Sussex" width="179" height="81" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/leaders-estate-agents-recommend.webp" alt="Leaders estate agents recommend Wolves Storage Sussex" width="251" height="81" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/alex-harvey-estate-agents-recommend.webp" alt="Alex Harvey estate agents recommend Wolves Storage Sussex" width="400" height="200" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/at-home-estate-lettings-recommend.webp" alt="At Home estate agents recommend Wolves Storage Sussex" width="389" height="108" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div></div></div></section>'
 
