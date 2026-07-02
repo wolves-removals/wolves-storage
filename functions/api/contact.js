@@ -29,6 +29,13 @@ export async function onRequestPost({ request, env }) {
   const phone = clean(data.phone);
   const message = clean(data.message);
   const page  = clean(data.page);
+  const collect = clean(data.collect_goods);
+  const addr = [clean(data.addr1), clean(data.addr2), clean(data.town), clean(data.postcode)].filter(Boolean).join(", ");
+  const inventory = clean(data.inventory);
+  const consent = clean(data.consent) ? "Yes" : "";
+  let submitted = "";
+  try { submitted = new Date().toLocaleString("en-GB", { timeZone:"Europe/London", day:"2-digit", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" }); }
+  catch { try { submitted = new Date().toISOString(); } catch {} }
   let enquiry = data.enquiry;
   if (Array.isArray(enquiry)) enquiry = enquiry.join(", ");
   enquiry = clean(enquiry);
@@ -50,7 +57,7 @@ export async function onRequestPost({ request, env }) {
     to: [to],
     reply_to: email,
     subject: `New storage enquiry — ${first} ${last}`.trim(),
-    html: ownerEmail({ first, last, email, phone, enquiry, message, page }),
+    html: ownerEmail({ first, last, email, phone, enquiry, message, page, collect, addr, inventory, consent, submitted }),
   });
 
   // customer confirmation (different email) — best-effort; don't fail the whole request if it bounces
@@ -59,7 +66,7 @@ export async function onRequestPost({ request, env }) {
     to: [email],
     reply_to: to,
     subject: "Thanks for contacting Wolves Storage Sussex",
-    html: customerEmail({ first, enquiry, message }),
+    html: customerEmail({ first, enquiry, message, collect, addr }),
   });
 
   if (!owner.ok) return json({ ok:false, error:"Could not send your message. Please call us." }, 502);
@@ -113,7 +120,42 @@ function row(label, value){
 </tr>`;
 }
 
-function ownerEmail({ first, last, email, phone, enquiry, message, page }){
+function estimateBlock(estimateJson){
+  if(!estimateJson) return "";
+  let d; try { d = JSON.parse(estimateJson); } catch { return ""; }
+  const inv = (d && Array.isArray(d.inventory)) ? d.inventory : [];
+  const cuft = d.cuft || 0, cbm = d.cbm || 0, pods = Math.ceil(d.pods || 0);
+  if(!(pods || cuft || inv.length || d.moveIn || d.duration || d.estCost)) return "";
+  const count = inv.reduce((a,i)=>a+(parseInt(i.qty,10)||0),0);
+  const container = pods ? `&asymp;${pods} container${pods===1?"":"s"}${cuft?` &middot; ~${cuft} cu ft`:""}${cbm?` / ${cbm} cu m`:""}` : "";
+  const rows = [
+    ["Container size", container],
+    ["Move-in date", esc(d.moveIn)],
+    ["Move-out date", esc(d.moveOut)],
+    ["Duration", esc(d.duration)],
+    ["Estimated cost", esc(d.estCost)],
+    ["Cover level", esc(d.cover)],
+  ].filter(r=>r[1]).map(r=>row(r[0], r[1])).join("");
+  let items = "";
+  if(inv.length){
+    const groups = {}, order = [];
+    inv.forEach(i=>{ const c = clean(i.cat) || "Items"; if(!groups[c]){ groups[c]=[]; order.push(c); } groups[c].push(i); });
+    const cats = order.map(c=>{
+      const chips = groups[c].map(i=>`<span style="display:inline-block;background:#ffffff;border:1px solid ${C.border};border-radius:14px;padding:4px 10px;margin:0 6px 6px 0;font-size:13px;color:${C.ink};">${esc(i.name)} <b style="color:${C.orange};">&times;${esc(i.qty)}</b></span>`).join("");
+      return `<p style="margin:12px 0 6px;font-size:11px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;color:${C.grey};">${esc(c)}</p>${chips}`;
+    }).join("");
+    items = `<p style="margin:14px 0 6px;font-size:12px;color:${C.grey};font-weight:bold;">Items (${count})</p><div style="background:#ffffff;border:1px solid ${C.border};border-radius:8px;padding:12px 14px 6px;">${cats}</div>`;
+  }
+  return `<p style="margin:24px 0 6px;font-size:13px;color:${C.grey};font-weight:bold;">Storage estimate <span style="color:${C.grey};font-weight:normal;">(from the size calculator)</span></p>
+<div style="background:${C.light};border:1px solid ${C.border};border-radius:10px;padding:6px 16px 14px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table>
+${items}</div>`;
+}
+
+function ownerEmail({ first, last, email, phone, enquiry, message, page, collect, addr, inventory, consent, submitted }){
+  const collection = collect === "Yes"
+    ? (addr ? esc(addr) : "Yes &mdash; collection requested (no address given)")
+    : "No &mdash; customer will drop off / no collection needed";
   const inner = `
 <h1 style="margin:0 0 4px;font-size:20px;color:${C.ink};">New website enquiry</h1>
 <p style="margin:0 0 22px;font-size:14px;color:${C.grey};">A customer has submitted the contact form${page ? ` on <strong style="color:${C.ink};">${esc(page)}</strong>` : ""}.</p>
@@ -122,20 +164,24 @@ ${row("Name", esc(`${first} ${last}`.trim()))}
 ${row("Email", `<a href="mailto:${esc(email)}" style="color:${C.orange};text-decoration:none;">${esc(email)}</a>`)}
 ${row("Phone", phone ? `<a href="tel:${esc(phone)}" style="color:${C.orange};text-decoration:none;">${esc(phone)}</a>` : "")}
 ${row("Storing", esc(enquiry))}
+${row("Collection", collection)}
+${row("Consent", consent === "Yes" ? "&#10003; Agreed to the privacy policy" : "")}
 </table>
+${estimateBlock(inventory)}
 ${message ? `<p style="margin:22px 0 6px;font-size:13px;color:${C.grey};font-weight:bold;">Message</p>
 <div style="background:${C.light};border:1px solid ${C.border};border-radius:10px;padding:16px;font-size:15px;line-height:1.6;color:${C.ink};">${nl2br(message)}</div>` : ""}
-<p style="margin:24px 0 0;font-size:14px;color:${C.grey};">Just hit <strong style="color:${C.ink};">Reply</strong> to respond to ${esc(first)} directly.</p>`;
+<p style="margin:24px 0 4px;font-size:14px;color:${C.grey};">Just hit <strong style="color:${C.ink};">Reply</strong> to respond to ${esc(first)} directly.</p>
+${submitted ? `<p style="margin:0;font-size:12px;color:${C.grey};">Submitted ${esc(submitted)}${page ? ` &middot; ${esc(page)}` : ""}</p>` : ""}`;
   return shell(inner);
 }
 
-function customerEmail({ first, enquiry, message }){
+function customerEmail({ first, enquiry, message, collect, addr }){
   const inner = `
 <h1 style="margin:0 0 14px;font-size:22px;color:${C.ink};">Thanks, ${esc(first)} — we&rsquo;ve got your enquiry</h1>
 <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:${C.ink};">Thanks for getting in touch with <strong>Wolves Storage Sussex</strong>. A member of our friendly, family-run team will get back to you shortly &mdash; and we&rsquo;ll send your free, no-obligation quote within 24 hours.</p>
-${(enquiry || message) ? `<p style="margin:0 0 8px;font-size:13px;color:${C.grey};font-weight:bold;">What you sent us</p>
+${(enquiry || message || collect === "Yes") ? `<p style="margin:0 0 8px;font-size:13px;color:${C.grey};font-weight:bold;">What you sent us</p>
 <div style="background:${C.light};border:1px solid ${C.border};border-radius:10px;padding:16px;font-size:15px;line-height:1.6;color:${C.ink};">
-${enquiry ? `<strong>Storing:</strong> ${esc(enquiry)}<br>` : ""}${message ? nl2br(message) : ""}
+${enquiry ? `<strong>Storing:</strong> ${esc(enquiry)}<br>` : ""}${(collect === "Yes" && addr) ? `<strong>Collection from:</strong> ${esc(addr)}<br>` : ""}${message ? nl2br(message) : ""}
 </div>` : ""}
 <p style="margin:22px 0;font-size:15px;line-height:1.6;color:${C.ink};">Need us sooner? Give us a call &mdash; we&rsquo;re happy to help.</p>
 <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:${C.orange};border-radius:999px;">

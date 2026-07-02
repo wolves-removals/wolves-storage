@@ -37,6 +37,8 @@ Submit the form on the live site. You should receive the owner email at
 If the form shows the red error, check: domain Verified, `RESEND_API_KEY` set, deployment redeployed.
 
 ## Notes
+- The contact form has a **"Would you like us to collect your goods?"** toggle. When set to **Yes**, collection-address fields (line 1/2, town, postcode) appear and are required; the owner email then shows a **Collection** line with the address (or "No — customer will drop off").
+- If the visitor arrives from the **size calculator** ("Get a quote"), their item list is handed over (via `sessionStorage`) and shown as a **visual inventory panel** on the form; it's also rendered as a **Storage inventory** block (capacity + category-grouped items) in the owner email.
 - The form has a hidden honeypot field (`company`); bot submissions are silently dropped.
 - All form fields are HTML-escaped before being placed in the emails.
 - Any form with `class="enquiry-form"` is wired automatically (contact form today, future quote forms too).

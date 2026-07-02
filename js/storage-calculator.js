@@ -230,6 +230,35 @@
       if (itemCount > 0) sb.push('From your items: ~' + Math.round(cuftNow) + ' cu ft / ' + cumNow.toFixed(1) + ' cu m, ' + itemCount + ' items');
       sb.push('Contents cover: ' + ((coverInp && coverInp.checked) ? 'standard + extended' : 'standard'));
       quoteBtn.href = 'contact.html?service=Storage&details=' + encodeURIComponent(sb.join('; '));
+      try {
+        var invList = [];
+        panels.forEach(function (p) {
+          var tabBtn = root.querySelector('.scalc-tab[data-target="' + p.id + '"]');
+          var cat = tabBtn ? tabBtn.textContent.trim() : '';
+          slice(p.querySelectorAll('.scalc-item')).forEach(function (it) {
+            var qi = it.querySelector('input[data-cuft]');
+            var q = qi ? (parseInt(qi.value, 10) || 0) : 0;
+            if (q > 0) {
+              var nm = it.querySelector('.scalc-item-name');
+              invList.push({ name: (nm ? nm.textContent : (it.dataset.name || 'Item')).trim(), qty: q, cat: cat });
+            }
+          });
+        });
+        sessionStorage.setItem('wssEstimate', JSON.stringify({
+          inventory: invList,
+          items: itemCount,
+          cuft: Math.round(cuftNow),
+          cbm: +cumNow.toFixed(1),
+          pods: pods,
+          ongoing: !!ongoing,
+          moveIn: fv ? fmtDate(fv) : '',
+          moveOut: (exact && tv) ? fmtDate(tv) : '',
+          duration: ongoing ? 'Ongoing (billed monthly)' : ((valid && days > 0) ? periodLabel(days) : ''),
+          estCost: ongoing ? (money0(monthly) + '/month inc VAT') : ((valid && days > 0) ? (money0(total) + ' inc VAT') : ''),
+          cover: (coverInp && coverInp.checked) ? 'Standard + extended' : 'Standard',
+          summary: sb.join('; ')
+        }));
+      } catch (e) {}
     }
   }
 

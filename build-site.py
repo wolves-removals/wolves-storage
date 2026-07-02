@@ -11,6 +11,7 @@ CSSV = "/css/site.min.css"
 LOGO = "/images/wolves-storage-logo@480.webp"
 CONTACT_MAIN = open(os.path.join(SITE,"partials","contact-main.html"),encoding="utf-8").read()
 CALC_HTML = open(os.path.join(SITE,"partials","storage-calculator.html"),encoding="utf-8").read()
+COLLECT_HTML = open(os.path.join(SITE,"partials","collect-inventory.html"),encoding="utf-8").read()
 
 PHONE1, PHONE2 = "01903 893731", "07789 390421"
 EMAIL = "info@sussexstoragecompany.co.uk"
@@ -164,6 +165,36 @@ A11Y_CSS=('<style>'
   '.map-guard__veil{position:absolute;inset:0;z-index:5;border:0;background:transparent;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding:0 0 12px}'
   '.map-guard.is-live .map-guard__veil{display:none}'
   '.map-guard__hint{padding:6px 14px;border-radius:9999px;background:rgba(35,40,45,.85);color:#fff;font:600 .8rem/1 Barlow,system-ui,sans-serif;box-shadow:0 4px 14px -4px rgba(0,0,0,.5)}'
+  '[x-cloak]{display:none!important}'
+  '.wss-collect{margin-top:.25rem}'
+  '.wss-switch-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;background:#F9F8F6;border:1px solid #E7E7E7;border-radius:.9rem;padding:.9rem 1.1rem}'
+  '.wss-q{font-weight:600;color:#262626}'
+  '.wss-switch{display:inline-flex;align-items:center;gap:.6rem;cursor:pointer;user-select:none}'
+  '.wss-switch input{position:absolute;opacity:0;width:0;height:0}'
+  '.wss-track{position:relative;width:52px;height:30px;border-radius:999px;background:#c7ccd1;transition:background .25s ease;flex:none}'
+  '.wss-thumb{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.3);transition:transform .25s cubic-bezier(.2,.7,.3,1)}'
+  '.wss-switch input:checked+.wss-track{background:#FC9700}'
+  '.wss-switch input:checked+.wss-track .wss-thumb{transform:translateX(22px)}'
+  '.wss-switch input:focus-visible+.wss-track{outline:2px solid #FC9700;outline-offset:2px}'
+  '.wss-state{font-weight:700;color:#697783;min-width:1.8rem}'
+  '.wss-switch input:checked~.wss-state{color:#FC9700}'
+  '.wss-addr{margin-top:1rem;padding:1.1rem 1.15rem;border:1px dashed #cfd4d9;border-radius:.9rem;background:#fff}'
+  '.wss-addr-h{display:flex;align-items:center;gap:.5rem;font-weight:700;color:#262626;margin:0 0 .8rem}'
+  '.wss-addr-h svg{color:#FC9700;flex:none}'
+  '.wss-addr-note{margin:.8rem 0 0;font-size:.9rem;color:#697783}'
+  '.wss-inv{border:1px solid #E7E7E7;border-radius:1rem;overflow:hidden;background:#fff;box-shadow:0 3px 10px rgba(38,38,38,.05);margin-bottom:.25rem}'
+  '.wss-inv-hd{background:linear-gradient(120deg,#6f7d89,#697783,#5d6a75);color:#fff;padding:1.1rem 1.25rem}'
+  '.wss-inv-t{display:flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#F3F1EC;margin:0 0 .55rem}'
+  '.wss-gauge{height:12px;border-radius:999px;background:rgba(255,255,255,.22);overflow:hidden}'
+  '.wss-gauge>span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#FC9700,#F6BB06);transition:width .9s cubic-bezier(.2,.7,.3,1)}'
+  '.wss-inv-sum{margin:.6rem 0 0;font-size:.98rem;font-weight:700;color:#fff}'
+  '.wss-inv-meta{margin:.35rem 0 0;font-size:.82rem;font-weight:500;color:#EDEBE4}'
+  '.wss-inv-body{padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:.85rem}'
+  '.wss-cat-h{font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#697783;margin:0 0 .5rem}'
+  '.wss-chips{display:flex;flex-wrap:wrap;gap:.5rem}'
+  '.wss-chip{display:inline-flex;align-items:center;gap:.45rem;background:#F9F8F6;border:1px solid #E7E7E7;border-radius:999px;padding:.4rem .5rem .4rem .85rem;font-size:.9rem;color:#262626;font-weight:500}'
+  '.wss-chip b{display:inline-flex;align-items:center;justify-content:center;min-width:1.5rem;height:1.5rem;padding:0 .35rem;border-radius:999px;background:#FC9700;color:#fff;font-size:.78rem;font-weight:800}'
+  '.wss-inv-foot{padding:.85rem 1.25rem;border-top:1px solid #E7E7E7;background:#F9F8F6;font-size:.9rem;color:#697783;font-weight:600}'
   '</style>')
 def split(bg, h2, paras, img, alt, reverse=False):
     body = "".join(f'<p>{p}</p>' for p in paras)
@@ -465,14 +496,15 @@ def cta_band(title, img):
             f'<a class="button-orange btn-white btn-sweep shrink-0 px-8 lg:px-10" href="tel:+441903893731"><span class="relative z-10">Call {PHONE1}</span><span class="btn-sweep-shine" aria-hidden="true"></span></a></div>'
             '</div></div></div></section>')
 
-FORM = ('<form id="quote-form" class="enquiry-form mt-5" novalidate><div data-form-fields class="grid grid-cols-12 gap-4">'
+FORM = ('<form id="quote-form" class="enquiry-form mt-5" x-data="{collect:false}" novalidate><div data-form-fields class="grid grid-cols-12 gap-4">'
+ '<div id="wss-inv" class="col-span-12"></div><input type="hidden" name="inventory" id="wss-inv-data">'
  '<div class="col-span-12 md:col-span-6"><label class="block font-semibold mb-1" for="f-first">First name <span class="text-darkgrey">*</span></label><input class="w-full" type="text" id="f-first" name="first_name" required></div>'
  '<div class="col-span-12 md:col-span-6"><label class="block font-semibold mb-1" for="f-last">Last name <span class="text-darkgrey">*</span></label><input class="w-full" type="text" id="f-last" name="last_name" required></div>'
  '<div class="col-span-12 md:col-span-6"><label class="block font-semibold mb-1" for="f-email">Email <span class="text-darkgrey">*</span></label><input class="w-full" type="email" id="f-email" name="email" required></div>'
  '<div class="col-span-12 md:col-span-6"><label class="block font-semibold mb-1" for="f-phone">Phone</label><input class="w-full" type="tel" id="f-phone" name="phone"></div>'
  '<div class="col-span-12"><span class="block font-semibold mb-2">What do you need to store?</span><div class="flex flex-wrap gap-2">'
  +"".join(f'<label class="enq-chip"><input type="checkbox" name="enquiry" value="{v}"><span>{v}</span></label>' for v in ["Household","Long-term","Short-term","Business","Not sure"])+'</div></div>'
- '<div class="col-span-12"><label class="block font-semibold mb-1" for="f-msg">Message</label><textarea class="w-full" id="f-msg" name="message" rows="4"></textarea></div>'
+ +COLLECT_HTML+'<div class="col-span-12"><label class="block font-semibold mb-1" for="f-msg">Message</label><textarea class="w-full" id="f-msg" name="message" rows="4"></textarea></div>'
  f'<div class="col-span-12">{btn("Request My Free Quote","javascript:void(0)","px-8 lg:px-10")}</div></div>'
  '<div data-form-success hidden class="mt-5 p-6 bg-lightgrey rounded-xl text-center"><p class="text-xl font-bold text-black">Thank you &mdash; your request is in!</p><p class="mt-2">A member of our family team will be in touch within 24 hours with your free quote.</p></div></form>')
 FORM_JS = ('<script>document.addEventListener("submit",async function(e){'
@@ -553,6 +585,7 @@ def head(d):
 # Pre-fill the contact form from the size-calculator handoff (?service=&details=), so the
 # customer's estimate flows into the enquiry (and into the email you receive) instead of being lost.
 PREFILL_JS = ('<script>(function(){function run(){try{'
+ 'try{if(sessionStorage.getItem("wssEstimate"))return;}catch(_e){}'
  'var p=new URLSearchParams(location.search);var details=p.get("details");var service=p.get("service");'
  'if(!details&&!service)return;'
  'var msg=document.querySelector(".enquiry-form textarea[name=message]");'
@@ -570,7 +603,33 @@ PREFILL_JS = ('<script>(function(){function run(){try{'
  '}catch(e){}}'
  'if(document.readyState!=="loading")run();else document.addEventListener("DOMContentLoaded",run);'
  '})();</script>')
-SCRIPTS = '<script defer src="/js/alpine.min.js"></script><script defer src="/js/process-carousel.js?v=3"></script>'+FORM_JS+PREFILL_JS
+# Render the size-calculator inventory (handed off via sessionStorage) as a visual panel
+# in the contact form, and stash the raw JSON in a hidden field so the email can render it too.
+INV_JS = ('<script>(function(){function esc(s){var e=document.createElement("span");e.textContent=(s==null?"":s);return e.innerHTML;}'
+ 'function run(){try{'
+ 'var raw=sessionStorage.getItem("wssEstimate");if(!raw)return;'
+ 'var host=document.getElementById("wss-inv");if(!host)return;'
+ 'var d=JSON.parse(raw);var inv=(d&&d.inventory)||[];'
+ 'var hid=document.getElementById("wss-inv-data");if(hid)hid.value=raw;'
+ 'if(!inv.length)return;'
+ 'var groups={},order=[];inv.forEach(function(i){var c=i.cat||"Items";if(!groups[c]){groups[c]=[];order.push(c);}groups[c].push(i);});'
+ 'var pods=d.pods||0,cuft=d.cuft||0,count=inv.reduce(function(a,i){return a+(parseInt(i.qty,10)||0);},0);'
+ 'var fill=Math.min(100,Math.round(cuft/(Math.max(1,Math.ceil(pods))*250)*100));'
+ 'var meta=[];if(d.moveIn)meta.push("Move-in "+d.moveIn);if(d.duration)meta.push(d.duration);if(d.estCost)meta.push(d.estCost);if(d.cover)meta.push(d.cover+" cover");'
+ 'var metaHtml=meta.length?"<p class=\\"wss-inv-meta\\">"+meta.map(esc).join(" \\u00b7 ")+"</p>":"";'
+ 'var cats=order.map(function(c){var chips=groups[c].map(function(i){return "<span class=\\"wss-chip\\">"+esc(i.name)+" <b>"+esc(i.qty)+"</b></span>";}).join("");'
+ 'return "<div><p class=\\"wss-cat-h\\">"+esc(c)+"</p><div class=\\"wss-chips\\">"+chips+"</div></div>";}).join("");'
+ 'var podsR=Math.round(pods*10)/10,podsC=Math.ceil(pods);'
+ 'host.innerHTML="<div class=\\"wss-inv\\"><div class=\\"wss-inv-hd\\"><p class=\\"wss-inv-t\\">Your storage inventory</p>"'
+ '+"<div class=\\"wss-gauge\\"><span></span></div>"'
+ '+"<p class=\\"wss-inv-sum\\">\\u2248 "+podsR+" container"+(podsR===1?"":"s")+" \\u00b7 ~"+cuft+" cu ft</p>"+metaHtml+"</div>"'
+ '+"<div class=\\"wss-inv-body\\">"+cats+"</div>"'
+ '+"<div class=\\"wss-inv-foot\\">"+count+" item"+(count===1?"":"s")+" \\u00b7 ~"+cuft+" cu ft \\u00b7 \\u2248"+podsC+" container"+(podsC===1?"":"s")+"</div></div>";'
+ 'var bar=host.querySelector(".wss-gauge>span");if(bar){requestAnimationFrame(function(){bar.style.width=fill+"%";});}'
+ '}catch(e){}}'
+ 'if(document.readyState!=="loading")run();else document.addEventListener("DOMContentLoaded",run);'
+ '})();</script>')
+SCRIPTS = '<script defer src="/js/alpine.min.js"></script><script defer src="/js/process-carousel.js?v=3"></script>'+FORM_JS+PREFILL_JS+INV_JS
 
 TRUSTED_BY = '<section class="relative bg-lightgrey w-full pt-8 lg:pt-16 pb-8 lg:pb-16 border-border"><div class="container"><div class="text-center mb-10"><h2 class="relative leading-tight text-black">We&rsquo;re Trusted By</h2></div><div class="flex justify-center mb-10 lg:mb-12"><a href="https://lapada.org/dealers/wolves-removals/" target="_blank" rel="noopener" aria-label="Wolves Storage Sussex is LAPADA accredited" class="inline-block hover:opacity-80 transition-opacity"><img src="/images/photos/lapada-approved-service-provider.webp" alt="LAPADA Approved Service Provider, Association of Art &amp; Antiques Dealers" width="520" height="493" loading="lazy" decoding="async" class="h-32 sm:h-40 lg:h-44 w-auto"></a></div><div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 items-center gap-2"><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/fine-and-country-recommend-wolves.webp" alt="Fine &amp; Country estate agents recommend Wolves Storage Sussex" width="500" height="250" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/justin-lloyd-estate-agents-recommend.webp" alt="Justin Lloyd estate agents recommend Wolves Storage Sussex" width="210" height="80" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/mansell-mctaggart-estate-agents-partner.webp" alt="Mansell McTaggart estate agents recommend Wolves Storage Sussex" width="179" height="81" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/leaders-estate-agents-recommend.webp" alt="Leaders estate agents recommend Wolves Storage Sussex" width="251" height="81" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/alex-harvey-estate-agents-recommend.webp" alt="Alex Harvey estate agents recommend Wolves Storage Sussex" width="400" height="200" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div><div class="flex items-center justify-center py-3 px-3"><img src="/images/photos/at-home-estate-lettings-recommend.webp" alt="At Home estate agents recommend Wolves Storage Sussex" width="389" height="108" loading="lazy" decoding="async" class="h-10 sm:h-12 lg:h-14 w-auto max-w-full"></div></div></div></section>'
 
