@@ -152,9 +152,6 @@ ${items}</div>`;
 }
 
 function ownerEmail({ first, last, email, phone, enquiry, message, page, collect, addr, inventory, submitted }){
-  const collection = collect === "Yes"
-    ? (addr ? esc(addr) : "Yes &mdash; collection requested (no address given)")
-    : "No &mdash; customer will drop off / no collection needed";
   const inner = `
 <h1 style="margin:0 0 4px;font-size:20px;color:${C.ink};">New website enquiry</h1>
 <p style="margin:0 0 22px;font-size:14px;color:${C.grey};">A customer has submitted the contact form${page ? ` on <strong style="color:${C.ink};">${esc(page)}</strong>` : ""}.</p>
@@ -163,7 +160,8 @@ ${row("Name", esc(`${first} ${last}`.trim()))}
 ${row("Email", `<a href="mailto:${esc(email)}" style="color:${C.orange};text-decoration:none;">${esc(email)}</a>`)}
 ${row("Phone", phone ? `<a href="tel:${esc(phone)}" style="color:${C.orange};text-decoration:none;">${esc(phone)}</a>` : "")}
 ${row("Storing", esc(enquiry))}
-${row("Collection", collection)}
+${row("Address", esc(addr))}
+${row("Collection", collect === "Yes" ? "Yes &mdash; collect from the address above" : "No &mdash; customer will drop off")}
 </table>
 ${estimateBlock(inventory)}
 ${message ? `<p style="margin:22px 0 6px;font-size:13px;color:${C.grey};font-weight:bold;">Message</p>
